@@ -1,23 +1,23 @@
-import { trpc } from "@/shared/utils/trpc";
-import { Button, Card, CardBody } from "@nextui-org/react";
+import { useRef } from "react";
+import Flows from "./components/flows";
+import { ProjectContext } from "./stores/project-context";
+import useCreateProjectStore from "./stores/project";
 
-const Project = () => {
-  const test = trpc.greet.useQuery();
-  console.log(test.data);
-  
+const ProjectInside = () => {
   return (
-    <div>
-      <h1>Project</h1>
-      <Card>
-        <CardBody>
-          <p>{test.data}</p>
-        </CardBody>
-      </Card>
-      <Button>
-        Hi
-      </Button>
+    <div className="w-screen h-screen">
+      {/* tasks (datas) */}
+      {/* flow */}
+      <Flows />
     </div>
   );
 };
-
+const Project = () => {
+  const store = useRef(useCreateProjectStore);
+  return (
+    <ProjectContext.Provider value={store.current}>
+      <ProjectInside />
+    </ProjectContext.Provider>
+  );
+};
 export default Project;

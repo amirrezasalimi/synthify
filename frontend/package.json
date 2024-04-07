@@ -27,7 +27,8 @@
     "react-query": "3",
     "react-router-dom": "^6.22.3",
     "reactflow": "^11.11.0",
-    "y-partykit": "^0.0.28"
+    "y-partykit": "^0.0.28",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
