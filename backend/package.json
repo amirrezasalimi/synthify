@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "build": "bun build src/index.ts",
+    "start": "NODE_ENV=production bun src/index.ts",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.0.2",
+    "@elysiajs/trpc": "^1.0.2",
+    "@elysiajs/websocket": "^0.2.8",
+    "@trpc/server": "^10.45.2",
+    "bee-queue": "^1.7.1",
+    "elysia": "^1.0.13",
+    "openai": "^4.33.0",
+    "pocketbase": "^0.21.1"
+  }
+}
