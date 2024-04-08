@@ -3,6 +3,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@nextui-org/react";
 import { TbArrowsMoveVertical, TbPlus } from "react-icons/tb";
+import { RichTextarea } from "rich-textarea";
 
 const Block = ({
   i,
@@ -19,10 +20,12 @@ const Block = ({
 }) => {
   const { id } = block;
 
+  const canMove = id !== "prompt";
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id,
     });
+
   return (
     <div
       {...attributes}
@@ -30,23 +33,32 @@ const Block = ({
       className="w-full h-auto border-3 rounded-2xl p-2 bg-white relative group"
       style={{
         borderColor: color,
-        transform: CSS.Transform.toString(transform),
+        position: "relative",
+        transform: transform ? `translate3d(0, ${transform?.y}px, 0)` : "none",
       }}
     >
-      {id !== "prompt" && (
-        <>
-          {/* move */}
+      {/* move */}
+      <div className="w-10 h-10 rounded-lg absolute left-[-52px] top-1.5 group overflow-hidden">
+        <div
+          className={cn(
+            "w-full h-full flex items-center justify-center bg-gray-200",
+            canMove && "group-hover:hidden"
+          )}
+        >
+          {i + 1}
+        </div>
+        {canMove && (
           <div
-            className="w-10 h-10 rounded-lg absolute left-[-52px] top-1.5 group overflow-hidden"
             {...listeners}
+            className="flex justify-center items-center w-full h-full nodrag group-hover:bg-gray-600 text-white"
           >
-            <div className="w-full h-full flex items-center justify-center bg-gray-200 group-hover:hidden">
-              {i + 1}
-            </div>
-            <div className="flex justify-center items-center w-full h-full nodrag group-hover:bg-gray-600 text-white">
-              <TbArrowsMoveVertical />
-            </div>
+            <TbArrowsMoveVertical />
           </div>
+        )}
+      </div>
+
+      {canMove && (
+        <>
           {/* remove | right */}
 
           <div
@@ -81,6 +93,23 @@ const Block = ({
           />
         </div>
         <div>{block.id}</div>
+      </div>
+      <div className="w-full mt-2 nopan nodrag nowheel rounded-lg overflow-hidden">
+        <RichTextarea
+          className="h-full bg-gray-300  p-2 outline-none text-black overflow-y-auto resize-y"
+          style={{
+            backgroundColor: "#f9f9f9",
+            width: "100%",
+            height: "auto",
+            minHeight: "100px",
+            maxHeight: "300px",
+          }}
+          value={block.prompt}
+          rows={block.prompt.split("\n").length}
+          onChange={(e) => {
+            block.prompt = e.target.value;
+          }}
+        />
       </div>
     </div>
   );
