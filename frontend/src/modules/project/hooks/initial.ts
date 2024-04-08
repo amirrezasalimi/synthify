@@ -36,6 +36,15 @@ const useInitial = () => {
           id: "main",
           name: "Main Flow",
           color: "#3894FF",
+          blocks: [
+            {
+              id: "prompt",
+              name: "Prompt",
+              prompt: "",
+              type: "text",
+              order: 0,
+            },
+          ],
         },
         position: { x: 100, y: 100 },
       };

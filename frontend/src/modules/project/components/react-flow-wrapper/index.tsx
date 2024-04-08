@@ -1,25 +1,26 @@
 import ReactFlow, { Background, NodeTypes } from "reactflow";
 import "reactflow/dist/style.css";
-import useSyncedState from "../../hooks/synced-state";
-import { FlowNode } from "../../types/flow-data";
-import ReactFlowNode from "../react-flow-node";
-import { useMemo } from "react";
-
+import FlowNode from "../flow-node";
+import useFlows from "../../hooks/flows";
+import { DndContext } from "@dnd-kit/core";
 const nodeTypes: NodeTypes = {
-  flow: ReactFlowNode,
+  flow: FlowNode,
 };
 const ReactFlowWrapper = ({ children }: { children?: React.ReactNode }) => {
-  const state = useSyncedState();
-  const nodes = useMemo(() => {
-    return [...Object.values(state.nodes)] as FlowNode[];
-  }, [state.nodes]);
+  const { nodes, onNodesChange, onSortEnd } = useFlows();
 
   return (
     <div className="w-full h-full">
-      <ReactFlow nodeTypes={nodeTypes} nodes={nodes}>
-        {children}
-        <Background />
-      </ReactFlow>
+      <DndContext autoScroll onDragEnd={onSortEnd}>
+        <ReactFlow
+          nodeTypes={nodeTypes}
+          nodes={nodes}
+          onNodesChange={onNodesChange}
+        >
+          {children}
+          <Background />
+        </ReactFlow>
+      </DndContext>
     </div>
   );
 };
