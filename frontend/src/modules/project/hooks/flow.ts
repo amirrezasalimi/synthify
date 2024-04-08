@@ -6,7 +6,9 @@ const useFlow = (id: string) => {
   const state = nodes[id] as FlowNode;
 
   const name = state.data.name || "Untitled";
-  const blocks = state.data.blocks.sort((a, b) => a.order - b.order);
+  const blocks = [...state.data.blocks]
+  // from -infinity to +infinity
+  .sort((a, b) => a.order - b.order);
 
   const addEmptyBlock = () => {
     // add to top
@@ -35,6 +37,9 @@ const useFlow = (id: string) => {
 
   const removeBlock = (id: string) => {
     const index = state.data.blocks.findIndex((block) => block.id === id);
+    if (state.data.blocks[index].id == "prompt") {
+      return;
+    }
     if (index > -1) {
       state.data.blocks.splice(index, 1);
     }

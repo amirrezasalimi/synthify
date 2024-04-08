@@ -4,7 +4,11 @@ import useFlow from "../../hooks/flow";
 import { Button, cn } from "@nextui-org/react";
 import { TbPlus } from "react-icons/tb";
 import chroma from "chroma-js";
-import { SortableContext } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  rectSwappingStrategy,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import Block from "./components/block";
 
 const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
@@ -59,7 +63,9 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
       </div>
 
       <SortableContext
-        items={state.data.blocks.map((block) => block.id)}
+        items={
+          blocks.map((block) => block.id) // block.id
+        }
         id={`flow-${id}`}
       >
         {/* render blocks */}
@@ -69,6 +75,7 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
             const color = chroma(state.data.color).brighten(0.5).hex();
             return (
               <Block
+                key={block.id}
                 i={i}
                 block={block}
                 color={color}
