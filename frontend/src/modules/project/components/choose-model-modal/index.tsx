@@ -11,7 +11,7 @@ import {
 } from "@nextui-org/react";
 import { useCommonStore } from "../../stores/common";
 import { trpc } from "@/shared/utils/trpc";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 
 const ChooseModelModal = () => {
   const { isChooseModelModalOpen, toggleChooseModelModal, onChooseModel } =
@@ -30,6 +30,13 @@ const ChooseModelModal = () => {
     );
     toggleChooseModelModal(false);
   };
+
+  useLayoutEffect(() => {
+    if (!isChooseModelModalOpen) {
+      setModelFilter("");
+      setSelectedModel(null);
+    }
+  }, [isChooseModelModalOpen]);
 
   return (
     <Modal
