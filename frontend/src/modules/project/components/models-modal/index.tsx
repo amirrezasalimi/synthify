@@ -8,6 +8,7 @@ import {
   Modal,
   ModalBody,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   Spinner,
   cn,
@@ -95,7 +96,7 @@ const ModelsModal = () => {
                 onChange={(e) => setServiceApiKey(e.target.value)}
               />
             </ModalBody>
-            <ModalHeader>
+            <ModalFooter>
               <Button
                 isLoading={addService.isLoading}
                 onClick={addNewService}
@@ -105,7 +106,7 @@ const ModelsModal = () => {
               >
                 Add
               </Button>
-            </ModalHeader>
+            </ModalFooter>
           </ModalContent>
         </Modal>
 

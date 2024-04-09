@@ -43,6 +43,7 @@ const useInitial = () => {
               prompt: "",
               type: "text",
               order: 0,
+              ai_config: {},
             },
           ],
         },

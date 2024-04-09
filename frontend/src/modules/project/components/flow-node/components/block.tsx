@@ -1,9 +1,11 @@
+import { useCommonStore } from "@/modules/project/stores/common";
 import { FlowBlock } from "@/modules/project/types/flow-data";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@nextui-org/react";
 import { TbArrowsMoveVertical, TbPlus } from "react-icons/tb";
 import { RichTextarea } from "rich-textarea";
+import { useStore } from "zustand";
 
 const Block = ({
   i,
@@ -18,13 +20,25 @@ const Block = ({
   updateBlockName: (id: string, name: string) => void;
   removeBlock: (id: string) => void;
 }) => {
+  const toggleChooseModelModal = useCommonStore(
+    (state) => state.toggleChooseModelModal
+  );
   const { id } = block;
 
   const canMove = id !== "prompt";
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({
-      id,
+  const { attributes, listeners, setNodeRef, transform } = useSortable({
+    id,
+  });
+
+  const chooseModel = () => {
+    toggleChooseModelModal(true, (service_id, model_id) => {
+      if(!block.ai_config){
+        block.ai_config = {};
+      }
+      block.ai_config.service = service_id;
+      block.ai_config.model = model_id;
     });
+  };
 
   return (
     <div
@@ -92,7 +106,14 @@ const Block = ({
             onChange={(e) => updateBlockName(id, e.target.value)}
           />
         </div>
-        <div>{block.id}</div>
+        <div>
+          <button
+            onClick={chooseModel}
+            className="px-2 py-1 bg-gray-200 rounded-lg truncate w-auto max-w-[150px]"
+          >
+            {block?.ai_config?.model ? block.ai_config.model : "Choose Model"}
+          </button>
+        </div>
       </div>
       <div className="w-full mt-2 nopan nodrag nowheel rounded-lg overflow-hidden">
         <RichTextarea

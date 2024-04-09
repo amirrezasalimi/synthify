@@ -12,6 +12,11 @@ export interface FlowBlock {
   type: "list" | "text";
   prompt: string;
   cache?: boolean;
+  ai_config: {
+    service?: string;
+    model?: string;
+    temprature?: number;
+  };
   data?: {
     content: string;
     items: string[];
