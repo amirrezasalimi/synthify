@@ -1,11 +1,9 @@
 import { useCommonStore } from "@/modules/project/stores/common";
 import { FlowBlock } from "@/modules/project/types/flow-data";
 import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@nextui-org/react";
 import { TbArrowsMoveVertical, TbPlus } from "react-icons/tb";
 import { RichTextarea } from "rich-textarea";
-import { useStore } from "zustand";
 
 const Block = ({
   i,
