@@ -26,7 +26,6 @@ const runFlow = async ({
   // run single flow
   const blocks = flow.data.blocks;
   const ordredBlocks = blocks.sort((a, b) => a.order - b.order);
-  console.log(`ordredBlocks`, ordredBlocks);
 
   for (const block of ordredBlocks) {
     if (block.type == "run-flow") {
@@ -39,6 +38,8 @@ const runFlow = async ({
           aiServices,
         });
         if (res) blockCache[nextFlow.data.name] = res;
+        console.log(`run-flow ${nextFlow.data.name}`, res);
+        
       }
       continue;
     }
@@ -92,7 +93,6 @@ const runFlow = async ({
         }
       }
 
-      console.log(`use ai `, block.name, prompt);
       const res = await oai.chat.completions.create({
         model: ai_config.model ?? "gpt-3.5-turbo",
         messages: [
@@ -102,14 +102,22 @@ const runFlow = async ({
           },
         ],
       });
+
       let content = res.choices[0].message?.content;
       if (!content) continue;
+      console.log(`ai :`, prompt, content);
+
       if (block.type == "list") {
         const sep = block.settings.item_seperator ?? "\n";
-        cache[`${flowId}-${block.id}`] = content
-          .split(sep)
+        const list = content
+          .split(new RegExp(sep, "g"))
           .map((t) => t.trim().replace(sep, ""));
+
+        cache[`${flowId}-${block.id}`] = list;
         blockCache[block.name] = cache[`${flowId}-${block.id}`];
+
+        console.log(`list content`, content);
+        console.log(`list items`, sep, list);
       } else if (block.type == "text") {
         blockCache[block.name] = content;
       }
