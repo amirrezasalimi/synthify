@@ -6,6 +6,7 @@ import useInitial from "./hooks/initial";
 import { CircularProgress } from "@nextui-org/react";
 import TopBar from "./components/top-bar";
 import Tasks from "./components/tasks";
+import ModelsModal from "./components/models-modal";
 
 const ProjectInside = () => {
   const { isConnected } = useInitial();
@@ -18,7 +19,8 @@ const ProjectInside = () => {
   }
   return (
     <div className="w-screen h-screen">
-      {/* top bar */}
+      <ModelsModal/>
+       {/* top bar */}
       {/* tasks (datas) */}
       {/* flow */}
       <ReactFlowWrapper>

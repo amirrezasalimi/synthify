@@ -15,12 +15,10 @@ import {
 import { useLayoutEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { TbPlus, TbReload, TbTrash } from "react-icons/tb";
+import { useCommonStore } from "../../stores/common";
 
-interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-}
-const ModelsModal = ({ isOpen, onClose }: Props) => {
+const ModelsModal = () => {
+  const { isConfigModelOpen, toggleConfigModel } = useCommonStore();
   const [addModalOpen, setAddModalOpen] = useState(false);
 
   const [modelName, setModelName] = useState<string>("");
@@ -52,21 +50,20 @@ const ModelsModal = ({ isOpen, onClose }: Props) => {
 
   const services = trpc.list_ai_services.useQuery();
   useLayoutEffect(() => {
-    if (isOpen) services.refetch();
-  }, [isOpen]);
+    if (isConfigModelOpen) services.refetch();
+  }, [isConfigModelOpen]);
 
   const [showMoreModels, setShowMoreModels] = useState<{
     [key: string]: boolean;
   }>({});
-  const toggleServiceModels = (id: string) => {
-    setShowMoreModels((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-  const showMoreServiceModels = (id: string) => {
-    return showMoreModels[id] ?? false;
-  };
+
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} title="Config Ai's">
+      <Modal
+        isOpen={isConfigModelOpen}
+        onClose={() => toggleConfigModel(false)}
+        title="Config Ai's"
+      >
         {/* add modal */}
         <Modal
           isOpen={addModalOpen}

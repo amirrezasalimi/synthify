@@ -1,17 +1,12 @@
 import { Button } from "@nextui-org/react";
-import { useState } from "react";
 import { TbChevronLeft } from "react-icons/tb";
-import ModelsModal from "../models-modal";
+import { useCommonStore } from "../../stores/common";
 
 const TopBar = () => {
-  const [isModelsModalOpen, setIsModelsModalOpen] = useState(false);
+  const { toggleConfigModel } = useCommonStore();
   // top center
   return (
     <>
-      <ModelsModal
-        isOpen={isModelsModalOpen}
-        onClose={() => setIsModelsModalOpen(false)}
-      />
       <div className="w-full flex justify-center items-center">
         <div className="w-3/6 flex justify-between items-center bg-white rounded-xl border mt-4 z-40 px-2 py-2">
           <div className="flex gap-2 items-center">
@@ -23,7 +18,7 @@ const TopBar = () => {
 
           <div>
             <Button
-              onClick={() => setIsModelsModalOpen(true)}
+              onClick={() => toggleConfigModel(true)}
               className="px-2 w-auto"
               isIconOnly
               variant="flat"
