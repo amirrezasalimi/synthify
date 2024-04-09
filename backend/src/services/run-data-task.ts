@@ -1,5 +1,5 @@
-import { FlowNode } from "@/modules/project/types/flow-data";
 import { pb } from "../libs/pb";
+import { FlowNode } from "../types/flow-data";
 import {
   DatasRecord,
   DatasStatusOptions,
