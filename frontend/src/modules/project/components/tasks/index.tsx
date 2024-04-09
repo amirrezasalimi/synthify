@@ -25,9 +25,9 @@ const Tasks = () => {
   const helper = useTasks();
 
   return (
-    <div className="absolute w-1/6 h-[80vh] m-8 flex flex-col rounded-xl border bg-white p-4 z-50">
-      <h2 className="font-bold">Datasets</h2>
-      <div className="flex flex-col mt-4  gap-2">
+    <div className="absolute w-1/6 h-[80vh] m-8 flex flex-col rounded-xl border bg-white z-50">
+      <h2 className="font-bold p-4">Datasets</h2>
+      <div className="flex flex-col gap-2 overflow-scroll px-3">
         {helper.tasks.isLoading && <Spinner />}
         {helper.tasks.data?.map((task) => (
           <Item task={task} />

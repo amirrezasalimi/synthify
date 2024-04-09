@@ -132,7 +132,9 @@ const router = t.router({
   // tasks
 
   tasksList: p.query(async () => {
-    const res = await pb.collection("tasks").getFullList();
+    const res = await pb.collection("tasks").getFullList({
+      sort: "-created",
+    });
     return res;
   }),
 });

@@ -117,18 +117,20 @@ const runDataTask = async ({
   flows: FlowNode[];
 }) => {
   const mainFlow = flows.find((flow) => flow.data.id === "main") as FlowNode;
-  pb.collection("tasks").create({
+  const res = await pb.collection("tasks").create({
     count,
     title,
     flows,
     status: TasksStatusOptions["in-progress"],
     // user: "1",
   } as TasksRecord);
+  const taskId = res.id;
 
   const aiServices = await pb.collection("user_ai").getFullList();
 
   const cache: Record<string, string | string[]> = {};
   const dataset: string[] = [];
+
   for (let i = 0; i < count; i++) {
     const result = await runFlow({
       cache,
@@ -140,13 +142,10 @@ const runDataTask = async ({
     result && dataset.push(result);
   }
   console.log(`dataset`, dataset);
-  
-  pb.collection("tasks").create({
-    count,
-    title,
-    flows,
-    status: TasksStatusOptions.done,
-    // user: "1",
+
+  // update status
+  pb.collection("tasks").update(taskId, {
+    status: TasksStatusOptions["done"],
   } as TasksRecord);
 };
 
