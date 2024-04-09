@@ -4,6 +4,8 @@ import { ProjectContext } from "./stores/project-context";
 import useCreateProjectStore from "./stores/project";
 import useInitial from "./hooks/initial";
 import { CircularProgress } from "@nextui-org/react";
+import TopBar from "./components/top-bar";
+import Tasks from "./components/tasks";
 
 const ProjectInside = () => {
   const { isConnected } = useInitial();
@@ -16,9 +18,13 @@ const ProjectInside = () => {
   }
   return (
     <div className="w-screen h-screen">
+      {/* top bar */}
       {/* tasks (datas) */}
       {/* flow */}
-      <ReactFlowWrapper />
+      <ReactFlowWrapper>
+        <Tasks/>
+        <TopBar />
+      </ReactFlowWrapper>
     </div>
   );
 };

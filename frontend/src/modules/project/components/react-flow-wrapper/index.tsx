@@ -17,8 +17,8 @@ const ReactFlowWrapper = ({ children }: { children?: React.ReactNode }) => {
           nodes={nodes}
           onNodesChange={onNodesChange}
         >
-          {children}
           <Background />
+          {children}
         </ReactFlow>
       </DndContext>
     </div>

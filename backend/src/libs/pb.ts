@@ -1,4 +1,5 @@
 import Pocketbase from "pocketbase";
+import { TypedPocketBase } from "../types/pocketbase";
 const pocketbase = async () => {
   console.log("Connecting to Pocketbase...", process.env.POCKETBASE_HOST);
 
@@ -9,5 +10,5 @@ const pocketbase = async () => {
   );
   return _;
 };
-const pb = await pocketbase();
+const pb = (await pocketbase()) as TypedPocketBase;
 export { pb };
