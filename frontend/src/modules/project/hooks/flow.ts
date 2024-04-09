@@ -3,10 +3,10 @@ import useSyncedState from "./synced-state";
 
 const useFlow = (id: string) => {
   const { nodes } = useSyncedState();
-  const state = nodes[id] as FlowNode;
+  const state = nodes?.[id] as FlowNode;
 
-  const name = state.data.name || "Untitled";
-  const blocks = [...state.data.blocks]
+  const name = state?.data?.name || "Untitled";
+  const blocks = [...state?.data?.blocks??[]]
     // from -infinity to +infinity
     .sort((a, b) => a.order - b.order);
 
@@ -31,7 +31,7 @@ const useFlow = (id: string) => {
       ai_config: {},
       settings: {
         cache: type == "list",
-        item_seperator: ","
+        item_seperator: ",",
       },
     });
   };
@@ -55,10 +55,17 @@ const useFlow = (id: string) => {
     }
   };
 
+  const remove = () => {
+    if (id === "main") {
+      return;
+    }
+    delete nodes[id];
+  };
   return {
     state,
     name,
     blocks,
+    remove,
     addBlock,
     updateFlowName,
     updateBlockName,

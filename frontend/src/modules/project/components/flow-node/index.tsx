@@ -9,7 +9,7 @@ import {
   DropdownTrigger,
   cn,
 } from "@nextui-org/react";
-import { TbPlus } from "react-icons/tb";
+import { TbPlus, TbTrash } from "react-icons/tb";
 import chroma from "chroma-js";
 import { SortableContext } from "@dnd-kit/sortable";
 import Block from "./components/block";
@@ -23,17 +23,31 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
     updateBlockName,
     updateFlowName,
     removeBlock,
+    remove,
   } = useFlow(id);
 
   return (
     <div className="w-[400px] ">
       {/* head */}
       <div
-        className="w-full flex items-center justify-center rounded-3xl"
+        className="w-full flex items-center justify-center rounded-3xl group"
         style={{
           backgroundColor: data.color,
         }}
       >
+        {/* remove */}
+        {id !== "main" && (
+          <div className="absolute w-[100px] h-10 left-[-36px] top-2 z-10  flex items-center">
+            <TbTrash
+              size={24}
+              className="hover:text-red-500 cursor-pointer group-hover:visible invisible"
+              onClick={remove}
+            >
+              X
+            </TbTrash>
+          </div>
+        )}
+
         <div
           className="w-full text-white text-lg rounded-2xl border-4 border-white m-1.5 px-2 py-1"
           style={{
