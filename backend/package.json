@@ -12,7 +12,6 @@
     "@elysiajs/websocket": "^0.2.8",
     "@trpc/server": "^10.45.2",
     "@types/node": "^20.12.5",
-    "bee-queue": "^1.7.1",
     "elysia": "^1.0.13",
     "openai": "^4.33.0",
     "pocketbase": "^0.21.1",

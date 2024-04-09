@@ -2,6 +2,8 @@ import { Elysia } from "elysia";
 import { trpc } from "@elysiajs/trpc";
 import router from "./routes";
 import { cors } from "@elysiajs/cors";
+import Queue from "bee-queue";
+
 
 const elysia = new Elysia()
   .use(trpc(router))

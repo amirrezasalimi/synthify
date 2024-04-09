@@ -2,6 +2,9 @@ import { initTRPC } from "@trpc/server";
 import { z } from "zod";
 import { pb } from "../libs/pb";
 import OpenAI from "openai";
+import { FlowNode } from "@/modules/project/types/flow-data";
+import runDataTask from "../services/run-data-task";
+
 const t = initTRPC.create();
 const p = t.procedure;
 
@@ -102,6 +105,36 @@ const router = t.router({
         throw new Error("Failed to refresh models");
       }
     }),
+
+  run: p
+    .input(
+      z.object({
+        title: z.string(),
+        count: z.number().optional(),
+        flows: z.array(z.custom<FlowNode>()),
+      })
+    )
+    .mutation(async ({ input: { flows, title, count = 1 } }) => {
+      // validation
+      const main = flows.find((f) => f.data.id === "main");
+
+      if (main?.data.blocks.length == 1) {
+        throw new Error("At least two blocks required");
+      }
+
+      runDataTask({
+        count,
+        flows,
+        title,
+      });
+      return "ok";
+    }),
+  // tasks
+
+  tasksList: p.query(async () => {
+    const res = await pb.collection("tasks").getFullList();
+    return res;
+  }),
 });
 export type Router = typeof router;
 export default router;
