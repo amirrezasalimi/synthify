@@ -2,9 +2,8 @@ import { initTRPC } from "@trpc/server";
 import { z } from "zod";
 import { pb } from "../libs/pb";
 import OpenAI from "openai";
-import { FlowNode } from "@/modules/project/types/flow-data";
 import runDataTask from "../services/run-data-task";
-
+import { FlowNode } from "../types/flow-data";
 const t = initTRPC.create();
 const p = t.procedure;
 
@@ -124,7 +123,7 @@ const router = t.router({
 
       runDataTask({
         count,
-        flows,
+        flows: flows,
         title,
       });
       return "ok";
@@ -138,12 +137,13 @@ const router = t.router({
     const extendMore = res.map(async (task) => {
       let done_count = 0;
       try {
-        const done_data = await pb.collection("datas").getList(1,1,{
+        const done_data = await pb.collection("datas").getList(1, 1, {
           filter: `task = "${task.id}" && status = "done"`,
           $autoCancel: false,
-        })
+        });
         done_count = done_data.totalItems;
       } catch (e) {
+        // @ts-ignore
         console.log(`error`, e.message);
       }
       return {
