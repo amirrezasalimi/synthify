@@ -85,11 +85,8 @@ const runFlow = async ({
         apiKey: service_config.api_key,
         baseURL: service_config.endpoint,
       });
-      let needAi = true;
-
       if (block.type == "list" && block.settings.cache) {
         if (cache[`${flowId}-${block.id}`]) {
-          needAi = false;
           blockCache[block.name] = cache[`${flowId}-${block.id}`];
           continue;
         }
