@@ -8,8 +8,10 @@ import {
 } from "@nextui-org/react";
 import { useState } from "react";
 import useRun from "../../hooks/run";
+import useFlows from "../../hooks/flows";
 
-const RunTask = () => {
+const ButtomBar = () => {
+  const flows = useFlows();
   const [modalOpen, setModalOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [dataCount, setDataCount] = useState(1);
@@ -52,15 +54,16 @@ const RunTask = () => {
           </ModalBody>
         </ModalContent>
       </Modal>
-      <Button
-        color="primary"
-        className="absolute bottom-6 right-6 z-10"
-        onClick={() => setModalOpen(true)}
-      >
-        Run
-      </Button>
+      <div className="absolute bottom-4 w-full flex justify-center">
+        <div className="bg-white w-1/6 rounded-xl px-4 py-2 z-10 border shadow-sm flex gap-4 justify-center items-center">
+          <Button color="primary" onClick={() => setModalOpen(true)}>
+            Run
+          </Button>
+          <Button onClick={flows.addEmptyFlow}>Add Flow</Button>
+        </div>
+      </div>
     </>
   );
 };
 
-export default RunTask;
+export default ButtomBar;

@@ -8,7 +8,7 @@ import TopBar from "./components/top-bar";
 import Tasks from "./components/tasks";
 import ModelsModal from "./components/models-modal";
 import ChooseModelModal from "./components/choose-model-modal";
-import RunTask from "./components/publish";
+import ButtomBar from "./components/bottom-bar";
 
 const ProjectInside = () => {
   const { isConnected } = useInitial();
@@ -29,7 +29,7 @@ const ProjectInside = () => {
       <ReactFlowWrapper>
         <Tasks/>
         <TopBar />
-        <RunTask />
+        <ButtomBar />
       </ReactFlowWrapper>
     </div>
   );

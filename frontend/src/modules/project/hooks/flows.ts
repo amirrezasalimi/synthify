@@ -63,11 +63,48 @@ const useFlows = () => {
       }
     }
   };
+  const addEmptyFlow = () => {
+    const lastFlow = Object.values(state.nodes)
+      .filter((node) => node?.type === "flow")
+      .pop();
+    let x, y;
+    if (lastFlow) {
+      x = lastFlow?.position.x + 200 || 100;
+      y = lastFlow?.position.y + 200 || 100;
+    } else {
+      x = 100;
+      y = 100;
+    }
+    const colors = ["#FF3897", "#1FE9AC", "#E91F1F", "#531FE9"];
+    const id = Math.random().toString(36).substring(7);
 
+    state.nodes[id] = {
+      id,
+      type: "flow",
+      data: {
+        id,
+        name: `flow${Object.keys(state.nodes).length + 1}`,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        blocks: [
+          {
+            id: "prompt",
+            name: "Prompt",
+            prompt: "",
+            type: "text",
+            order: 0,
+            ai_config: {},
+            settings: {},
+          },
+        ],
+      },
+      position: { x, y },
+    };
+  };
   return {
     nodes,
     onNodesChange,
     onSortEnd,
+    addEmptyFlow
   };
 };
 
