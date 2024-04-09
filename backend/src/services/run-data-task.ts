@@ -36,7 +36,6 @@ const runFlow = async ({
           flows,
           aiServices,
         });
-        console.log(`run flow`, nextFlow, res);
         if (res) blockCache[nextFlow.data.name] = res;
       }
       continue;
