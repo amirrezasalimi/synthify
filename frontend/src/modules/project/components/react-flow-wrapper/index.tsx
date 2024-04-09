@@ -3,11 +3,13 @@ import "reactflow/dist/style.css";
 import FlowNode from "../flow-node";
 import useFlows from "../../hooks/flows";
 import { DndContext } from "@dnd-kit/core";
+import ViewportSaver from "./components/viewport-saver";
 const nodeTypes: NodeTypes = {
   flow: FlowNode,
 };
 const ReactFlowWrapper = ({ children }: { children?: React.ReactNode }) => {
   const { nodes, onNodesChange, onSortEnd } = useFlows();
+
 
   return (
     <div className="w-full h-full">
@@ -17,6 +19,7 @@ const ReactFlowWrapper = ({ children }: { children?: React.ReactNode }) => {
           nodes={nodes}
           onNodesChange={onNodesChange}
         >
+          <ViewportSaver />
           <Background />
           {children}
         </ReactFlow>

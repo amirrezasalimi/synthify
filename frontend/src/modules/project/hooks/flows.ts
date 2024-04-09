@@ -4,7 +4,6 @@ import useSyncedState from "./synced-state";
 import { NodeChange } from "reactflow";
 import { SortableData } from "@dnd-kit/sortable";
 import toast from "react-hot-toast";
-
 const useFlows = () => {
   const state = useSyncedState();
   const nodes = [...Object.values(state.nodes)] as FlowNode[];
@@ -104,7 +103,7 @@ const useFlows = () => {
     nodes,
     onNodesChange,
     onSortEnd,
-    addEmptyFlow
+    addEmptyFlow,
   };
 };
 
