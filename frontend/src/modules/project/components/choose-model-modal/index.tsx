@@ -3,7 +3,6 @@ import {
   Modal,
   ModalBody,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   Radio,
   RadioGroup,
@@ -11,33 +10,18 @@ import {
 } from "@nextui-org/react";
 import { useCommonStore } from "../../stores/common";
 import { trpc } from "@/shared/utils/trpc";
-import { useLayoutEffect, useState } from "react";
+import { useState } from "react";
 
 const ChooseModelModal = () => {
   const { isChooseModelModalOpen, toggleChooseModelModal, onChooseModel } =
     useCommonStore();
   const services = trpc.list_ai_services.useQuery();
   const [modelFilter, setModelFilter] = useState("");
-  const [selectedModel, setSelectedModel] = useState<{
-    service_id: string;
-    model_id: string;
-  } | null>(null);
 
-  const save = () => {
-    onChooseModel?.(
-      selectedModel?.service_id ?? "",
-      selectedModel?.model_id ?? ""
-    );
-    toggleChooseModelModal(false);
-  };
-
-  useLayoutEffect(() => {
-    if (!isChooseModelModalOpen) {
-      setModelFilter("");
-      setSelectedModel(null);
-    }
-  }, [isChooseModelModalOpen]);
-
+  const selectedModel={
+    service_id: "",
+    model_id: "",
+  }
   return (
     <Modal
       isOpen={isChooseModelModalOpen}
@@ -54,7 +38,8 @@ const ChooseModelModal = () => {
               value={`${selectedModel?.service_id}@${selectedModel?.model_id}`}
               onValueChange={(value) => {
                 const [service_id, model_id] = value.split("@");
-                setSelectedModel({ service_id, model_id });
+                onChooseModel?.(service_id ?? "", model_id ?? "");
+                toggleChooseModelModal(false);
               }}
               label="Select Model"
             >
@@ -90,9 +75,6 @@ const ChooseModelModal = () => {
             </RadioGroup>
           </div>
         </ModalBody>
-        <ModalFooter className="sticky bottom-0 bg-white">
-          <button onClick={save}>Save</button>
-        </ModalFooter>
       </ModalContent>
     </Modal>
   );
