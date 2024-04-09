@@ -7,22 +7,32 @@ const useFlow = (id: string) => {
 
   const name = state.data.name || "Untitled";
   const blocks = [...state.data.blocks]
-  // from -infinity to +infinity
-  .sort((a, b) => a.order - b.order);
+    // from -infinity to +infinity
+    .sort((a, b) => a.order - b.order);
 
-  const addEmptyBlock = () => {
+  const addBlock = (type: any) => {
     // add to top
     const lowestOrder = state.data.blocks.reduce(
       (acc, block) => Math.min(acc, block.order),
       0
     );
+    let prompt = "";
+    if (type == "list") {
+      prompt =
+        "make a list of 20 different categories about shopping ,no extra talk ,sepereated by comma:";
+    }
 
     state.data.blocks.push({
       id: Math.random().toString(36).substring(7),
       name: "Untitled",
-      type: "text",
-      prompt: "",
+      type,
+      prompt,
       order: lowestOrder - 1,
+      ai_config: {},
+      settings: {
+        cache: type == "list",
+        item_seperator: ","
+      },
     });
   };
   const updateFlowName = (name: string) => {
@@ -49,7 +59,7 @@ const useFlow = (id: string) => {
     state,
     name,
     blocks,
-    addEmptyBlock,
+    addBlock,
     updateFlowName,
     updateBlockName,
     removeBlock,

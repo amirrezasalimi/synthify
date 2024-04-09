@@ -1,14 +1,17 @@
 import { NodeProps } from "reactflow";
 import { FlowData } from "../../types/flow-data";
 import useFlow from "../../hooks/flow";
-import { Button, cn } from "@nextui-org/react";
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  cn,
+} from "@nextui-org/react";
 import { TbPlus } from "react-icons/tb";
 import chroma from "chroma-js";
-import {
-  SortableContext,
-  rectSwappingStrategy,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { SortableContext } from "@dnd-kit/sortable";
 import Block from "./components/block";
 
 const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
@@ -16,7 +19,7 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
     name,
     state,
     blocks,
-    addEmptyBlock,
+    addBlock,
     updateBlockName,
     updateFlowName,
     removeBlock,
@@ -51,15 +54,27 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
       </div>
 
       {/* add to top */}
+
       <div className="flex justify-center py-2">
-        <Button
-          className="px-8"
-          variant="flat"
-          size="sm"
-          onClick={addEmptyBlock}
-        >
-          <TbPlus />
-        </Button>
+        <Dropdown>
+          <DropdownTrigger>
+            <Button className="px-8" variant="flat" size="sm">
+              <TbPlus />
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu
+            onAction={(selected) => {
+              console.log("selected", selected);
+              addBlock(String(selected));
+            }}
+            title="Blocks"
+            aria-label="Blocks"
+          >
+            <DropdownItem key="list">LIST</DropdownItem>
+            <DropdownItem key="text">TEXT</DropdownItem>
+            <DropdownItem key="run-flow">RUN FLOW</DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
       </div>
 
       <SortableContext
@@ -77,6 +92,7 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
               <Block
                 key={block.id}
                 i={i}
+                flowId={id}
                 block={block}
                 color={color}
                 updateBlockName={updateBlockName}

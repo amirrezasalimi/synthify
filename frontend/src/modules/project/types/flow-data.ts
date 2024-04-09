@@ -9,9 +9,13 @@ export interface FlowData {
 export interface FlowBlock {
   id: string;
   name: string;
-  type: "list" | "text";
+  type: "list" | "text" | "run-flow";
   prompt: string;
-  cache?: boolean;
+  settings: {
+    cache?: boolean;
+    item_seperator?: string;
+    selected_flow?: string;
+  };
   ai_config: {
     service?: string;
     model?: string;
