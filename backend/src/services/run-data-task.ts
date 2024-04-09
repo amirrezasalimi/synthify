@@ -9,17 +9,16 @@ import OpenAI from "openai";
 
 const runFlow = async ({
   cache,
-  flowId,
   aiServices,
   flow,
   flows,
 }: {
   cache: Record<string, string | string[]>;
   aiServices: UserAiResponse<unknown, unknown>[];
-  flowId: string;
   flow: FlowNode;
   flows: FlowNode[];
 }) => {
+  const flowId = flow.id;
   let errors = [];
   const blockCache: Record<string, string | string[]> = {};
   // run single flow
@@ -29,6 +28,17 @@ const runFlow = async ({
 
   for (const block of ordredBlocks) {
     if (block.type == "run-flow") {
+      const nextFlow = flows.find((f) => f.id === block.settings.selected_flow);
+      if (nextFlow) {
+        const res = await runFlow({
+          cache,
+          flow: nextFlow,
+          flows,
+          aiServices,
+        });
+        console.log(`run flow`, nextFlow, res);
+        if (res) blockCache[nextFlow.data.name] = res;
+      }
       continue;
     }
     let prompt = "";
@@ -94,18 +104,20 @@ const runFlow = async ({
           },
         ],
       });
-      let text = res.choices[0].message.content;
-      if (!text) continue;
+      let content = res.choices[0].message?.content;
+      if (!content) continue;
       if (block.type == "list") {
         const sep = block.settings.item_seperator ?? "\n";
-        cache[`${flowId}-${block.id}`] = text
+        cache[`${flowId}-${block.id}`] = content
           .split(sep)
           .map((t) => t.trim().replace(sep, ""));
         blockCache[block.name] = cache[`${flowId}-${block.id}`];
       } else if (block.type == "text") {
-        blockCache[block.name] = text;
+        blockCache[block.name] = content;
       }
       //
+    } else {
+      blockCache[block.name] = prompt;
     }
   }
 };
@@ -137,7 +149,6 @@ const runDataTask = async ({
   for (let i = 0; i < count; i++) {
     const result = await runFlow({
       cache,
-      flowId: mainFlow.id,
       flow: mainFlow,
       flows,
       aiServices: aiServices,
