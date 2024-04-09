@@ -61,89 +61,6 @@
         }
     },
     {
-        "id": "o9ef5oes2vz6dng",
-        "name": "tasks",
-        "type": "base",
-        "system": false,
-        "schema": [
-            {
-                "system": false,
-                "id": "f66y6wbr",
-                "name": "flows",
-                "type": "json",
-                "required": false,
-                "presentable": false,
-                "unique": false,
-                "options": {
-                    "maxSize": 2000000
-                }
-            },
-            {
-                "system": false,
-                "id": "7puxhliv",
-                "name": "count",
-                "type": "number",
-                "required": false,
-                "presentable": false,
-                "unique": false,
-                "options": {
-                    "min": null,
-                    "max": null,
-                    "noDecimal": false
-                }
-            },
-            {
-                "system": false,
-                "id": "jarqsusc",
-                "name": "user",
-                "type": "relation",
-                "required": false,
-                "presentable": false,
-                "unique": false,
-                "options": {
-                    "collectionId": "_pb_users_auth_",
-                    "cascadeDelete": false,
-                    "minSelect": null,
-                    "maxSelect": 1,
-                    "displayFields": null
-                }
-            },
-            {
-                "system": false,
-                "id": "ymtwq5so",
-                "name": "status",
-                "type": "text",
-                "required": false,
-                "presentable": false,
-                "unique": false,
-                "options": {
-                    "min": null,
-                    "max": null,
-                    "pattern": ""
-                }
-            },
-            {
-                "system": false,
-                "id": "9kvsuric",
-                "name": "meta",
-                "type": "json",
-                "required": false,
-                "presentable": false,
-                "unique": false,
-                "options": {
-                    "maxSize": 2000000
-                }
-            }
-        ],
-        "indexes": [],
-        "listRule": null,
-        "viewRule": null,
-        "createRule": null,
-        "updateRule": null,
-        "deleteRule": null,
-        "options": {}
-    },
-    {
         "id": "yya8tn9ykw3taig",
         "name": "datas",
         "type": "base",
@@ -313,6 +230,106 @@
                 "unique": false,
                 "options": {
                     "maxSize": 2000000
+                }
+            }
+        ],
+        "indexes": [],
+        "listRule": null,
+        "viewRule": null,
+        "createRule": null,
+        "updateRule": null,
+        "deleteRule": null,
+        "options": {}
+    },
+    {
+        "id": "o9ef5oes2vz6dng",
+        "name": "tasks",
+        "type": "base",
+        "system": false,
+        "schema": [
+            {
+                "system": false,
+                "id": "zlcnreuv",
+                "name": "title",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "system": false,
+                "id": "7puxhliv",
+                "name": "count",
+                "type": "number",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "noDecimal": false
+                }
+            },
+            {
+                "system": false,
+                "id": "f66y6wbr",
+                "name": "flows",
+                "type": "json",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "maxSize": 2000000
+                }
+            },
+            {
+                "system": false,
+                "id": "jarqsusc",
+                "name": "user",
+                "type": "relation",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "collectionId": "_pb_users_auth_",
+                    "cascadeDelete": false,
+                    "minSelect": null,
+                    "maxSelect": 1,
+                    "displayFields": null
+                }
+            },
+            {
+                "system": false,
+                "id": "9kvsuric",
+                "name": "meta",
+                "type": "json",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "maxSize": 2000000
+                }
+            },
+            {
+                "system": false,
+                "id": "4xarpjew",
+                "name": "status",
+                "type": "select",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "maxSelect": 1,
+                    "values": [
+                        "in-progress",
+                        "done",
+                        "error"
+                    ]
                 }
             }
         ],

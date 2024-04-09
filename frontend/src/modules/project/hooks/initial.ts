@@ -44,6 +44,7 @@ const useInitial = () => {
               type: "text",
               order: 0,
               ai_config: {},
+              settings: {},
             },
           ],
         },

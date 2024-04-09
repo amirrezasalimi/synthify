@@ -1,13 +1,25 @@
 import { Spinner } from "@nextui-org/react";
-import { TasksRecord } from "../../../../../../backend/src/types/pocketbase";
+import {
+  TasksRecord,
+  TasksStatusOptions,
+} from "../../../../../../backend/src/types/pocketbase";
 import useTasks from "../../hooks/tasks";
 
 const Item = ({ task }: { task: TasksRecord }) => {
-  return <div>
-    <h2>
-      {task.title}
-    </h2>
-  </div>;
+  const statusMap = {
+    "in-progress": "In Progress",
+    done: "Done",
+    error: "Error",
+  };
+  return (
+    <div className="flex justify-between p-2 border rounded-lg">
+      <div className="flex flex-col gap-1">
+        <h2>{task.title}</h2>
+        <span>{task.count}</span>
+      </div>
+      <span>{statusMap?.[task.status as TasksStatusOptions] ?? "Unknown"}</span>
+    </div>
+  );
 };
 const Tasks = () => {
   const helper = useTasks();
