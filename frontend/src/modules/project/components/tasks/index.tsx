@@ -5,7 +5,13 @@ import {
 } from "../../../../../../backend/src/types/pocketbase";
 import useTasks from "../../hooks/tasks";
 
-const Item = ({ task }: { task: TasksRecord }) => {
+const Item = ({
+  task,
+}: {
+  task: TasksRecord & {
+    done_count: number;
+  };
+}) => {
   const statusMap = {
     "in-progress": "In Progress",
     done: "Done",
@@ -15,7 +21,10 @@ const Item = ({ task }: { task: TasksRecord }) => {
     <div className="flex justify-between p-2 border rounded-lg">
       <div className="flex flex-col gap-1">
         <h2>{task.title}</h2>
-        <span>{task.count}</span>
+        <span>
+          {task.done_count}/
+          {task.count}
+        </span>
       </div>
       <span>{statusMap?.[task.status as TasksStatusOptions] ?? "Unknown"}</span>
     </div>

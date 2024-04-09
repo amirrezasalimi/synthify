@@ -135,7 +135,24 @@ const router = t.router({
     const res = await pb.collection("tasks").getFullList({
       sort: "-created",
     });
-    return res;
+    const extendMore = res.map(async (task) => {
+      let done_count = 0;
+      try {
+        const done_data = await pb.collection("datas").getList(1,1,{
+          filter: `task = "${task.id}" && status = "done"`,
+          $autoCancel: false,
+        })
+        done_count = done_data.totalItems;
+      } catch (e) {
+        console.log(`error`, e.message);
+      }
+      return {
+        ...task,
+        done_count,
+      };
+      console.log(`task`, task);
+    });
+    return await Promise.all(extendMore);
   }),
 });
 export type Router = typeof router;

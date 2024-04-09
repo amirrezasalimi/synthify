@@ -9,7 +9,7 @@ export interface FlowData {
 export interface FlowBlock {
   id: string;
   name: string;
-  type: "list" | "text" | "run-flow";
+  type: "list" | "text" | "run-flow" | "merge";
   prompt: string;
   settings: {
     cache?: boolean;
