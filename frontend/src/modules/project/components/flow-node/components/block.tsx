@@ -180,7 +180,7 @@ const Block = ({
               <>
                 <Checkbox
                   title="Cache"
-                  checked={block.settings?.cache ?? false}
+                  isSelected={block.settings?.cache ?? false}
                   onChange={(e) => {
                     if (!block.settings) {
                       block.settings = {};

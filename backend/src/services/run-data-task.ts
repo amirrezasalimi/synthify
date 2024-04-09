@@ -25,6 +25,7 @@ const runFlow = async ({
   // run single flow
   const blocks = flow.data.blocks;
   const ordredBlocks = blocks.sort((a, b) => a.order - b.order);
+  console.log(`ordredBlocks`, ordredBlocks);
 
   for (const block of ordredBlocks) {
     if (block.type == "run-flow") {
@@ -93,11 +94,13 @@ const runFlow = async ({
           },
         ],
       });
-      const text = res.choices[0].message.content;
+      let text = res.choices[0].message.content;
       if (!text) continue;
       if (block.type == "list") {
         const sep = block.settings.item_seperator ?? "\n";
-        cache[`${flowId}-${block.id}`] = text.split(sep);
+        cache[`${flowId}-${block.id}`] = text
+          .split(sep)
+          .map((t) => t.trim().replace(sep, ""));
         blockCache[block.name] = cache[`${flowId}-${block.id}`];
       } else if (block.type == "text") {
         blockCache[block.name] = text;
