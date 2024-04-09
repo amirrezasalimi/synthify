@@ -1,6 +1,8 @@
 import { FlowNode } from "@/modules/project/types/flow-data";
 import { pb } from "../libs/pb";
 import {
+  DatasRecord,
+  DatasStatusOptions,
   TasksRecord,
   TasksStatusOptions,
   UserAiResponse,
@@ -146,13 +148,30 @@ const runDataTask = async ({
   const dataset: string[] = [];
 
   for (let i = 0; i < count; i++) {
-    const result = await runFlow({
-      cache,
-      flow: mainFlow,
-      flows,
-      aiServices: aiServices,
-    });
-    result && dataset.push(result);
+    let error = "";
+    let result: string | null | undefined = "";
+    try {
+      result = await runFlow({
+        cache,
+        flow: mainFlow,
+        flows,
+        aiServices: aiServices,
+      });
+      result && dataset.push(result);
+    } catch (e) {
+      // @ts-ignore
+      error = e.message;
+    }
+    if (result) {
+      await pb.collection("datas").create({
+        task: taskId,
+        data: {
+          content: result ?? "",
+        },
+        error,
+        status: error ? DatasStatusOptions.error : DatasStatusOptions.done,
+      } as DatasRecord);
+    }
   }
   console.log(`dataset`, dataset);
 

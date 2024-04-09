@@ -46,6 +46,7 @@ export type DatasRecord<Tdata = unknown, Tmeta = unknown> = {
 	error?: string
 	meta?: null | Tmeta
 	status?: DatasStatusOptions
+	task?: RecordIdString
 	user?: RecordIdString
 }
 

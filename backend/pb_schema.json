@@ -61,92 +61,6 @@
         }
     },
     {
-        "id": "yya8tn9ykw3taig",
-        "name": "datas",
-        "type": "base",
-        "system": false,
-        "schema": [
-            {
-                "system": false,
-                "id": "yxijmduf",
-                "name": "user",
-                "type": "relation",
-                "required": false,
-                "presentable": false,
-                "unique": false,
-                "options": {
-                    "collectionId": "_pb_users_auth_",
-                    "cascadeDelete": false,
-                    "minSelect": null,
-                    "maxSelect": 1,
-                    "displayFields": null
-                }
-            },
-            {
-                "system": false,
-                "id": "uxrdyj8p",
-                "name": "data",
-                "type": "json",
-                "required": false,
-                "presentable": false,
-                "unique": false,
-                "options": {
-                    "maxSize": 2000000
-                }
-            },
-            {
-                "system": false,
-                "id": "zcsyk6ch",
-                "name": "meta",
-                "type": "json",
-                "required": false,
-                "presentable": false,
-                "unique": false,
-                "options": {
-                    "maxSize": 2000000
-                }
-            },
-            {
-                "system": false,
-                "id": "crlw5krl",
-                "name": "status",
-                "type": "select",
-                "required": false,
-                "presentable": false,
-                "unique": false,
-                "options": {
-                    "maxSelect": 1,
-                    "values": [
-                        "done",
-                        "in-progress",
-                        "error"
-                    ]
-                }
-            },
-            {
-                "system": false,
-                "id": "zooigfjz",
-                "name": "error",
-                "type": "text",
-                "required": false,
-                "presentable": false,
-                "unique": false,
-                "options": {
-                    "min": null,
-                    "max": null,
-                    "pattern": ""
-                }
-            }
-        ],
-        "indexes": [],
-        "listRule": null,
-        "viewRule": null,
-        "createRule": null,
-        "updateRule": null,
-        "deleteRule": null,
-        "options": {}
-    },
-    {
         "id": "x4szptjmsaa967c",
         "name": "user_ai",
         "type": "base",
@@ -330,6 +244,108 @@
                         "done",
                         "error"
                     ]
+                }
+            }
+        ],
+        "indexes": [],
+        "listRule": null,
+        "viewRule": null,
+        "createRule": null,
+        "updateRule": null,
+        "deleteRule": null,
+        "options": {}
+    },
+    {
+        "id": "yya8tn9ykw3taig",
+        "name": "datas",
+        "type": "base",
+        "system": false,
+        "schema": [
+            {
+                "system": false,
+                "id": "myqffi9x",
+                "name": "task",
+                "type": "relation",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "collectionId": "o9ef5oes2vz6dng",
+                    "cascadeDelete": false,
+                    "minSelect": null,
+                    "maxSelect": 1,
+                    "displayFields": null
+                }
+            },
+            {
+                "system": false,
+                "id": "yxijmduf",
+                "name": "user",
+                "type": "relation",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "collectionId": "_pb_users_auth_",
+                    "cascadeDelete": false,
+                    "minSelect": null,
+                    "maxSelect": 1,
+                    "displayFields": null
+                }
+            },
+            {
+                "system": false,
+                "id": "uxrdyj8p",
+                "name": "data",
+                "type": "json",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "maxSize": 2000000
+                }
+            },
+            {
+                "system": false,
+                "id": "zcsyk6ch",
+                "name": "meta",
+                "type": "json",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "maxSize": 2000000
+                }
+            },
+            {
+                "system": false,
+                "id": "crlw5krl",
+                "name": "status",
+                "type": "select",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "maxSelect": 1,
+                    "values": [
+                        "done",
+                        "in-progress",
+                        "error"
+                    ]
+                }
+            },
+            {
+                "system": false,
+                "id": "zooigfjz",
+                "name": "error",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
                 }
             }
         ],
