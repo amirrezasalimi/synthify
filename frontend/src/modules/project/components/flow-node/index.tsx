@@ -86,6 +86,7 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
           >
             <DropdownItem key="list">LIST</DropdownItem>
             <DropdownItem key="text">TEXT</DropdownItem>
+            <DropdownItem key="merge">MERGE</DropdownItem>
             <DropdownItem key="run-flow">RUN FLOW</DropdownItem>
           </DropdownMenu>
         </Dropdown>

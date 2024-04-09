@@ -140,7 +140,7 @@ const Block = ({
             </Dropdown>
           )}
         </div>
-        {type != "run-flow" && canMove && (
+        {(type == "text" || type == "list") && canMove && (
           <div>
             <button
               onClick={chooseModel}
