@@ -14,7 +14,7 @@ const TopBar = () => {
               <TbChevronLeft size={24} />
             </Button>
           </div>
-          <div className="text-lg font-bold">Project</div>
+          <div className="text-lg font-bold">Synthify</div>
 
           <div>
             <Button
