@@ -69,10 +69,10 @@ const ModelsModal = () => {
         <Modal
           isOpen={addModalOpen}
           onClose={() => setAddModalOpen(false)}
-          title="Add Model"
+          title="Add ai service"
         >
           <ModalContent>
-            <ModalHeader className="flex flex-col gap-1">Add Model</ModalHeader>
+            <ModalHeader className="flex flex-col gap-1">Add ai service</ModalHeader>
             <ModalBody>
               <Input
                 variant="bordered"
@@ -113,11 +113,18 @@ const ModelsModal = () => {
         <ModalContent className="max-h-[80vh] overflow-auto">
           <ModalHeader className="flex flex-col gap-1 sticky top-0 bg-white z-10">
             Config Ai's
-            <Button onClick={() => setAddModalOpen(true)}>Add New</Button>
+            <Button className="my-2" onClick={() => setAddModalOpen(true)}>Add New</Button>
           </ModalHeader>
           <ModalBody className="">
             {/* ai's */}
             {services.isLoading && <Spinner />}
+            {
+              !services.isLoading && services.data?.length === 0 && (
+                <div className="flex justify-center items-center h-32">
+                  <h3 className="text-lg text-gray-500">No ai services found</h3>
+                </div>
+              )
+            }
             {services.data?.map((service) => (
               <Card
                 key={service.id}

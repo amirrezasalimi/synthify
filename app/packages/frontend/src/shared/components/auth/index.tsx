@@ -46,7 +46,6 @@ const Auth = ({ head = true }: { head?: boolean }) => {
   const authCheck = status == "loading";
   const isLoginned = status == "success" && isLogin;
 
-
   const checkUserExists = trpc.user.userExists.useMutation();
   const register = trpc.user.registerUser.useMutation();
   const [email, setEmail] = useState("");

@@ -301,10 +301,6 @@ const userRouter = router({
 });
 
 const routes = router({
-  getUser: publicProcedure.query(async ({ ctx }) => {
-    const user = await pb.collection("users").getOne("1");
-    return user;
-  }),
   user: userRouter,
   project: projectRouter,
 });

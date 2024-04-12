@@ -1,4 +1,5 @@
 import {
+  Button,
   Input,
   Modal,
   ModalBody,
@@ -13,8 +14,12 @@ import { trpc } from "@/shared/utils/trpc";
 import { useState } from "react";
 
 const ChooseModelModal = () => {
-  const { isChooseModelModalOpen, toggleChooseModelModal, onChooseModel } =
-    useCommonStore();
+  const {
+    isChooseModelModalOpen,
+    toggleChooseModelModal,
+    onChooseModel,
+    toggleConfigModel,
+  } = useCommonStore();
   const services = trpc.project.list_ai_services.useQuery();
   const [modelFilter, setModelFilter] = useState("");
 
@@ -43,11 +48,26 @@ const ChooseModelModal = () => {
               }}
               label="Select Model"
             >
-              <Input
-                placeholder="Search model"
-                value={modelFilter}
-                onChange={(e) => setModelFilter(e.target.value)}
-              />
+              {!services.isLoading && !!services.data?.length && (
+                <Input
+                  placeholder="Search model"
+                  value={modelFilter}
+                  onChange={(e) => setModelFilter(e.target.value)}
+                />
+              )}
+
+              {!services.isLoading && services.data?.length === 0 && (
+                <div className="w-full flex flex-col items-center justify-center py-4 gap-4">
+                  <span>No AI's found</span>
+                  <Button
+                    onClick={() => {
+                      toggleConfigModel(true);
+                    }}
+                  >
+                    Add New
+                  </Button>
+                </div>
+              )}
 
               {services.data?.map((service) => (
                 <div className="w-full flex flex-col gap-2">
