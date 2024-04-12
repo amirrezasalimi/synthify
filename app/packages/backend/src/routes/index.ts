@@ -284,7 +284,7 @@ const projectRouter = router({
     }),
 
   // for partkyit side
-  hasAccessToProject: publicProcedure
+  getProjectFromPartykit: publicProcedure
     .input(
       z.object({
         token: z.string(),
@@ -315,6 +315,7 @@ const projectRouter = router({
           message: "Project not found",
         });
       }
+      return projectRecord;
     }),
 });
 
