@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 
 const useRun = () => {
   const flows = useFlows();
-  const runApi = trpc.run.useMutation();
+  const runApi = trpc.project.run.useMutation();
   const run = (title: string, count: number = 1) => {
     return new Promise(async (resolve) => {
       runApi

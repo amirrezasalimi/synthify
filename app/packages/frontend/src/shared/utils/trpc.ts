@@ -6,7 +6,7 @@ import {
 } from "@trpc/react-query";
 import { createTRPCProxyClient } from "@trpc/client";
 
-import { AppRoutes } from "@synthify/backend";
+import { AppRoutes } from "@synthify/backend/src/routes";
 import { pb_client } from "./pb_client";
 export const trpc = createTRPCReact<AppRoutes>();
 const url = import.meta.env.VITE_BACKEND_HOST;

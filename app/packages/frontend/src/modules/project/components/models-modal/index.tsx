@@ -26,7 +26,7 @@ const ModelsModal = () => {
   const [serviceTitle, setServiceTitle] = useState("");
   const [serviceEndpoint, setServiceEndpoint] = useState("");
   const [serviceApiKey, setServiceApiKey] = useState("");
-  const addService = trpc.add_ai_service.useMutation();
+  const addService = trpc.project.add_ai_service.useMutation();
   const addNewService = async () => {
     addService
       .mutateAsync({
@@ -44,12 +44,12 @@ const ModelsModal = () => {
         toast.success("Service added successfully");
       });
   };
-  const removeService = trpc.remove_ai_service.useMutation();
-  const addModel = trpc.add_service_model.useMutation();
-  const refreshModels = trpc.refresh_service_models.useMutation();
-  const removeModel = trpc.remove_service_model.useMutation();
+  const removeService = trpc.project.remove_ai_service.useMutation();
+  const addModel = trpc.project.add_service_model.useMutation();
+  const refreshModels = trpc.project.refresh_service_models.useMutation();
+  const removeModel = trpc.project.remove_service_model.useMutation();
 
-  const services = trpc.list_ai_services.useQuery();
+  const services = trpc.project.list_ai_services.useQuery();
   useLayoutEffect(() => {
     if (isConfigModelOpen) services.refetch();
   }, [isConfigModelOpen]);

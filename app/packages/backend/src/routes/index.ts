@@ -309,5 +309,8 @@ const routes = router({
   project: projectRouter,
 });
 
-export type AppRoutes = typeof routes;
-export default routes;
+type AppRoutes = typeof routes;
+export {
+  AppRoutes,
+  routes,
+};
