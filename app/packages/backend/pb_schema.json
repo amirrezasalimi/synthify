@@ -61,56 +61,30 @@
         }
     },
     {
-        "id": "x4szptjmsaa967c",
-        "name": "user_ai",
+        "id": "yya8tn9ykw3taig",
+        "name": "datas",
         "type": "base",
         "system": false,
         "schema": [
             {
                 "system": false,
-                "id": "rg2vo6ue",
-                "name": "title",
-                "type": "text",
+                "id": "myqffi9x",
+                "name": "task",
+                "type": "relation",
                 "required": false,
                 "presentable": false,
                 "unique": false,
                 "options": {
-                    "min": null,
-                    "max": null,
-                    "pattern": ""
+                    "collectionId": "o9ef5oes2vz6dng",
+                    "cascadeDelete": false,
+                    "minSelect": null,
+                    "maxSelect": 1,
+                    "displayFields": null
                 }
             },
             {
                 "system": false,
-                "id": "cpneese3",
-                "name": "endpoint",
-                "type": "text",
-                "required": false,
-                "presentable": false,
-                "unique": false,
-                "options": {
-                    "min": null,
-                    "max": null,
-                    "pattern": ""
-                }
-            },
-            {
-                "system": false,
-                "id": "4xomspyl",
-                "name": "api_key",
-                "type": "text",
-                "required": false,
-                "presentable": false,
-                "unique": false,
-                "options": {
-                    "min": null,
-                    "max": null,
-                    "pattern": ""
-                }
-            },
-            {
-                "system": false,
-                "id": "qcfmo0jh",
+                "id": "yxijmduf",
                 "name": "user",
                 "type": "relation",
                 "required": false,
@@ -126,18 +100,165 @@
             },
             {
                 "system": false,
-                "id": "aykmpjvg",
-                "name": "oai_schema",
-                "type": "bool",
+                "id": "uxrdyj8p",
+                "name": "data",
+                "type": "json",
                 "required": false,
                 "presentable": false,
                 "unique": false,
-                "options": {}
+                "options": {
+                    "maxSize": 2000000
+                }
             },
             {
                 "system": false,
-                "id": "xlgflbxl",
-                "name": "models",
+                "id": "zcsyk6ch",
+                "name": "meta",
+                "type": "json",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "maxSize": 2000000
+                }
+            },
+            {
+                "system": false,
+                "id": "crlw5krl",
+                "name": "status",
+                "type": "select",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "maxSelect": 1,
+                    "values": [
+                        "done",
+                        "in-progress",
+                        "error"
+                    ]
+                }
+            },
+            {
+                "system": false,
+                "id": "zooigfjz",
+                "name": "error",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            }
+        ],
+        "indexes": [],
+        "listRule": null,
+        "viewRule": null,
+        "createRule": null,
+        "updateRule": null,
+        "deleteRule": null,
+        "options": {}
+    },
+    {
+        "id": "heflrz5ny80by2e",
+        "name": "projects",
+        "type": "base",
+        "system": false,
+        "schema": [
+            {
+                "system": false,
+                "id": "w9cihs8d",
+                "name": "title",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "system": false,
+                "id": "kqbtt3du",
+                "name": "user",
+                "type": "relation",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "collectionId": "_pb_users_auth_",
+                    "cascadeDelete": false,
+                    "minSelect": null,
+                    "maxSelect": 1,
+                    "displayFields": null
+                }
+            },
+            {
+                "system": false,
+                "id": "2kevalgi",
+                "name": "flows",
+                "type": "json",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "maxSize": 2000000
+                }
+            }
+        ],
+        "indexes": [],
+        "listRule": null,
+        "viewRule": null,
+        "createRule": null,
+        "updateRule": null,
+        "deleteRule": null,
+        "options": {}
+    },
+    {
+        "id": "e118zkwuzva1wes",
+        "name": "task_logs",
+        "type": "base",
+        "system": false,
+        "schema": [
+            {
+                "system": false,
+                "id": "ncuj6lgj",
+                "name": "task_id",
+                "type": "relation",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "collectionId": "o9ef5oes2vz6dng",
+                    "cascadeDelete": false,
+                    "minSelect": null,
+                    "maxSelect": 1,
+                    "displayFields": null
+                }
+            },
+            {
+                "system": false,
+                "id": "dqnqoifq",
+                "name": "message",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "system": false,
+                "id": "oo3kcq7y",
+                "name": "meta",
                 "type": "json",
                 "required": false,
                 "presentable": false,
@@ -256,30 +377,56 @@
         "options": {}
     },
     {
-        "id": "yya8tn9ykw3taig",
-        "name": "datas",
+        "id": "x4szptjmsaa967c",
+        "name": "user_ai",
         "type": "base",
         "system": false,
         "schema": [
             {
                 "system": false,
-                "id": "myqffi9x",
-                "name": "task",
-                "type": "relation",
+                "id": "rg2vo6ue",
+                "name": "title",
+                "type": "text",
                 "required": false,
                 "presentable": false,
                 "unique": false,
                 "options": {
-                    "collectionId": "o9ef5oes2vz6dng",
-                    "cascadeDelete": false,
-                    "minSelect": null,
-                    "maxSelect": 1,
-                    "displayFields": null
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
                 }
             },
             {
                 "system": false,
-                "id": "yxijmduf",
+                "id": "cpneese3",
+                "name": "endpoint",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "system": false,
+                "id": "4xomspyl",
+                "name": "api_key",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "system": false,
+                "id": "qcfmo0jh",
                 "name": "user",
                 "type": "relation",
                 "required": false,
@@ -295,8 +442,18 @@
             },
             {
                 "system": false,
-                "id": "uxrdyj8p",
-                "name": "data",
+                "id": "aykmpjvg",
+                "name": "oai_schema",
+                "type": "bool",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {}
+            },
+            {
+                "system": false,
+                "id": "xlgflbxl",
+                "name": "models",
                 "type": "json",
                 "required": false,
                 "presentable": false,
@@ -304,40 +461,104 @@
                 "options": {
                     "maxSize": 2000000
                 }
-            },
+            }
+        ],
+        "indexes": [],
+        "listRule": null,
+        "viewRule": null,
+        "createRule": null,
+        "updateRule": null,
+        "deleteRule": null,
+        "options": {}
+    },
+    {
+        "id": "cmcqgdeuxkacqlt",
+        "name": "user_usages",
+        "type": "base",
+        "system": false,
+        "schema": [
             {
                 "system": false,
-                "id": "zcsyk6ch",
-                "name": "meta",
-                "type": "json",
+                "id": "m2vgwneg",
+                "name": "user",
+                "type": "relation",
                 "required": false,
                 "presentable": false,
                 "unique": false,
                 "options": {
-                    "maxSize": 2000000
-                }
-            },
-            {
-                "system": false,
-                "id": "crlw5krl",
-                "name": "status",
-                "type": "select",
-                "required": false,
-                "presentable": false,
-                "unique": false,
-                "options": {
+                    "collectionId": "_pb_users_auth_",
+                    "cascadeDelete": false,
+                    "minSelect": null,
                     "maxSelect": 1,
-                    "values": [
-                        "done",
-                        "in-progress",
-                        "error"
-                    ]
+                    "displayFields": null
                 }
             },
             {
                 "system": false,
-                "id": "zooigfjz",
-                "name": "error",
+                "id": "qlqubvec",
+                "name": "task",
+                "type": "relation",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "collectionId": "o9ef5oes2vz6dng",
+                    "cascadeDelete": false,
+                    "minSelect": null,
+                    "maxSelect": 1,
+                    "displayFields": null
+                }
+            },
+            {
+                "system": false,
+                "id": "qdjrnqyq",
+                "name": "project",
+                "type": "relation",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "collectionId": "heflrz5ny80by2e",
+                    "cascadeDelete": false,
+                    "minSelect": null,
+                    "maxSelect": 1,
+                    "displayFields": null
+                }
+            },
+            {
+                "system": false,
+                "id": "z4eupzyz",
+                "name": "cost",
+                "type": "number",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": 0,
+                    "max": null,
+                    "noDecimal": false
+                }
+            },
+            {
+                "system": false,
+                "id": "ly0z8iuw",
+                "name": "ai_service",
+                "type": "relation",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "collectionId": "x4szptjmsaa967c",
+                    "cascadeDelete": false,
+                    "minSelect": null,
+                    "maxSelect": 1,
+                    "displayFields": null
+                }
+            },
+            {
+                "system": false,
+                "id": "ziw7ger0",
+                "name": "model_name",
                 "type": "text",
                 "required": false,
                 "presentable": false,
@@ -346,6 +567,20 @@
                     "min": null,
                     "max": null,
                     "pattern": ""
+                }
+            },
+            {
+                "system": false,
+                "id": "mba5wmqa",
+                "name": "token_count",
+                "type": "number",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "noDecimal": false
                 }
             }
         ],

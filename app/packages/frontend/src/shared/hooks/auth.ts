@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { pb_client } from "../utils/pb_client";
+import { UsersResponse } from "@synthify/backend/src/types/pocketbase";
 
 const useAuth = () => {
   const isLoginned = useQuery({
@@ -22,7 +23,7 @@ const useAuth = () => {
   return {
     status: isLoginned.status,
     isLogin: isLoginned.data,
-    user: pb_client.authStore.model,
+    user: pb_client.authStore.model as UsersResponse,
     logout,
     refresh,
   };

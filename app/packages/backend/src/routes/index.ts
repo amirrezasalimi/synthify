@@ -1,5 +1,5 @@
 import { TrpcContext } from "@/libs/trpc/context";
-import { pb } from "../libs/pb";
+import { pb, pbInstance } from "../libs/pb";
 import runDataTask from "@/services/run-data-task";
 import { FlowNode } from "@/types/flow-data";
 import OpenAI from "openai";
@@ -7,7 +7,8 @@ import { z } from "zod";
 
 import { TRPCError, initTRPC } from "@trpc/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";
-import { TasksRecord } from "@/types/pocketbase";
+import { TasksRecord, UsersRecord, UsersResponse } from "@/types/pocketbase";
+import { RecordAuthResponse } from "pocketbase";
 
 export const trpc = initTRPC.context<TrpcContext>().create();
 export const router = trpc.router;
@@ -227,6 +228,94 @@ const projectRouter = router({
 
     return await Promise.all(itemsPromises);
   }),
+
+  //
+  createProject: userProcedure
+    .input(
+      z.object({
+        title: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input: { title } }) => {
+      const user = ctx.user.id;
+      const res = await pb.collection("projects").create({
+        user,
+        title,
+      });
+      return res.id;
+    }),
+  projectsList: userProcedure.query(async ({ ctx }) => {
+    const user = ctx.user.id;
+    const res = await pb.collection("projects").getFullList({
+      filter: `user = "${user}"`,
+    });
+    return res;
+  }),
+  removeProject: userProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input: id }) => {
+      const user = ctx.user.id;
+      const project = await pb.collection("projects").getOne(id);
+      // check access
+      if (project.user !== user) {
+        throw new Error("Access denied");
+      }
+      const res = await pb.collection("projects").delete(id);
+      return res;
+    }),
+
+  getProject: userProcedure
+    .input(z.string())
+    .query(async ({ ctx, input: id }) => {
+      const user = ctx.user.id;
+      try {
+        const project = await pb.collection("projects").getOne(id);
+        // check access
+        if (project.user !== user) {
+          throw new Error("Access denied");
+        }
+        return project;
+      } catch (e) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Project not found",
+        });
+      }
+    }),
+
+  // for partkyit side
+  hasAccessToProject: publicProcedure
+    .input(
+      z.object({
+        token: z.string(),
+        project: z.string(),
+      })
+    )
+    .query(async ({ input: { token, project } }) => {
+      const _pb = pbInstance();
+      _pb.authStore.save(token);
+      await _pb.collection("users").authRefresh();
+      const user = _pb.authStore.model as UsersResponse;
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Invalid token",
+        });
+      }
+      const projectRecord = await _pb.collection("projects").getOne(project);
+      if (projectRecord.user !== user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Access denied",
+        });
+      }
+      if (!projectRecord) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Project not found",
+        });
+      }
+    }),
 });
 
 const userRouter = router({
@@ -306,7 +395,4 @@ const routes = router({
 });
 
 type AppRoutes = typeof routes;
-export {
-  AppRoutes,
-  routes,
-};
+export { AppRoutes, routes };
