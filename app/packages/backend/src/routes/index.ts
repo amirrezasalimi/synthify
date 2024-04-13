@@ -273,6 +273,7 @@ const projectRouter = router({
     const user = ctx.user.id;
     const res = await pb.collection("projects").getFullList({
       filter: `user = "${user}"`,
+      sort: "-created",
     });
     return res;
   }),
