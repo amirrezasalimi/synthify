@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useSyncedState from "./synced-state";
 import { LINKS } from "@/shared/constants";
 import useProject from "./project";
+import { pb_client } from "@/shared/utils/pb_client";
 
 const useInitial = () => {
   const store = useProjectStore();
@@ -28,7 +29,14 @@ const useInitial = () => {
       return;
     }
     const partyHost = import.meta.env.VITE_PARTY_HOST;
-    const provider = new YPartyKitProvider(partyHost, id, ydoc);
+    const provider = new YPartyKitProvider(partyHost, id, ydoc, {
+      params() {
+        return {
+          "x-pb": pb_client.authStore.token,
+        };
+      },
+      resyncInterval: 2000,
+    });
 
     provider.on("synced", async (status: any) => {
       if (status) {

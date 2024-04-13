@@ -284,7 +284,7 @@ const projectRouter = router({
     }),
 
   // for partkyit side
-  getProjectFromPartykit: publicProcedure
+  getProjectWithToken: publicProcedure
     .input(
       z.object({
         token: z.string(),
@@ -293,8 +293,17 @@ const projectRouter = router({
     )
     .query(async ({ input: { token, project } }) => {
       const _pb = pbInstance();
-      _pb.authStore.save(token);
-      await _pb.collection("users").authRefresh();
+      _pb.autoCancellation(false);
+      try {
+        _pb.authStore.save(token);
+        await _pb.collection("users").authRefresh();
+      } catch (e) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Invalid token",
+        });
+      }
+
       const user = _pb.authStore.model as UsersResponse;
       if (!user) {
         throw new TRPCError({
@@ -302,7 +311,9 @@ const projectRouter = router({
           message: "Invalid token",
         });
       }
-      const projectRecord = await _pb.collection("projects").getOne(project);
+      pb.autoCancellation(false);
+
+      const projectRecord = await pb.collection("projects").getOne(project);
       if (projectRecord.user !== user.id) {
         throw new TRPCError({
           code: "FORBIDDEN",
@@ -315,7 +326,57 @@ const projectRouter = router({
           message: "Project not found",
         });
       }
+      pb.autoCancellation(true);
       return projectRecord;
+    }),
+  updateProjectDataWithToken: publicProcedure
+    .input(
+      z.object({
+        token: z.string(),
+        project: z.string(),
+        data: z.string(),
+      })
+    )
+    .query(async ({ input: { token, project, data } }) => {
+      const _pb = pbInstance();
+      _pb.autoCancellation(false);
+      try {
+        _pb.authStore.save(token);
+        await _pb.collection("users").authRefresh();
+      } catch (e) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Invalid token",
+        });
+      }
+
+      const user = _pb.authStore.model as UsersResponse;
+      if (!user) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Invalid token",
+        });
+      }
+      pb.autoCancellation(false);
+
+      const projectRecord = await pb.collection("projects").getOne(project);
+      if (projectRecord.user !== user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Access denied",
+        });
+      }
+      if (!projectRecord) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Project not found",
+        });
+      }
+      pb.autoCancellation(true);
+      const res = await pb.collection("projects").update(project, {
+        data,
+      });
+      return res;
     }),
 });
 

@@ -2,5 +2,8 @@
   "$schema": "https://www.partykit.io/schema.json",
   "name": "party",
   "main": "src/server.ts",
-  "compatibilityDate": "2024-04-07"
+  "compatibilityDate": "2024-04-07",
+  "define": {
+    "BACKEND_HOST": "'http://localhost:3002'"
+  }
 }

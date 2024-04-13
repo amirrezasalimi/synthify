@@ -34,7 +34,6 @@
     "y-partykit": "^0.0.28",
     "zustand": "^4.5.2",
     "@synthify/backend": "^1.0.0"
-
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
