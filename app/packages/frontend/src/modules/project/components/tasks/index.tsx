@@ -1,9 +1,10 @@
-import { Spinner } from "@nextui-org/react";
+import { Button, Spinner } from "@nextui-org/react";
 import {
   TasksRecord,
   TasksStatusOptions,
 } from "@synthify/backend/src/types/pocketbase";
 import useTasks from "../../hooks/tasks";
+import { useCommonStore } from "../../stores/common";
 
 const Item = ({
   task,
@@ -31,6 +32,7 @@ const Item = ({
 };
 const Tasks = () => {
   const helper = useTasks();
+  const { toggleDatasetModal } = useCommonStore();
 
   return (
     <div className="absolute w-1/6 h-[80vh] m-8 flex flex-col rounded-xl border bg-white z-50">
@@ -38,7 +40,14 @@ const Tasks = () => {
       <div className="flex flex-col gap-2 overflow-scroll px-3">
         {helper.tasks.isLoading && <Spinner />}
         {helper.tasks.data?.map((task: any, i: number) => (
-          <Item key={i} task={task} />
+          <div
+            key={i}
+            onClick={() => {
+              toggleDatasetModal(true, task.id);
+            }}
+          >
+            <Item task={task} />
+          </div>
         ))}
       </div>
     </div>

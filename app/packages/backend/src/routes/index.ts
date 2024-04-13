@@ -7,13 +7,7 @@ import { z } from "zod";
 
 import { TRPCError, initTRPC } from "@trpc/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";
-import {
-  TasksRecord,
-  UserAiAddByOptions,
-  UsersRecord,
-  UsersResponse,
-} from "@/types/pocketbase";
-import { RecordAuthResponse } from "pocketbase";
+import { UserAiAddByOptions, UsersResponse } from "@/types/pocketbase";
 
 export const trpc = initTRPC.context<TrpcContext>().create();
 export const router = trpc.router;
@@ -392,6 +386,67 @@ const projectRouter = router({
         data,
       });
       return res;
+    }),
+  // data
+  getTask: userProcedure.input(z.string()).query(async ({ ctx, input: id }) => {
+    const user = ctx.user.id;
+    try {
+      const task = await pb.collection("tasks").getOne(id);
+      // check access
+      if (task.user !== user) {
+        throw new Error("Access denied");
+      }
+      return task;
+    } catch (e) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Task not found",
+      });
+    }
+  }),
+  datasetItems: userProcedure
+    .input(
+      z.object({
+        project: z.string(),
+        task: z.string(),
+        page: z.number().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const user = ctx.user.id;
+
+      const project = await pb.collection("projects").getOne(input.project);
+
+      if (project.user !== user) {
+        throw new Error("Access denied");
+      }
+      const res = await pb.collection("datas").getList(input.page, 20, {
+        filter: `task = "${input.task}"`,
+      });
+      return res;
+    }),
+  downloadDataset: userProcedure
+    .input(
+      z.object({
+        project: z.string(),
+        task: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = ctx.user.id;
+
+      const project = await pb.collection("projects").getOne(input.project);
+
+      if (project.user !== user) {
+        throw new Error("Access denied");
+      }
+
+      // make a .jsonl file
+      const datas = await pb.collection("datas").getList(1, 1000, {
+        filter: `task = "${input.task}"`,
+      });
+      const data = datas.items.map((d) => JSON.stringify(d.data)).join("\n");
+      return data;
     }),
 });
 

@@ -9,6 +9,7 @@ import Tasks from "./components/tasks";
 import ModelsModal from "./components/models-modal";
 import ChooseModelModal from "./components/choose-model-modal";
 import ButtomBar from "./components/bottom-bar";
+import DatasetModal from "./components/dataset-modal";
 
 const ProjectInside = () => {
   const { isConnected } = useInitial();
@@ -22,12 +23,13 @@ const ProjectInside = () => {
   return (
     <div className="w-screen h-screen">
       <ChooseModelModal />
-      <ModelsModal/>
-       {/* top bar */}
+      <DatasetModal />
+      <ModelsModal />
+      {/* top bar */}
       {/* tasks (datas) */}
       {/* flow */}
       <ReactFlowWrapper>
-        <Tasks/>
+        <Tasks />
         <TopBar />
         <ButtomBar />
       </ReactFlowWrapper>
