@@ -182,61 +182,77 @@ const projectRouter = router({
   run: userProcedure
     .input(
       z.object({
+        projectId: z.string(),
         title: z.string(),
         count: z.number().optional(),
         flows: z.array(z.custom<FlowNode>()),
       })
     )
-    .mutation(async ({ ctx, input: { flows, title, count = 1 } }) => {
-      const user = ctx.user.id;
-      // validation
-      const main = flows.find((f) => f.data.id === "main");
+    .mutation(
+      async ({ ctx, input: { flows, title, count = 1, projectId } }) => {
+        const user = ctx.user.id;
 
-      if (main?.data.blocks.length == 1) {
-        throw new Error("At least two blocks required");
+        const project = await pb.collection("projects").getOne(projectId);
+        if (project.user !== user) {
+          throw new Error("Access denied");
+        }
+
+        // validation
+        const main = flows.find((f) => f.data.id === "main");
+
+        if (main?.data.blocks.length == 1) {
+          throw new Error("At least two blocks required");
+        }
+
+        runDataTask({
+          userId: user,
+          projectId,
+          count,
+          flows: flows,
+          title,
+        });
+        return "ok";
       }
-
-      runDataTask({
-        user,
-        count,
-        flows: flows,
-        title,
-      });
-      return "ok";
-    }),
+    ),
   // tasks
 
-  tasksList: userProcedure.query(async ({ ctx }) => {
-    const user = ctx.user.id;
-    const tasks = await pb.collection("tasks").getFullList({
-      sort: "-created",
-      filter: `user = "${user}"`,
-    });
+  tasksList: userProcedure
+    .input(
+      z.object({
+        project: z.string().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const user = ctx.user.id;
+      const tasks = await pb.collection("tasks").getFullList({
+        sort: "-created",
+        filter: `user = "${user}" && project = "${input.project}"`,
+      });
 
-    const fetchDoneData = async (task: any) => {
-      try {
-        const done_data = await pb.collection("datas").getList(1, 1, {
-          filter: `task = "${task.id}" && status = "done"`,
-          $autoCancel: false,
-        });
-        return done_data.totalItems;
-      } catch (e) {
-        // @ts-ignore
-        console.error(`error`, e.message);
-        return 0;
-      }
-    };
-
-    const itemsPromises = tasks.map(async (task) => {
-      const done_count = await fetchDoneData(task);
-      return {
-        ...task,
-        done_count,
+      const fetchDoneData = async (task: any) => {
+        try {
+          const done_data = await pb.collection("datas").getList(1, 1, {
+            filter: `task = "${task.id}" && status = "done"`,
+            $autoCancel: false,
+          });
+          return done_data.totalItems;
+        } catch (e) {
+          // @ts-ignore
+          console.error(`error`, e.message);
+          return 0;
+        }
       };
-    });
 
-    return await Promise.all(itemsPromises);
-  }),
+      const itemsPromises = tasks.map(async (task) => {
+        const done_count = await fetchDoneData(task);
+        return {
+          ...task,
+          done_count,
+        };
+      });
+
+      return await Promise.all(itemsPromises);
+    }),
 
   //
   createProject: userProcedure

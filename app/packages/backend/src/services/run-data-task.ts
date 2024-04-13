@@ -131,16 +131,19 @@ const runDataTask = async ({
   count,
   title,
   flows,
-  user,
+  userId,
+  projectId,
 }: {
   count: number;
   title: string;
   flows: FlowNode[];
-  user: string;
+  userId: string;
+  projectId: string;
 }) => {
   const mainFlow = flows.find((flow) => flow.data.id === "main") as FlowNode;
   const res = await pb.collection("tasks").create({
-    user,
+    user: userId,
+    project: projectId,
     count,
     title,
     flows,
