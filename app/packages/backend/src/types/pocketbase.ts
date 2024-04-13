@@ -54,6 +54,7 @@ export type DatasRecord<Tdata = unknown, Tmeta = unknown> = {
 }
 
 export type ProjectsRecord<Tflows = unknown> = {
+	data?: string
 	flows?: null | Tflows
 	title?: string
 	user?: RecordIdString
@@ -79,7 +80,12 @@ export type TasksRecord<Tflows = unknown, Tmeta = unknown> = {
 	user?: RecordIdString
 }
 
+export enum UserAiAddByOptions {
+	"system" = "system",
+	"user" = "user",
+}
 export type UserAiRecord<Tmodels = unknown> = {
+	add_by?: UserAiAddByOptions
 	api_key?: string
 	endpoint?: string
 	models?: null | Tmodels

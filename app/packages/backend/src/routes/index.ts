@@ -7,7 +7,12 @@ import { z } from "zod";
 
 import { TRPCError, initTRPC } from "@trpc/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";
-import { TasksRecord, UsersRecord, UsersResponse } from "@/types/pocketbase";
+import {
+  TasksRecord,
+  UserAiAddByOptions,
+  UsersRecord,
+  UsersResponse,
+} from "@/types/pocketbase";
 import { RecordAuthResponse } from "pocketbase";
 
 export const trpc = initTRPC.context<TrpcContext>().create();
@@ -94,6 +99,7 @@ const projectRouter = router({
     const user = ctx.user.id;
     const res = await pb.collection("user_ai").getFullList({
       filter: `user = "${user}"`,
+      fields: "id,title,models,add_by",
     });
     return res;
   }),
@@ -106,6 +112,9 @@ const projectRouter = router({
       if (service.user !== user) {
         throw new Error("Access denied");
       }
+      if (service.add_by == UserAiAddByOptions.system) {
+        throw new Error("System services cannot be removed");
+      }
       const res = await pb.collection("user_ai").delete(id);
       return res;
     }),
@@ -117,6 +126,9 @@ const projectRouter = router({
       // check access
       if (service.user !== user) {
         throw new Error("Access denied");
+      }
+      if (service.add_by == UserAiAddByOptions.system) {
+        throw new Error("System services cannot be modified");
       }
       const models = ((service.models as string[]) ?? []).filter(
         (m) => m !== model_id
@@ -153,6 +165,9 @@ const projectRouter = router({
       // check access
       if (service.user !== user) {
         throw new Error("Access denied");
+      }
+      if (service.add_by == UserAiAddByOptions.system) {
+        throw new Error("System services cannot be modified");
       }
       const ai = new OpenAI({
         apiKey: service.api_key,

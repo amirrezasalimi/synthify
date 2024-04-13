@@ -209,6 +209,20 @@
                 "options": {
                     "maxSize": 2000000
                 }
+            },
+            {
+                "system": false,
+                "id": "njxkkofd",
+                "name": "data",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
             }
         ],
         "indexes": [],
@@ -460,6 +474,22 @@
                 "unique": false,
                 "options": {
                     "maxSize": 2000000
+                }
+            },
+            {
+                "system": false,
+                "id": "zfrdsve6",
+                "name": "add_by",
+                "type": "select",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "maxSelect": 1,
+                    "values": [
+                        "system",
+                        "user"
+                    ]
                 }
             }
         ],
