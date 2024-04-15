@@ -1,0 +1,35 @@
+# Use the official Node.js image as base
+FROM oven/bun
+
+
+# Define build arguments for environment variables
+ARG VITE_BACKEND_HOST
+ARG VITE_PARTY_HOST
+ARG VITE_POCKETBASE_HOST
+
+ENV VITE_BACKEND_HOST=$VITE_BACKEND_HOST
+ENV VITE_PARTY_HOST=$VITE_PARTY_HOST
+ENV VITE_POCKETBASE_HOST=$VITE_POCKETBASE_HOST
+
+# Set working directory
+WORKDIR /app
+
+# Copy the rest of the frontend code
+COPY . ./
+
+WORKDIR /app/
+
+# Install dependencies
+
+WORKDIR /app/packages/frontend
+
+RUN bun i
+
+RUN bun run build
+
+# Expose the port the app runs on
+EXPOSE 3000
+
+
+# Start the frontend server
+CMD ["bun","run", "preview"]

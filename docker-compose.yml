@@ -1,0 +1,102 @@
+version: "3.8"
+
+services:
+  traefik:
+    image: traefik:v2.5
+    command:
+      - "--api.insecure=true" # Enable insecure API for dashboard (for demo purposes)
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+
+    ports:
+      - "80:80" # HTTP
+      - "443:443" # HTTPS
+      - "8080:8080" # Dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock" # Connect to Docker API
+    networks:
+      - traefik_network
+    restart: always
+  pocketbase:
+    restart: always
+    build:
+      context: ./pb
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./data/pb/data:/pb/pb_data
+      - ./data/pb/hooks:/pb/pb_hooks
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pocketbase.rule=Host(`localhost`)"
+      - "traefik.http.routers.pocketbase.entrypoints=websecure"
+      - "traefik.http.routers.pocketbase.tls=true"
+      - "traefik.http.routers.pocketbase.tls.certresolver=myresolver"
+
+    networks:
+      - traefik_network
+  backend:
+    build:
+      context: ./app/packages/backend
+      dockerfile: Dockerfile
+
+    ports:
+      - "3001:3001"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`localhost`)"
+      - "traefik.http.routers.backend.tls=true"
+    networks:
+      - traefik_network
+    environment:
+      - POCKETBASE_HOST=pocketbase:8090
+      - POCKETBASE_EMAIL=${POCKETBASE_EMAIL}
+      - POCKETBASE_PASSWORD=${POCKETBASE_PASSWORD}
+    depends_on:
+      - pocketbase
+
+  party:
+    build:
+      context: ./party
+      dockerfile: Dockerfile
+      args:
+        - BACKEND_HOST="http://backend:3001"
+    volumes:
+      - ./data/party:/.partykit
+
+    ports:
+      - "1999:1999"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.party.rule=Host(`localhost`)"
+      - "traefik.http.routers.party.entrypoints=websecure"
+      - "traefik.http.routers.party.tls=true"
+      - "traefik.http.routers.party.tls.certresolver=myresolver"
+    depends_on:
+      - backend
+    networks:
+      - traefik_network
+  frontend:
+    build:
+      context: ./app/
+      dockerfile: Dockerfile-frontend
+      args:
+        - VITE_BACKEND_HOST=${BACKEND_HOST}
+        - VITE_PARTY_HOST=${PARTY_HOST}
+        - VITE_POCKETBASE_HOST=${POCKETBASE_HOST}
+    ports:
+      - "3000:3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+    networks:
+      - traefik_network
+
+    depends_on:
+      - backend
+
+networks:
+  traefik_network:
+    driver: bridge

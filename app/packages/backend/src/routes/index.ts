@@ -529,6 +529,8 @@ const userRouter = router({
         await pb.collection("users").requestVerification(input.email);
         return res;
       } catch (e) {
+        console.log(`error`, e);
+        
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to register user",

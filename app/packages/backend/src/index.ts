@@ -2,22 +2,27 @@ import { Elysia } from "elysia";
 import { trpc } from "@elysiajs/trpc";
 import { cors } from "@elysiajs/cors";
 import createTrpcContext from "./libs/trpc/context";
-import {routes } from "@/routes";
+import { routes } from "@/routes";
 const elysia = new Elysia()
-  .use(
-    trpc(routes, {
-      createContext: createTrpcContext,
-    })
-  )
   .use(
     cors({
       origin: "*",
     })
   )
+  .use(
+    trpc(routes, {
+      createContext: createTrpcContext,
+    })
+  )
+
   .get("/", async () => {
-    return {};
+    return { message: "Hello World" };
   })
-  .listen(3002);
+  .listen({
+    port: 3001,
+    hostname: "0.0.0.0",
+  });
 
-console.log(`Server is running on port ${elysia.server.port}`);
-
+console.log(
+  `Server is running on port ${elysia.server.hostname}:${elysia.server.port}`
+);

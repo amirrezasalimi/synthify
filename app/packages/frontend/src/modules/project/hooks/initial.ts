@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState } from "react";
-import YPartyKitProvider from "y-partykit/provider";
+import YPartyKitProvider, { WebsocketProvider } from "y-partykit/provider";
 import { useProjectStore } from "../stores/project-context";
 import { useStore } from "zustand";
 import { useNavigate, useParams } from "react-router-dom";
@@ -7,6 +7,8 @@ import useSyncedState from "./synced-state";
 import { LINKS } from "@/shared/constants";
 import useProject from "./project";
 import { pb_client } from "@/shared/utils/pb_client";
+import { WebSocket } from "partysocket";
+import WS from "ws";
 
 const useInitial = () => {
   const store = useProjectStore();
@@ -29,6 +31,7 @@ const useInitial = () => {
       return;
     }
     const partyHost = import.meta.env.VITE_PARTY_HOST;
+
     const provider = new YPartyKitProvider(partyHost, id, ydoc, {
       params() {
         return {
@@ -36,6 +39,7 @@ const useInitial = () => {
         };
       },
       resyncInterval: 2000,
+      maxBackoffTime: 5000,
     });
 
     provider.on("synced", async (status: any) => {

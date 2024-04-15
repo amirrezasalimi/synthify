@@ -11,13 +11,13 @@ type TrpcResponse<T> = {
   };
 };
 export const getProject = async (
+  origin: string,
   projectId: string,
   userToken: string
 ): Promise<Project> => {
   // @ts-ignore
-  const backend = BACKEND_HOST;
   return new Promise(async (resolve, reject) => {
-    const url = `${backend}/trpc/project.getProjectWithToken?input=${encodeURIComponent(
+    const url = `${origin}/trpc/project.getProjectWithToken?input=${encodeURIComponent(
       JSON.stringify({
         project: projectId,
         token: userToken,
@@ -40,14 +40,13 @@ export const getProject = async (
 };
 
 export const updateProjectData = async (
+  origin: string,
   projectId: string,
   userToken: string,
   data: string
 ): Promise<Project> => {
-  // @ts-ignore
-  const backend = BACKEND_HOST;
   return new Promise(async (resolve, reject) => {
-    const url = `${backend}/trpc/project.updateProjectDataWithToken?input=${encodeURIComponent(
+    const url = `${origin}/trpc/project.updateProjectDataWithToken?input=${encodeURIComponent(
       JSON.stringify({
         project: projectId,
         token: userToken,
