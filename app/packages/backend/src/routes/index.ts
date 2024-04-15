@@ -8,6 +8,7 @@ import { z } from "zod";
 import { TRPCError, initTRPC } from "@trpc/server";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { UserAiAddByOptions, UsersResponse } from "@/types/pocketbase";
+import { AiModel } from "../types/ai-model";
 
 export const trpc = initTRPC.context<TrpcContext>().create();
 export const router = trpc.router;
@@ -58,17 +59,17 @@ const projectRouter = router({
   add_ai_service: userProcedure
     .input(
       z.object({
-        title: z.string(),
+        name: z.string(),
         endpoint: z.string(),
         apikey: z.string(),
       })
     )
-    .mutation(async ({ ctx, input: { title, endpoint, apikey } }) => {
+    .mutation(async ({ ctx, input: { name, endpoint, apikey } }) => {
       const user = ctx.user.id;
 
       // check name or endpoint already exists
       const exists = await pb.collection("user_ai").getFullList({
-        filter: `endpoint = "${endpoint}"`,
+        filter: `(endpoint = "${endpoint}" || title = "${name}")`,
       });
 
       if (exists.length > 0) {
@@ -79,23 +80,44 @@ const projectRouter = router({
         apiKey: apikey,
         baseURL: endpoint,
       });
-      const models = await ai.models.list();
-      const res = await pb.collection("user_ai").create({
-        user,
-        title,
-        endpoint,
-        api_key: apikey,
-        oai_schema: true,
-        models: models.data.map((m) => m.id),
-      });
+      let models: AiModel[] = [];
+      try {
+        models = (await ai.models.list()).data as unknown as AiModel[];
+      } catch (e) {
+        // throw new Error("Failed to fetch models");
+      }
+      try {
+        const res = await pb.collection("user_ai").create({
+          user,
+          title: name,
+          endpoint,
+          api_key: apikey,
+          oai_schema: true,
+          models: models,
+        });
+      } catch (e) {
+        throw new Error("Failed to add service");
+      }
+      return true;
     }),
   list_ai_services: userProcedure.query(async ({ ctx }) => {
     const user = ctx.user.id;
     const res = await pb.collection("user_ai").getFullList({
       filter: `user = "${user}"`,
       fields: "id,title,models,add_by",
+      sort: "-created",
     });
-    return res;
+    const list = res.map((r) => ({
+      ...r,
+      models: ((r.models as AiModel[]) ?? []).map(
+        (m) =>
+          ({
+            id: m.id,
+            name: m?.name,
+          } as AiModel)
+      ),
+    }));
+    return list;
   }),
   remove_ai_service: userProcedure
     .input(z.string())
@@ -124,9 +146,8 @@ const projectRouter = router({
       if (service.add_by == UserAiAddByOptions.system) {
         throw new Error("System services cannot be modified");
       }
-      const models = ((service.models as string[]) ?? []).filter(
-        (m) => m !== model_id
-      );
+      let models = (service.models as AiModel[]) ?? [];
+      models = models.filter((m) => m.id != model_id);
       const res = await pb.collection("user_ai").update(service_id, {
         models,
       });
@@ -143,7 +164,22 @@ const projectRouter = router({
       if (service.user !== user) {
         throw new Error("Access denied");
       }
-      const models = [model_id, ...((service.models as string[]) ?? [])];
+      if (service.add_by == UserAiAddByOptions.system) {
+        throw new Error("System services cannot be modified");
+      }
+      let models = (service.models as Partial<AiModel>[]) ?? [];
+      if (models.find((m) => m.id == model_id)) {
+        throw new Error("Model already exists");
+      }
+      // prepend
+      models = [
+        {
+          id: model_id,
+          name: model_id,
+        },
+        ...models,
+      ];
+
       const res = await pb.collection("user_ai").update(service_id, {
         models,
       });
@@ -167,13 +203,25 @@ const projectRouter = router({
         apiKey: service.api_key,
         baseURL: service.endpoint,
       });
-      const models = await ai.models.list();
-      const oldModels = service.models as string[];
-      const newModels = models.data.map((m) => m.id);
-      const uniqueModels = [...new Set([...oldModels, ...newModels])];
+      const oldModels = service.models as AiModel[];
+      let fetchedModels: AiModel[] = [];
+      try {
+        fetchedModels = (await ai.models.list()).data as unknown as AiModel[];
+      } catch (e) {
+        throw new Error("Failed to fetch models");
+      }
+
+      const models = fetchedModels as unknown as AiModel[];
+
+      // unique
+      const newModels = models.filter(
+        (m) => !oldModels.find((sm) => sm.id == m.id)
+      );
+
       const res = await pb.collection("user_ai").update(id, {
-        models: uniqueModels,
+        models: [...oldModels, ...newModels],
       });
+
       if (!res) {
         throw new Error("Failed to refresh models");
       }
@@ -530,7 +578,7 @@ const userRouter = router({
         return res;
       } catch (e) {
         console.log(`error`, e);
-        
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to register user",

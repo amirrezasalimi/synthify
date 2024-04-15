@@ -76,17 +76,19 @@ const ChooseModelModal = () => {
                   </h2>
 
                   <div className="w-full flex flex-col gap-2">
-                    {((service.models as string[]) ?? [])
+                    {(service.models ?? [])
                       .filter((model) =>
-                        model.toLowerCase().includes(modelFilter.toLowerCase())
+                        model?.name
+                          ?.toLowerCase()
+                          .includes(modelFilter.toLowerCase())
                       )
                       ?.map((model) => (
                         <Radio
                           className="w-fu"
-                          value={`${service.id}@${model}`}
-                          key={model}
+                          value={`${service.id}@${model.id}`}
+                          key={model.id}
                         >
-                          {model}
+                          {model.name}
                         </Radio>
                       ))}
                   </div>

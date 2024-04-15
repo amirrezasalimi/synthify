@@ -23,20 +23,24 @@ const ModelsModal = () => {
   const [addModalOpen, setAddModalOpen] = useState(false);
 
   const [modelName, setModelName] = useState<string>("");
-  const [serviceTitle, setServiceTitle] = useState("");
+  const [serviceName, setServiceName] = useState("");
   const [serviceEndpoint, setServiceEndpoint] = useState("");
   const [serviceApiKey, setServiceApiKey] = useState("");
   const addService = trpc.project.add_ai_service.useMutation();
+
+  const utils = trpc.useUtils();
+
   const addNewService = async () => {
     addService
       .mutateAsync({
-        title: serviceTitle,
+        name: serviceName,
         endpoint: serviceEndpoint,
         apikey: serviceApiKey,
       })
       .then(() => {
+        utils.project.list_ai_services.refetch();
         // clear
-        setServiceTitle("");
+        setServiceName("");
         setServiceEndpoint("");
         setServiceApiKey("");
 
@@ -54,10 +58,6 @@ const ModelsModal = () => {
     if (isConfigModelOpen) services.refetch();
   }, [isConfigModelOpen]);
 
-  const [showMoreModels, setShowMoreModels] = useState<{
-    [key: string]: boolean;
-  }>({});
-
   return (
     <>
       <Modal
@@ -72,14 +72,16 @@ const ModelsModal = () => {
           title="Add ai service"
         >
           <ModalContent>
-            <ModalHeader className="flex flex-col gap-1">Add ai service</ModalHeader>
+            <ModalHeader className="flex flex-col gap-1">
+              Add ai service
+            </ModalHeader>
             <ModalBody>
               <Input
                 variant="bordered"
                 placeholder="Open Router"
                 label="Name"
-                value={serviceTitle}
-                onChange={(e) => setServiceTitle(e.target.value)}
+                value={serviceName}
+                onChange={(e) => setServiceName(e.target.value)}
               />
               <Input
                 variant="bordered"
@@ -113,18 +115,18 @@ const ModelsModal = () => {
         <ModalContent className="max-h-[80vh] overflow-auto">
           <ModalHeader className="flex flex-col gap-1 sticky top-0 bg-white z-10">
             Config Ai's
-            <Button className="my-2" onClick={() => setAddModalOpen(true)}>Add New</Button>
+            <Button className="my-2" onClick={() => setAddModalOpen(true)}>
+              Add New
+            </Button>
           </ModalHeader>
           <ModalBody className="">
             {/* ai's */}
             {services.isLoading && <Spinner />}
-            {
-              !services.isLoading && services.data?.length === 0 && (
-                <div className="flex justify-center items-center h-32">
-                  <h3 className="text-lg text-gray-500">No ai services found</h3>
-                </div>
-              )
-            }
+            {!services.isLoading && services.data?.length === 0 && (
+              <div className="flex justify-center items-center h-32">
+                <h3 className="text-lg text-gray-500">No ai services found</h3>
+              </div>
+            )}
             {services.data?.map((service) => (
               <Card
                 key={service.id}
@@ -156,7 +158,7 @@ const ModelsModal = () => {
                   <div className="flex flex-col">
                     <div className="flex gap-2 items-center">
                       <h3 className="font-medium">
-                        models({(service?.models as string)?.length ?? 0})
+                        models({service?.models?.length ?? 0})
                       </h3>
                       <TbReload
                         className={cn(
@@ -174,10 +176,10 @@ const ModelsModal = () => {
                       />
                     </div>
                     <div className="flex flex-col gap-1 py-2 max-h-[20vh] overflow-scroll">
-                      {((service?.models as string[]) ?? []).map((model) => (
-                        <div key={model} className="flex gap-2 items-center">
+                      {(service?.models ?? []).map((model) => (
+                        <div key={model.id} className="flex gap-2 items-center">
                           <div>
-                            <h4 className="text-sm">{model}</h4>
+                            <h4 className="text-sm">{model.name}</h4>
                           </div>
                           <div>
                             <TbPlus
@@ -188,7 +190,7 @@ const ModelsModal = () => {
                                 removeModel
                                   .mutateAsync({
                                     service_id: service.id,
-                                    model_id: model,
+                                    model_id: model.id,
                                   })
                                   .then(() => {
                                     services.refetch();
