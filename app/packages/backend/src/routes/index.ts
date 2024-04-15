@@ -514,7 +514,7 @@ const projectRouter = router({
       return data;
     }),
 });
-
+// for external services
 const userRouter = router({
   userExists: publicProcedure
     .input(
@@ -587,10 +587,11 @@ const userRouter = router({
       }
     }),
 });
-
+const externalRouter = router({});
 const routes = router({
   user: userRouter,
   project: projectRouter,
+  external: externalRouter,
 });
 
 type AppRoutes = typeof routes;
