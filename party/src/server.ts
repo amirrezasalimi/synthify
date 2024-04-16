@@ -2,6 +2,7 @@ import type * as Party from "partykit/server";
 import { onConnect } from "y-partykit";
 import {
   deserializeYDoc,
+  docToJson,
   getProject,
   serializeYDoc,
   updateProjectData,
@@ -17,6 +18,7 @@ export default class YjsServer implements Party.Server {
 
     const origin = process.env.BACKEND_HOST as string;
 
+    
     if (!token) {
       conn.close();
       return;
@@ -37,6 +39,9 @@ export default class YjsServer implements Party.Server {
 
     return onConnect(conn, this.party, {
       readOnly: project === null,
+      persist:{
+        mode: "snapshot",
+      },
       async load() {
         if (project && project.data && project.data !== "") {
           return deserializeYDoc(project.data);
@@ -45,10 +50,21 @@ export default class YjsServer implements Party.Server {
       },
       callback: {
         async handler(doc) {
+          console.log("doc");
+
           try {
             const project_data = serializeYDoc(doc);
-            await updateProjectData(origin, projectId, token, project_data);
-          } catch (e) {}
+            const project_json_data = docToJson(doc);
+            await updateProjectData(
+              origin,
+              projectId,
+              token,
+              project_data,
+              project_json_data
+            );
+          } catch (e) {
+            console.log(`Error updating project: `, e);
+          }
         },
       },
     });

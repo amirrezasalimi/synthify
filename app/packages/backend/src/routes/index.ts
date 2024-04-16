@@ -409,9 +409,10 @@ const projectRouter = router({
         token: z.string(),
         project: z.string(),
         data: z.string(),
+        json_data: z.any(),
       })
     )
-    .query(async ({ input: { token, project, data } }) => {
+    .query(async ({ input: { token, project, data, json_data } }) => {
       const _pb = pbInstance();
       _pb.autoCancellation(false);
       try {
@@ -449,6 +450,7 @@ const projectRouter = router({
       pb.autoCancellation(true);
       const res = await pb.collection("projects").update(project, {
         data,
+        json_data,
       });
       return res;
     }),

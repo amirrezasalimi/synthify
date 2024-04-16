@@ -43,7 +43,8 @@ export const updateProjectData = async (
   origin: string,
   projectId: string,
   userToken: string,
-  data: string
+  data: string,
+  json_data: any
 ): Promise<Project> => {
   return new Promise(async (resolve, reject) => {
     const url = `${origin}/trpc/project.updateProjectDataWithToken?input=${encodeURIComponent(
@@ -51,6 +52,7 @@ export const updateProjectData = async (
         project: projectId,
         token: userToken,
         data,
+        json_data,
       })
     )}`;
 
@@ -79,4 +81,12 @@ export function deserializeYDoc(base64YDoc: string) {
   const deserializedYDoc = new Y.Doc();
   Y.applyUpdate(deserializedYDoc, binaryEncoded);
   return deserializedYDoc;
+}
+
+export function docToJson(doc: Y.Doc) {
+  const data: Record<string, any> = {};
+  for (const key of Object.keys(doc?.toJSON()??{})) {
+    data[key] = doc.getMap(key).toJSON();
+  }
+  return data;
 }
