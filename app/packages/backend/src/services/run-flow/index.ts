@@ -11,6 +11,18 @@ import {
 } from "../../types/pocketbase";
 import OpenAI from "openai";
 import { AiModelUsage } from "./types";
+import Sandbox from "@nyariv/sandboxjs";
+
+// helpers
+const rand = (a: number | any[], b?: number) => {
+  if (Array.isArray(a)) {
+    return a[Math.floor(Math.random() * a.length)];
+  }
+  if (b === undefined) {
+    return Math.floor(Math.random() * a);
+  }
+  return Math.floor(Math.random() * (b - a + 1) + a);
+};
 
 type LogData = {
   type: "debug" | "error";
@@ -69,25 +81,28 @@ const runFlow = async (props: RunFlowData) => {
     // prompt block
     prompt = block.prompt;
     //  eval {x} of the prompt and replace
-
+    const context: Object = {};
     for (const key in blockCache) {
       // @ts-ignore
-      global[key] = blockCache[key];
+      context[key] = blockCache[key];
     }
-    // @ts-ignore
-    global.rand = (a: number | any[], b?: number) => {
-      if (Array.isArray(a)) {
-        return a[Math.floor(Math.random() * a.length)];
-      }
-      if (b === undefined) {
-        return Math.floor(Math.random() * a);
-      }
-      return Math.floor(Math.random() * (b - a + 1) + a);
-    };
 
-    prompt = prompt.replace(/{(.*?)}/g, (match, p1) => {
+    const sandbox = new Sandbox({
+      globals: {
+        ...Sandbox.SAFE_GLOBALS,
+        rand,
+      },
+    });
+
+    const regex = /{((?:[^{}]|{[^{}]*})*?)}/g;
+    prompt = prompt.replace(regex, (match, p1) => {
       try {
-        return eval(p1);
+        const code = `return ${p1}`;
+        const exec = sandbox.compile(code);
+
+        const res = exec(context).run() as string;
+        console.log(`exec`, code, res);
+        return res;
       } catch (e) {
         // console.log(`error`, e);
         return "";

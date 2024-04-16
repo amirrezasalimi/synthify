@@ -7,8 +7,10 @@
     "client": "cd packages/client && npm run dev"
   },
   "dependencies": {
+    "@nyariv/sandboxjs": "^0.8.23",
     "@types/node": "^20.12.7",
     "@types/ws": "^8.5.10",
+    "isolated-eval": "^0.0.3",
     "partysocket": "^1.0.1",
     "superjson": "^2.2.1",
     "ws": "^8.16.0"
