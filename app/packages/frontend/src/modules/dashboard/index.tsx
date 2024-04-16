@@ -58,7 +58,7 @@ const Dashboard = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <div className="w-screen h-screen bg-gray-100">
+      <div className="w-screen h-screen">
         <div className="container mx-auto max-w-2xl flex flex-col">
           <div className="flex justify-between items-center py-8">
             <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
