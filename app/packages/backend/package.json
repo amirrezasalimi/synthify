@@ -13,6 +13,7 @@
     "@elysiajs/cors": "^1.0.2",
     "@elysiajs/trpc": "^1.0.2",
     "@elysiajs/websocket": "^0.2.8",
+    "@nyariv/sandboxjs": "^0.8.23",
     "@trpc/server": "^10.45.2",
     "@types/node": "^20.12.5",
     "elysia": "^1.0.13",
