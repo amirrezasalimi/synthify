@@ -11,7 +11,6 @@ const nodeTypes: NodeTypes = {
 const ReactFlowWrapper = ({ children }: { children?: React.ReactNode }) => {
   const { nodes, onNodesChange, onSortEnd } = useFlows();
 
-
   return (
     <div className="w-full h-full">
       <DndContext autoScroll onDragEnd={onSortEnd}>
@@ -20,7 +19,7 @@ const ReactFlowWrapper = ({ children }: { children?: React.ReactNode }) => {
           nodes={nodes}
           onNodesChange={onNodesChange}
         >
-          {/* <AiAssistant /> */}
+          <AiAssistant />
           <ViewportSaver />
           <Background />
           {children}
