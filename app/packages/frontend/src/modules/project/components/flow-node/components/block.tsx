@@ -1,3 +1,4 @@
+import { blockNameMap } from "@/modules/project/constants";
 import useBlock from "@/modules/project/hooks/block";
 import { useCommonStore } from "@/modules/project/stores/common";
 import { FlowBlock } from "@/modules/project/types/flow-data";
@@ -13,6 +14,8 @@ import {
 } from "@nextui-org/react";
 import { TbArrowsMoveVertical, TbPlus } from "react-icons/tb";
 import { RichTextarea, createRegexRenderer } from "rich-textarea";
+
+
 
 const Block = ({
   i,
@@ -50,10 +53,9 @@ const Block = ({
     });
   };
 
-  
   const promptRender = createRegexRenderer([
     // anything between {} highlight
-    [ /{((?:[^{}]|{[^{}]*})*?)}/g, { color: "#0EC2FB" }],
+    [/{((?:[^{}]|{[^{}]*})*?)}/g, { color: "#0EC2FB" }],
   ]);
 
   return (
@@ -108,7 +110,9 @@ const Block = ({
               backgroundColor: color,
             }}
           >
-            {block.type}
+            {
+              blockNameMap[type as keyof typeof blockNameMap]
+            }
           </span>
           {type != "run-flow" && (
             <input

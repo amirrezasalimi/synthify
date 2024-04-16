@@ -13,6 +13,7 @@ import { TbPlus, TbTrash } from "react-icons/tb";
 import chroma from "chroma-js";
 import { SortableContext } from "@dnd-kit/sortable";
 import Block from "./components/block";
+import { blockNameMap, blockTypes } from "../../constants";
 
 const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
   const {
@@ -84,10 +85,11 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
             title="Blocks"
             aria-label="Blocks"
           >
-            <DropdownItem key="list">LIST</DropdownItem>
-            <DropdownItem key="text">TEXT</DropdownItem>
-            <DropdownItem key="merge">MERGE</DropdownItem>
-            <DropdownItem key="run-flow">RUN FLOW</DropdownItem>
+            {blockTypes.map((type) => (
+              <DropdownItem key={type}>
+                {blockNameMap[type as keyof typeof blockNameMap]}
+              </DropdownItem>
+            ))}
           </DropdownMenu>
         </Dropdown>
       </div>
