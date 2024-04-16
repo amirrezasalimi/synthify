@@ -50,9 +50,10 @@ const Block = ({
     });
   };
 
+  
   const promptRender = createRegexRenderer([
     // anything between {} highlight
-    [/{[^}]+}/g, { color: "#0EC2FB" }],
+    [ /{((?:[^{}]|{[^{}]*})*?)}/g, { color: "#0EC2FB" }],
   ]);
 
   return (
