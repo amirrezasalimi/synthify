@@ -10,6 +10,7 @@
     "@nyariv/sandboxjs": "^0.8.23",
     "@types/node": "^20.12.7",
     "@types/ws": "^8.5.10",
+    "framer-motion": "^11.1.1",
     "isolated-eval": "^0.0.3",
     "partysocket": "^1.0.1",
     "superjson": "^2.2.1",

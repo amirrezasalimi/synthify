@@ -4,6 +4,7 @@ import FlowNode from "../flow-node";
 import useFlows from "../../hooks/flows";
 import { DndContext } from "@dnd-kit/core";
 import ViewportSaver from "./components/viewport-saver";
+import AiAssistant from "../ai-assistant";
 const nodeTypes: NodeTypes = {
   flow: FlowNode,
 };
@@ -19,6 +20,7 @@ const ReactFlowWrapper = ({ children }: { children?: React.ReactNode }) => {
           nodes={nodes}
           onNodesChange={onNodesChange}
         >
+          {/* <AiAssistant /> */}
           <ViewportSaver />
           <Background />
           {children}
