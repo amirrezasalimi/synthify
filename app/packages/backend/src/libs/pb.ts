@@ -1,6 +1,10 @@
 import { TypedPocketBase } from "../types/pocketbase";
 import Pocketbase from "pocketbase";
 const pocketbase = async () => {
+  console.log(
+    "Connecting to Pocketbase...",
+    process.env.POCKETBASE_HOST,
+  );
 
   const _ = new Pocketbase(process.env.POCKETBASE_HOST) as TypedPocketBase;
 
