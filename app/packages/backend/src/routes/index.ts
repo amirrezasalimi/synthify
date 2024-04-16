@@ -1,6 +1,6 @@
 import { TrpcContext } from "@/libs/trpc/context";
 import { pb, pbInstance } from "../libs/pb";
-import runDataTask from "@/services/run-data-task";
+import runDataTask from "@/services/run-flow";
 import { FlowNode } from "@/types/flow-data";
 import OpenAI from "openai";
 import { z } from "zod";
