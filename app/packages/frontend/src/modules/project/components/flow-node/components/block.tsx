@@ -15,8 +15,6 @@ import {
 import { TbArrowsMoveVertical, TbPlus } from "react-icons/tb";
 import { RichTextarea, createRegexRenderer } from "rich-textarea";
 
-
-
 const Block = ({
   i,
   flowId,
@@ -62,7 +60,7 @@ const Block = ({
     <div
       {...attributes}
       ref={setNodeRef}
-      className="w-full h-auto border-3 rounded-2xl p-2 bg-white relative group"
+      className="w-full h-auto border-3 rounded-2xl p-2 bg-background-800 relative group"
       style={{
         borderColor: color,
         position: "relative",
@@ -70,10 +68,10 @@ const Block = ({
       }}
     >
       {/* move */}
-      <div className="w-10 h-10 rounded-lg absolute left-[-52px] top-1.5 group overflow-hidden">
+      <div className="w-10 h-10 rounded-lg absolute left-[-52px] top-1.5 group overflow-hidden border border-background-600">
         <div
           className={cn(
-            "w-full h-full flex items-center justify-center bg-gray-200",
+            "w-full h-full flex items-center justify-center ",
             canMove && "group-hover:hidden"
           )}
         >
@@ -82,9 +80,9 @@ const Block = ({
         {canMove && (
           <div
             {...listeners}
-            className="flex justify-center items-center w-full h-full nodrag group-hover:bg-gray-600 text-white"
+            className="flex justify-center items-center w-full h-full nodrag group-hover:bg-background-600 text-white"
           >
-            <TbArrowsMoveVertical />
+            <TbArrowsMoveVertical size={20} />
           </div>
         )}
       </div>
@@ -110,9 +108,7 @@ const Block = ({
               backgroundColor: color,
             }}
           >
-            {
-              blockNameMap[type as keyof typeof blockNameMap]
-            }
+            {blockNameMap[type as keyof typeof blockNameMap]}
           </span>
           {type != "run-flow" && (
             <input
@@ -149,7 +145,7 @@ const Block = ({
           <div>
             <button
               onClick={chooseModel}
-              className="px-2 py-1 bg-gray-200 rounded-lg truncate w-auto max-w-[150px]"
+              className="px-2 py-1 border border-background-600 rounded-lg truncate w-auto max-w-[150px]"
             >
               {block?.ai_config?.model ? block.ai_config.model : "Choose Model"}
             </button>
@@ -162,9 +158,8 @@ const Block = ({
         <>
           <div className="w-full mt-2 nopan nodrag nowheel rounded-lg overflow-hidden">
             <RichTextarea
-              className="h-full bg-gray-300  p-2 outline-none text-black overflow-y-auto resize-y"
+              className="h-full bg-transparent  p-2 outline-none text-black overflow-y-auto resize-y !caret-white"
               style={{
-                backgroundColor: "#f9f9f9",
                 width: "100%",
                 height: "auto",
                 minHeight: "100px",

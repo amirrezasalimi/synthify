@@ -1,5 +1,6 @@
+import { Button } from "@nextui-org/react";
+import { useCommonStore } from "../../stores/common";
 import {
-  Button,
   Input,
   Modal,
   ModalBody,
@@ -9,13 +10,16 @@ import {
 import { useState } from "react";
 import useRun from "../../hooks/run";
 import useFlows from "../../hooks/flows";
+import { TbPlus } from "react-icons/tb";
 
-const ButtomBar = () => {
+const TopToolBar = () => {
+  const { toggleConfigModel } = useCommonStore();
   const flows = useFlows();
   const [modalOpen, setModalOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [dataCount, setDataCount] = useState(1);
   const helper = useRun();
+
   return (
     <>
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
@@ -54,16 +58,29 @@ const ButtomBar = () => {
           </ModalBody>
         </ModalContent>
       </Modal>
-      <div className="absolute bottom-4 w-full flex justify-center">
-        <div className="bg-white w-1/6 rounded-xl px-4 py-2 z-10 border shadow-sm flex gap-4 justify-center items-center">
-          <Button color="primary" onClick={() => setModalOpen(true)}>
+      <div className="w-full h-full flex justify-between items-center">
+        <div>
+          <Button variant="bordered" onClick={flows.addEmptyFlow} size="sm">
+            <TbPlus size={16} />
+            Add Flow
+          </Button>
+        </div>
+        <div className="flex gap-3">
+          <Button
+            size="sm"
+            variant="bordered"
+            onClick={() => toggleConfigModel(true)}
+            className="px-2 w-auto"
+          >
+            Models
+          </Button>
+          <Button size="sm" color="primary" onClick={() => setModalOpen(true)}>
             Run
           </Button>
-          <Button onClick={flows.addEmptyFlow}>Add Flow</Button>
         </div>
       </div>
     </>
   );
 };
 
-export default ButtomBar;
+export default TopToolBar;

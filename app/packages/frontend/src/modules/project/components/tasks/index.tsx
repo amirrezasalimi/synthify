@@ -1,4 +1,4 @@
-import { Button, Spinner } from "@nextui-org/react";
+import { Spinner, cn } from "@nextui-org/react";
 import {
   TasksRecord,
   TasksStatusOptions,
@@ -13,20 +13,27 @@ const Item = ({
     done_count: number;
   };
 }) => {
-  const statusMap = {
-    "in-progress": "In Progress",
-    done: "Done",
-    error: "Error",
+  const statusColors = {
+    ["in-progress"]: "bg-warning-800",
+    done: "bg-success-800",
+    error: "bg-error-800",
   };
+
+  const title = task.title == "" ? "untitled" : task.title;
   return (
-    <div className="flex justify-between p-2 border rounded-lg">
+    <div className="flex justify-between p-2  rounded-lg bg-background-700/70 items-center">
       <div className="flex flex-col gap-1">
-        <h2>{task.title}</h2>
+        <h2>{title}</h2>
         <span>
           {task.done_count}/{task.count}
         </span>
       </div>
-      <span>{statusMap?.[task.status as TasksStatusOptions] ?? "Unknown"}</span>
+      <span
+        className={cn(
+          "rounded-full w-3 h-3",
+          statusColors[task.status as TasksStatusOptions]
+        )}
+      />
     </div>
   );
 };
@@ -35,9 +42,11 @@ const Tasks = () => {
   const { toggleDatasetModal } = useCommonStore();
 
   return (
-    <div className="absolute w-1/6 h-[80vh] m-8 flex flex-col rounded-xl border bg-white z-50">
-      <h2 className="font-bold p-4">Datasets</h2>
-      <div className="flex flex-col gap-2 overflow-scroll px-3">
+    <div className="w-full h-full flex flex-col overflow-hidden">
+      <div className="px-4 flex items-center h-12 min-h-12 max-h-12  border-b border-b-background-700">
+        <h2 className="font-bold">Datasets</h2>
+      </div>
+      <div className="flex flex-col gap-2 overflow-scroll px-3 py-4 h-[calc(100vh-(3rem+4rem))]">
         {helper.tasks.isLoading && <Spinner />}
         {helper.tasks.data?.map((task: any, i: number) => (
           <div

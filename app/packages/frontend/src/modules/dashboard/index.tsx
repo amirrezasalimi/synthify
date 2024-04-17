@@ -61,7 +61,7 @@ const Dashboard = () => {
       <div className="w-screen h-screen">
         <div className="container mx-auto max-w-2xl flex flex-col">
           <div className="flex justify-between items-center py-8">
-            <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
+            <h2 className="text-2xl font-bold ">Dashboard</h2>
             <Link to={LINKS.AUTH}>
               <Avatar name={user.email} />
             </Link>
@@ -92,7 +92,7 @@ const Dashboard = () => {
                   id: p.id,
                 })}
               >
-                <div className=" bg-white shadow-lg rounded-xl p-4 min-h-12 flex justify-between items-center">
+                <div className="bg-background-800 shadow-lg rounded-xl p-4 min-h-12 flex justify-between items-center">
                   <h3 className="text-lg font-bold">{p.title}</h3>
                   <Button variant="bordered">Go to project</Button>
                 </div>

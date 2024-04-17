@@ -11,7 +11,7 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
   return (
     <motion.div
       className={cn(
-        "absolute bottom-0 right-0 mb-6 mr-14 z-10 w-[450px] p-4 bg-white border rounded-md flex flex-col justify-between",
+        "absolute bottom-0 right-0 mb-6 mr-14 z-10 w-[450px] p-4 bg-background-800 border-background-700 border rounded-md flex flex-col justify-between",
         isOpen ? "block" : "hidden"
       )}
       initial={{
@@ -44,7 +44,7 @@ const AiAssistant = () => {
       <AiAssistantChat isOpen={isOpen} />
       <motion.div
         onClick={() => setIsOpen((prev) => !prev)}
-        className="absolute z-10 bottom-0 right-0 mb-6 px-4 flex gap-3 justify-center items-center rounded-md h-10  border bg-gradient-to-br from-blue-500 to-blue-700 text-white cursor-pointer overflow-hidden select-none"
+        className="absolute z-10 bottom-0 right-0 mb-6 px-4 flex gap-3 justify-center items-center rounded-md h-10  border bg-secondary border-secondary-700 text-background cursor-pointer overflow-hidden select-none"
         initial={{
           width: "fit-content",
           transformOrigin: "100% 100%",

@@ -46,7 +46,6 @@ const ChooseModelModal = () => {
                 onChooseModel?.(service_id ?? "", model_id ?? "");
                 toggleChooseModelModal(false);
               }}
-              label="Select Model"
             >
               {!services.isLoading && !!services.data?.length && (
                 <Input
@@ -71,7 +70,7 @@ const ChooseModelModal = () => {
 
               {services.data?.map((service) => (
                 <div className="w-full flex flex-col gap-2">
-                  <h2 className="font-bold sticky bg-white top-0 z-20">
+                  <h2 className="font-bold sticky bg-background-800 py-2 top-[-8px] z-20">
                     {service.title}
                   </h2>
 

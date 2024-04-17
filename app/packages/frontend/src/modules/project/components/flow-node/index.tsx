@@ -28,10 +28,10 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
   } = useFlow(id);
 
   return (
-    <div className="w-[400px] ">
+    <div className="w-[400px]">
       {/* head */}
       <div
-        className="w-full flex items-center justify-center rounded-3xl group"
+        className="w-full flex items-center justify-center rounded-xl group"
         style={{
           backgroundColor: data.color,
         }}
@@ -50,7 +50,7 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
         )}
 
         <div
-          className="w-full text-white text-lg rounded-2xl border-4 border-white m-1.5 px-2 py-1"
+          className="w-full text-white text-lg  m-1.5 px-2 py-1"
           style={{
             backgroundColor: data.color,
           }}

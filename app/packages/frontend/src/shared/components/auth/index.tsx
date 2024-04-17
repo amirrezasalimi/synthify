@@ -2,7 +2,7 @@
 import useAuth from "@/shared/hooks/auth";
 import { ReactNode, useState } from "react";
 import clsx from "clsx";
-import { Avatar, Button, CircularProgress, Input } from "@nextui-org/react";
+import { Button, CircularProgress, Input } from "@nextui-org/react";
 import { useMutation } from "@tanstack/react-query";
 import useAuthFlow from "./hooks/auth-flow";
 import { Link, useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { pb_client } from "@/shared/utils/pb_client";
 import { TbArrowLeft, TbChevronRight } from "react-icons/tb";
 import { LINKS } from "@/shared/constants";
+import Avatar from "../avatar";
 
 const ProviderItem = ({
   icon,
@@ -28,7 +29,7 @@ const ProviderItem = ({
     <div
       onClick={onClick}
       className={clsx(
-        "w-full p-3 border border-gray-300/10 cursor-pointer bg-white rounded-2xl gap-4 shadow-[0px_4px_4px_0px_#E2E8F0] justify-center items-center inline-flex",
+        "w-full p-3 border border-gray-300/10 cursor-pointer bg-white rounded-2xl gap-4 justify-center items-center inline-flex",
         loading ? "opacity-50 cursor-wait" : "hover:opacity-80"
       )}
     >
@@ -110,22 +111,20 @@ const Auth = ({ head = true }: { head?: boolean }) => {
       {isLoginned && (
         <>
           <div className="w-full flex justify-start py-6">
-            <span className="text-center text-black text-xl font-semibold">
+            <span className="text-center  text-xl font-semibold">
               continue as
             </span>
           </div>
           <Link className="w-full" to={LINKS.DASHBOARD}>
             <div
-              className="w-full px-6 py-4 flex bg-white rounded-2xl justify-between items-center cursor-pointer hover:bg-white/60 transition-all
+              className="w-full px-6 py-4 flex bg-background-500 border  rounded-2xl justify-between items-center cursor-pointer hover:bg-background-800 transition-all
                     "
             >
               <div className="flex gap-3 items-center">
-                <Avatar name={user?.username || ""} src={user?.avatar} />
+                <Avatar name={user?.email || ""} src={user?.avatar} />
                 <div className="flex flex-col justify-center items-start">
-                  <span className="text-black font-semibold">
-                    {user?.username}
-                  </span>
-                  <span className=" text-black">{user?.email}</span>
+                  <span className=" font-semibold">{user?.username}</span>
+                  <span className=" ">{user?.email}</span>
                 </div>
               </div>
               <TbChevronRight className="text-gray-400 w-[32px] h-[32px]" />
@@ -141,17 +140,17 @@ const Auth = ({ head = true }: { head?: boolean }) => {
       {!authCheck && !isLogin && (
         <>
           {head && (
-            <div className="w-full flex justify-start py-4">
-              <span className="text-center text-black text-xl font-semibold">
+            <div className="w-full flex justify-start py-3">
+              <span className="text-center  text-xl font-semibold">
                 {step == "login" && "welcome back"}
-                {step == "register" && "welcome | register"}
+                {step == "register" && "register"}
                 {step == "email" && "welcome"}
               </span>
             </div>
           )}
-          <div className="w-full flex flex-col gap-2 py-4">
+          <div className="w-full flex flex-col gap-2 ">
             <div>
-              <span className="text-center text-black text-xl font-semibold"></span>
+              <span className="text-center  text-xl font-semibold"></span>
             </div>
             {step == "email" && (
               <>
@@ -169,7 +168,7 @@ const Auth = ({ head = true }: { head?: boolean }) => {
                   onClick={checkeEmail}
                   fullWidth
                   size="lg"
-                  className="bg-blue-500 text-white"
+                  className="bg-blue-500 text-white mt-2"
                 >
                   Continue
                 </Button>
@@ -181,9 +180,9 @@ const Auth = ({ head = true }: { head?: boolean }) => {
                   <TbArrowLeft
                     fontSize={24}
                     onClick={() => setStep("email")}
-                    className="text-black cursor-pointer"
+                    className=" cursor-pointer"
                   />
-                  <div className="text-black text-md font-semibold">
+                  <div className=" text-md font-semibold">
                     Login as &nbsp;
                     <span className="text-blue-500">{email}</span>
                   </div>
@@ -214,9 +213,9 @@ const Auth = ({ head = true }: { head?: boolean }) => {
                   <TbArrowLeft
                     fontSize={24}
                     onClick={() => setStep("email")}
-                    className="text-black cursor-pointer"
+                    className=" cursor-pointer"
                   />
-                  <div className="text-black text-md font-semibold">
+                  <div className=" text-md font-semibold">
                     Register as &nbsp;
                     <span className="text-blue-500">{email}</span>
                   </div>
@@ -244,7 +243,7 @@ const Auth = ({ head = true }: { head?: boolean }) => {
             )}
           </div>
           {/* login with oauth providers */}
-          <div className="w-full mt-4 flex flex-col gap-2">
+          <div className="w-full flex flex-col gap-2 mt-8">
             <ProviderItem
               onClick={() => auth.open("github")}
               loading={auth.currentAuthLoading == "github"}

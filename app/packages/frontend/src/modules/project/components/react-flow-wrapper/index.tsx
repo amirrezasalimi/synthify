@@ -21,7 +21,7 @@ const ReactFlowWrapper = ({ children }: { children?: React.ReactNode }) => {
         >
           <AiAssistant />
           <ViewportSaver />
-          <Background />
+          {/* <Background /> */}
           {children}
         </ReactFlow>
       </DndContext>

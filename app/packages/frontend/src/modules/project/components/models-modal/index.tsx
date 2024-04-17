@@ -113,13 +113,8 @@ const ModelsModal = () => {
         </Modal>
 
         <ModalContent className="max-h-[80vh] overflow-auto">
-          <ModalHeader className="flex flex-col gap-1 sticky top-0 bg-white z-10">
-            Config Ai's
-            <Button className="my-2" onClick={() => setAddModalOpen(true)}>
-              Add New
-            </Button>
-          </ModalHeader>
-          <ModalBody className="">
+          <ModalHeader>Config Ai's</ModalHeader>
+          <ModalBody>
             {/* ai's */}
             {services.isLoading && <Spinner />}
             {!services.isLoading && services.data?.length === 0 && (
@@ -130,7 +125,7 @@ const ModelsModal = () => {
             {services.data?.map((service) => (
               <Card
                 key={service.id}
-                className="border bg-gray-50"
+                className="border border-background-600"
                 shadow="none"
                 radius="sm"
               >
@@ -212,6 +207,8 @@ const ModelsModal = () => {
                         onChange={(e) => setModelName(e.target.value)}
                       />
                       <Button
+                        isIconOnly
+                        size="lg"
                         onClick={() => {
                           addModel
                             .mutateAsync({
@@ -225,7 +222,7 @@ const ModelsModal = () => {
                             });
                         }}
                       >
-                        Add
+                        <TbPlus size={16} />
                       </Button>
                     </div>
                   </div>
@@ -233,6 +230,15 @@ const ModelsModal = () => {
               </Card>
             ))}
           </ModalBody>
+          <ModalFooter>
+            <Button
+              color="primary"
+              className="my-2"
+              onClick={() => setAddModalOpen(true)}
+            >
+              Add New
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>

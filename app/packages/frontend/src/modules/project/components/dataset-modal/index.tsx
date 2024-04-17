@@ -83,7 +83,7 @@ const DatasetModal = () => {
                     Download
                   </Button>
                 </div>
-                <div className="flex flex-col gap-2 max-h-[70vh] overflow-scroll px-4">
+                <div className="flex flex-col gap-2 max-h-[60vh] overflow-scroll">
                   {datas.data?.pages.map((page) => {
                     return (
                       <div className="flex flex-col gap-2">
