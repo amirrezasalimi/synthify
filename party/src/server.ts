@@ -50,8 +50,6 @@ export default class YjsServer implements Party.Server {
       },
       callback: {
         async handler(doc) {
-          console.log("doc");
-
           try {
             const project_data = serializeYDoc(doc);
             const project_json_data = docToJson(doc);
