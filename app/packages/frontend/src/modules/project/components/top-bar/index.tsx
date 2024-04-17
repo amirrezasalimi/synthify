@@ -1,6 +1,5 @@
 import { Button } from "@nextui-org/react";
 import { TbChevronLeft } from "react-icons/tb";
-import { useCommonStore } from "../../stores/common";
 import Avatar from "@/shared/components/avatar";
 import { Link } from "react-router-dom";
 import { LINKS } from "@/shared/constants";
@@ -21,7 +20,7 @@ const TopBar = () => {
             </Button>
           </Link>
         </div>
-        <div className="text-lg font-bold">{project.project.data?.title}</div>
+        <div className="text-lg">{project.project.data?.title}</div>
         <div className="flex gap-2 items-center">
           <Link to={LINKS.AUTH}>
             <Avatar name={user.email} />
