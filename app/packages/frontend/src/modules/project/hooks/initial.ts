@@ -22,7 +22,6 @@ const useInitial = () => {
 
   useLayoutEffect(() => {
     const isOk = typeof project.project.data != "undefined";
-    console.log("project ->", project.project.status, isOk);
 
     if (project.project.status === "error" && !isOk) {
       nav(LINKS.DASHBOARD);
