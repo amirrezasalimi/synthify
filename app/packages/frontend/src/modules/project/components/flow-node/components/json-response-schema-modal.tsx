@@ -83,9 +83,9 @@ const JsonResponseSchemaModal = ({
               }}
             />
           )}
-          <div className="p-2 rounded-md bg-warning-800 text-foreground-100 text-sm flex items-center gap-2">
+          <div className="p-2 rounded-md bg-warning-800 text-foreground-100 text-sm flex items-center gap-2 mt-2">
             <TbInfoCircle size={20} />
-            <span> make sure your llm support json mode</span>
+            <span> make sure your llm supports json mode</span>
           </div>
         </ModalBody>
       </ModalContent>
