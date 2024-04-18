@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState } from "react";
-import YPartyKitProvider, { WebsocketProvider } from "y-partykit/provider";
+import YPartyKitProvider from "y-partykit/provider";
 import { useProjectStore } from "../stores/project-context";
 import { useStore } from "zustand";
 import { useNavigate, useParams } from "react-router-dom";
@@ -7,8 +7,6 @@ import useSyncedState from "./synced-state";
 import { LINKS } from "@/shared/constants";
 import useProject from "./project";
 import { pb_client } from "@/shared/utils/pb_client";
-import { WebSocket } from "partysocket";
-import WS from "ws";
 import { defaultMainFlow } from "../constants";
 
 const useInitial = () => {
