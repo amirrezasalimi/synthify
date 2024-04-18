@@ -83,9 +83,12 @@ const ChooseModelModal = () => {
                       )
                       ?.map((model) => (
                         <Radio
-                          className="w-fu"
+                          className="w-full"
                           value={`${service.id}@${model.id}`}
                           key={model.id}
+                          classNames={{
+                            base: "flex !max-w-full",
+                          }}
                         >
                           {model.name}
                         </Radio>

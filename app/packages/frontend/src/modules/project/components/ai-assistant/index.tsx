@@ -1,17 +1,21 @@
 import { BotIcon } from "@/shared/components/icons";
-import { cn } from "@nextui-org/react";
+import { Button, cn } from "@nextui-org/react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { TbSettings } from "react-icons/tb";
 import { useLocalStorage } from "react-use";
+import useChat from "./hooks/chat";
 
 const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
   const [message, setMessage] = useLocalStorage("chat-message", "");
-
+  const [showSettings, setShowSettings] = useState(false);
   const msg = message as string;
+
+  const chat = useChat();
   return (
     <motion.div
       className={cn(
-        "absolute bottom-0 right-0 mb-6 mr-14 z-10 w-[450px] p-4 bg-background-800 border-background-700 border rounded-md flex flex-col justify-between",
+        "absolute bottom-0 right-0 mb-6 mr-14 z-10 w-[450px] p-2 bg-background-800 border-background-700 border rounded-md flex flex-col justify-between",
         isOpen ? "block" : "hidden"
       )}
       initial={{
@@ -22,8 +26,40 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
       }}
       transition={{ duration: 0.3 }}
     >
+      <div>
+        <div className="flex justify-between">
+          <div className="px-2 py-2">
+            {showSettings ? "Settings" : "Ai Assistant"}
+          </div>
+          <div>
+            <Button
+              isIconOnly
+              onClick={() => setShowSettings((prev) => !prev)}
+              variant={showSettings ? "solid" : "light"}
+            >
+              <TbSettings size={20} />
+            </Button>
+          </div>
+        </div>
+        {/* settings */}
+        <motion.div
+          className="bg-background-700 overflow-hidden rounded-md mt-2"
+          initial={{
+            height: 0,
+          }}
+          animate={{
+            height: showSettings ? "auto" : 0,
+          }}
+        >
+          <div className="w-full h-full p-2">
+            <Button onClick={chat.changeModel} fullWidth variant="ghost">
+              {chat.selectedModelId || "Select a model"}
+            </Button>
+          </div>
+        </motion.div>
+      </div>
       {/* bottom */}
-      <div></div>
+
       <div>
         <textarea
           value={message}
