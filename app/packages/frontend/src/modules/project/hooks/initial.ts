@@ -9,6 +9,7 @@ import useProject from "./project";
 import { pb_client } from "@/shared/utils/pb_client";
 import { WebSocket } from "partysocket";
 import WS from "ws";
+import { defaultMainFlow } from "../constants";
 
 const useInitial = () => {
   const store = useProjectStore();
@@ -58,27 +59,7 @@ const useInitial = () => {
 
   const firstTimeCheck = () => {
     if (typeof ydoc.getMap("config").get("isInitialized") === "undefined") {
-      state.nodes["main"] = {
-        id: "main",
-        type: "flow",
-        data: {
-          id: "main",
-          name: "Main Flow",
-          color: "#3894FF",
-          blocks: [
-            {
-              id: "prompt",
-              name: "Prompt",
-              prompt: "",
-              type: "text",
-              order: 0,
-              ai_config: {},
-              settings: {},
-            },
-          ],
-        },
-        position: { x: 100, y: 100 },
-      };
+      state.nodes["main"] = defaultMainFlow;
       state.config.isInitialized = true;
     }
   };

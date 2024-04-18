@@ -4,6 +4,7 @@ import useSyncedState from "./synced-state";
 import { NodeChange } from "reactflow";
 import { SortableData } from "@dnd-kit/sortable";
 import toast from "react-hot-toast";
+import { defaultMainFlow } from "../constants";
 const useFlows = () => {
   const state = useSyncedState();
   const nodes = [...Object.values(state.nodes)] as FlowNode[];
@@ -99,11 +100,18 @@ const useFlows = () => {
       position: { x, y },
     };
   };
+  const clearScene = () => {
+    for (const key of Object.keys(state.nodes)) {
+      delete state.nodes[key];
+    }
+    state.nodes["main"] = defaultMainFlow;
+  };
   return {
     nodes,
     onNodesChange,
     onSortEnd,
     addEmptyFlow,
+    clearScene,
   };
 };
 

@@ -10,7 +10,7 @@ import {
 import { useState } from "react";
 import useRun from "../../hooks/run";
 import useFlows from "../../hooks/flows";
-import { TbPlus } from "react-icons/tb";
+import { TbPlus, TbTrash } from "react-icons/tb";
 
 const TopToolBar = () => {
   const { toggleConfigModel } = useCommonStore();
@@ -59,10 +59,14 @@ const TopToolBar = () => {
         </ModalContent>
       </Modal>
       <div className="w-full h-full flex justify-between items-center">
-        <div>
+        <div className="flex gap-2">
           <Button variant="bordered" onClick={flows.addEmptyFlow} size="sm">
             <TbPlus size={16} />
             Add Flow
+          </Button>
+          <Button variant="bordered" onClick={flows.clearScene} size="sm">
+            <TbTrash size={16} />
+            clear
           </Button>
         </div>
         <div className="flex gap-3">
