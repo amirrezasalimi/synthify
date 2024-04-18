@@ -1,4 +1,4 @@
-import { createStore } from "zustand";
+import { StoreApi, UseBoundStore, create, createStore } from "zustand";
 import * as Y from "yjs";
 import { syncedStore } from "@syncedstore/core";
 import { initialSyncedStoreTaskState } from "../data/syncestore-state";
@@ -18,15 +18,19 @@ export type ProjectStore = {
   syncedStore: SyncedStoreHandler;
 };
 
-const useCreateProjectStore = createStore<ProjectStore>()((set) => {
-  const ydoc = new Y.Doc();
-  const _syncedStore = new SyncedStoreHandler(
-    syncedStore(initialSyncedStoreTaskState, ydoc)
-  );
-  return {
-    ydoc,
-    syncedStore: _syncedStore,
-  };
-});
+export type ProjectStoreReturnType = UseBoundStore<StoreApi<ProjectStore>>
 
-export default useCreateProjectStore;
+const createProjectStore = () =>
+  create<ProjectStore>()((set) => {
+    const ydoc = new Y.Doc();
+    const _syncedStore = new SyncedStoreHandler(
+      syncedStore(initialSyncedStoreTaskState, ydoc)
+    );
+    console.log("syncedStore", _syncedStore);
+    return {
+      ydoc,
+      syncedStore: _syncedStore,
+    };
+  });
+
+export default createProjectStore;

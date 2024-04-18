@@ -51,6 +51,8 @@ const useInitial = () => {
     });
     return () => {
       provider.destroy();
+      provider.disconnect();
+      provider.ws?.close();
     };
   }, [project.project.data, project.project.status]);
 

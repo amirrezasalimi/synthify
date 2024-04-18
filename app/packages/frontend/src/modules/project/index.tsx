@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import ReactFlowWrapper from "./components/react-flow-wrapper";
 import { ProjectContext } from "./stores/project-context";
-import useCreateProjectStore from "./stores/project";
 import useInitial from "./hooks/initial";
 import { CircularProgress } from "@nextui-org/react";
 import TopBar from "./components/top-bar";
@@ -12,6 +11,7 @@ import DatasetModal from "./components/dataset-modal";
 import { Link } from "react-router-dom";
 import { LINKS } from "@/shared/constants";
 import TopToolBar from "./components/top-tool-bar";
+import createProjectStore from "./stores/project";
 
 const ProjectInside = () => {
   const { isConnected } = useInitial();
@@ -57,7 +57,7 @@ const ProjectInside = () => {
   );
 };
 const Project = () => {
-  const store = useRef(useCreateProjectStore);
+  const store = useRef(createProjectStore());
   return (
     <ProjectContext.Provider value={store.current}>
       <ProjectInside />
