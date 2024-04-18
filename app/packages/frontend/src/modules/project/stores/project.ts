@@ -26,7 +26,6 @@ const createProjectStore = () =>
     const _syncedStore = new SyncedStoreHandler(
       syncedStore(initialSyncedStoreTaskState, ydoc)
     );
-    console.log("syncedStore", _syncedStore);
     return {
       ydoc,
       syncedStore: _syncedStore,

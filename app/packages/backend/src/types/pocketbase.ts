@@ -42,10 +42,11 @@ export type AuthSystemFields<T = never> = {
 export type AiUsagesRecord<Tusages = unknown> = {
 	ai_service?: RecordIdString
 	cost?: number
+	entity_id?: string
+	entity_type?: string
 	model_id?: string
 	project?: RecordIdString
 	service_name?: string
-	task?: RecordIdString
 	usages?: null | Tusages
 	user?: RecordIdString
 }
@@ -64,9 +65,9 @@ export type DatasRecord<Tdata = unknown, Tmeta = unknown> = {
 	user?: RecordIdString
 }
 
-export type ProjectsRecord<Tflows = unknown> = {
+export type ProjectsRecord<Tjson_data = unknown> = {
 	data?: string
-	flows?: null | Tflows
+	json_data?: null | Tjson_data
 	title?: string
 	user?: RecordIdString
 }
@@ -115,7 +116,7 @@ export type UsersRecord = {
 // Response types include system fields and match responses from the PocketBase API
 export type AiUsagesResponse<Tusages = unknown, Texpand = unknown> = Required<AiUsagesRecord<Tusages>> & BaseSystemFields<Texpand>
 export type DatasResponse<Tdata = unknown, Tmeta = unknown, Texpand = unknown> = Required<DatasRecord<Tdata, Tmeta>> & BaseSystemFields<Texpand>
-export type ProjectsResponse<Tflows = unknown, Texpand = unknown> = Required<ProjectsRecord<Tflows>> & BaseSystemFields<Texpand>
+export type ProjectsResponse<Tjson_data = unknown, Texpand = unknown> = Required<ProjectsRecord<Tjson_data>> & BaseSystemFields<Texpand>
 export type TaskLogsResponse<Tmeta = unknown, Texpand = unknown> = Required<TaskLogsRecord<Tmeta>> & BaseSystemFields<Texpand>
 export type TasksResponse<Tflows = unknown, Tmeta = unknown, Texpand = unknown> = Required<TasksRecord<Tflows, Tmeta>> & BaseSystemFields<Texpand>
 export type UserAiResponse<Tmodels = unknown, Texpand = unknown> = Required<UserAiRecord<Tmodels>> & BaseSystemFields<Texpand>

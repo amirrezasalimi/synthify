@@ -84,22 +84,6 @@
             },
             {
                 "system": false,
-                "id": "qlqubvec",
-                "name": "task",
-                "type": "relation",
-                "required": false,
-                "presentable": false,
-                "unique": false,
-                "options": {
-                    "collectionId": "o9ef5oes2vz6dng",
-                    "cascadeDelete": false,
-                    "minSelect": null,
-                    "maxSelect": 1,
-                    "displayFields": null
-                }
-            },
-            {
-                "system": false,
                 "id": "qdjrnqyq",
                 "name": "project",
                 "type": "relation",
@@ -182,6 +166,34 @@
                 "unique": false,
                 "options": {
                     "maxSize": 2000000
+                }
+            },
+            {
+                "system": false,
+                "id": "jbxj9wlz",
+                "name": "entity_type",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "system": false,
+                "id": "biyovqh2",
+                "name": "entity_id",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
                 }
             }
         ],
@@ -287,7 +299,9 @@
                 }
             }
         ],
-        "indexes": [],
+        "indexes": [
+            "CREATE INDEX `idx_xL8aENf` ON `datas` (`task`)"
+        ],
         "listRule": null,
         "viewRule": null,
         "createRule": null,
@@ -334,7 +348,7 @@
             {
                 "system": false,
                 "id": "2kevalgi",
-                "name": "flows",
+                "name": "json_data",
                 "type": "json",
                 "required": false,
                 "presentable": false,
@@ -548,7 +562,9 @@
                 }
             }
         ],
-        "indexes": [],
+        "indexes": [
+            "CREATE INDEX `idx_zduoD7V` ON `tasks` (`project`)"
+        ],
         "listRule": null,
         "viewRule": null,
         "createRule": null,
@@ -659,7 +675,9 @@
                 }
             }
         ],
-        "indexes": [],
+        "indexes": [
+            "CREATE INDEX `idx_zT5gSgD` ON `user_ai` (`user`)"
+        ],
         "listRule": null,
         "viewRule": null,
         "createRule": null,

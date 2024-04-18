@@ -221,8 +221,9 @@ const runDataTask = async ({
     try {
       await pb.collection("ai_usages").create({
         project: projectId,
-        task: taskId,
         user: userId,
+        entity_id: taskId,
+        entity_type: "task",
         // ai_service: data.serviceName,
         cost: data.usages.total_cost,
         usages: data.usages,
