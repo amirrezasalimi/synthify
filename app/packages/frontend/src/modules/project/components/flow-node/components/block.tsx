@@ -81,9 +81,13 @@ const Block = ({
       <JsonResponseSchemaModal
         isOpen={jsonResponseSchemaModal}
         onClose={() => toggleJsonResponseSchemaModal(false)}
-        content={block.settings?.response_schema || defaultResponseSchema}
-        onChange={(content) => {
-          helper.changeResponseSchema(content);
+        schema={block.settings?.response_schema || defaultResponseSchema}
+        sample={block.settings?.response_sample || ""}
+        onChangeSchema={(value) => {
+          helper.changeResponseSchema(value);
+        }}
+        onChangeSample={(value) => {
+          helper.changeResponseSample(value);
         }}
       />
       {/* move */}

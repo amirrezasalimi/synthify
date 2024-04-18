@@ -33,12 +33,18 @@ const useBlock = (flowId: string, blockId: string) => {
     if (!block.settings) block.settings = {};
     block.settings.response_schema = schema;
   };
+  const changeResponseSample = (sample: string) => {
+    if (!block) return;
+    if (!block.settings) block.settings = {};
+    block.settings.response_sample = sample;
+  };
   return {
     selectedFlow,
     otherFlows,
     changeFlow,
     changeResponseMode,
     changeResponseSchema,
+    changeResponseSample,
   };
 };
 

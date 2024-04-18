@@ -1,18 +1,29 @@
-import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
+import {
+  Checkbox,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+} from "@nextui-org/react";
+import { useState } from "react";
 import { TbInfoCircle } from "react-icons/tb";
 import { RichTextarea, createRegexRenderer } from "rich-textarea";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  content: string;
-  onChange: (content: string) => void;
+  schema: string;
+  sample?: string;
+  onChangeSchema: (value: string) => void;
+  onChangeSample?: (value: string) => void;
 }
 const JsonResponseSchemaModal = ({
   isOpen,
   onClose,
-  content,
-  onChange,
+  schema,
+  onChangeSchema,
+  sample,
+  onChangeSample,
 }: Props) => {
   const contentRender = createRegexRenderer([
     // Anything between {} highlight
@@ -27,29 +38,51 @@ const JsonResponseSchemaModal = ({
     [/\b(string|number|boolean|object|any)\b/g, { color: "#00FF00" }],
   ]);
 
+  const [showSample, setShowSample] = useState(false);
   return (
     <Modal size="lg" isOpen={isOpen} onClose={onClose}>
       <ModalContent>
         <ModalHeader>Response Schema</ModalHeader>
-        <ModalBody className="flex flex-col gap-1 py-4">
+        <ModalBody className="flex flex-col gap-1 py-4 h-[60vh]">
           <span className="text-sm">
-            with provided response schema,the llm will generate json response in
-            this format.
+            with provided Typescript Schema,the llm will generate json response
+            your schema format.
           </span>
 
           <RichTextarea
             className="h-full bg-transparent  p-2 outline-none text-black overflow-y-auto resize-none !caret-white"
             style={{
               width: "100%",
-              height: "300px",
+              height: "200px",
             }}
-            value={content}
+            value={schema}
             onChange={(e) => {
-              onChange(e.target.value);
+              onChangeSchema(e.target.value);
             }}
           >
             {contentRender}
           </RichTextarea>
+          <Checkbox
+            isSelected={showSample}
+            onChange={(e) => {
+              setShowSample(e.target.checked);
+            }}
+          >
+            Add Sample
+          </Checkbox>
+          {showSample && (
+            <RichTextarea
+              className="h-full bg-transparent  p-2 outline-none text-black overflow-y-auto resize-none !caret-white"
+              style={{
+                width: "100%",
+                height: "200px",
+              }}
+              value={sample}
+              onChange={(e) => {
+                onChangeSample?.(e.target.value);
+              }}
+            />
+          )}
           <div className="p-2 rounded-md bg-warning-800 text-foreground-100 text-sm flex items-center gap-2">
             <TbInfoCircle size={20} />
             <span> make sure your llm support json mode</span>

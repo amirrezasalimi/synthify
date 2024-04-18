@@ -14,6 +14,7 @@ export interface FlowBlock {
   settings: {
     response_type?: "json" | "text" | any;
     response_schema?: string;
+    response_sample?: string;
     cache?: boolean;
     item_seperator?: string;
     selected_flow?: string;

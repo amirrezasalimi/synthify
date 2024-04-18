@@ -25,7 +25,7 @@ const rand = (a: number | any[], b?: number) => {
 };
 
 type LogData = {
-  type: "debug" | "error";
+  type: "debug" | "ai-error";
   message: string;
   flowId: string;
   blockId: string;
@@ -129,52 +129,82 @@ const runFlow = async (props: RunFlowData) => {
           continue;
         }
       }
-      console.log(`block`, block);
-      if (
-        block.settings.response_type == "json" &&
-        block.settings.response_schema
-      ) {
+
+      const isJsonMode = block.settings.response_type == "json";
+
+      if (isJsonMode && block.settings.response_schema) {
+        const sample = block.settings?.response_sample || "";
+        if (sample.trim() != "") {
+          prompt += `
+---
+Sample Json Response:
+${sample}
+`;
+        }
         prompt += `
 ---
-Response exactly in this type format with json data, no extra talk:
+Response exactly in this type format with json data, no extra talk, this type should'nt be as parent root:
 ${block.settings.response_schema}
 `;
       }
       console.log(`prompt`, prompt);
 
-      const isJsonMode = block.settings.response_type == "json";
       const aiModelId = ai_config.model ?? "gpt-3.5-turbo";
-      const res = await oai.chat.completions.create({
-        model: aiModelId,
-        messages: [
-          {
-            role: "user",
-            content: prompt,
+      let content: string | null = null;
+      let usage: AiModelUsage | null = null;
+      try {
+        const res = await oai.chat.completions.create({
+          model: aiModelId,
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          response_format: {
+            type: isJsonMode ? "json_object" : "text",
           },
-        ],
-        response_format: {
-          type: isJsonMode ? "json_object" : "text",
-        },
-      });
+        });
+        content = res?.choices?.[0].message?.content;
+        usage = res?.usage as AiModelUsage;
+      } catch (e: any) {
+        console.log(`error`, e);
 
-      let content = res.choices[0].message?.content;
+        log({
+          type: "ai-error",
+          message: e.message,
+          flowId,
+          blockId: block.id,
+        });
+      }
 
-      onAiResponse({
-        prompt,
-        response: content ?? "",
-        serviceName: service_config.title,
-        modelId: aiModelId,
-        flowId,
-        blockId: block.id,
-        usages: res.usage as AiModelUsage,
-      });
-      if (!content) continue;
-
+      if (!content || !usage) continue;
+      if (content) {
+        onAiResponse({
+          prompt,
+          response: content ?? "",
+          serviceName: service_config.title,
+          modelId: aiModelId,
+          flowId,
+          blockId: block.id,
+          usages: usage,
+        });
+      }
       if (isJsonMode) {
+        console.log(`json`, content);
         // replace ```json and last ``` with empty string, with regex , multiline
         const jsonRegex = /```json([\s\S]*?)```/g;
         content = content.replace(jsonRegex, "$1");
-        content = JSON.parse(content);
+        try {
+          content = JSON.parse(content);
+        } catch (e) {
+          log({
+            type: "ai-error",
+            message: "Invalid JSON response",
+            flowId,
+            blockId: block.id,
+          });
+        }
       }
 
       if (block.type == "list") {
@@ -228,6 +258,8 @@ const runDataTask = async ({
   const dataset: string[] = [];
 
   const log = async (data: LogData) => {
+    console.log(`log`, data);
+
     try {
       await pb.collection("task_logs").create({
         task_id: taskId,

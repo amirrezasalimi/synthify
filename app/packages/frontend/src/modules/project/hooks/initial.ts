@@ -7,7 +7,7 @@ import useSyncedState from "./synced-state";
 import { LINKS } from "@/shared/constants";
 import useProject from "./project";
 import { pb_client } from "@/shared/utils/pb_client";
-import { defaultMainFlow } from "../constants";
+import { currentProjectVersion, defaultMainFlow } from "../constants";
 
 const useInitial = () => {
   const store = useProjectStore();
@@ -58,6 +58,7 @@ const useInitial = () => {
     if (typeof ydoc.getMap("config").get("isInitialized") === "undefined") {
       state.nodes["main"] = defaultMainFlow;
       state.config.isInitialized = true;
+      state.config.projectVersion = currentProjectVersion
     }
   };
   return {

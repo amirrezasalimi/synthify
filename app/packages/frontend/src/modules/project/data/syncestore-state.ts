@@ -4,6 +4,7 @@ import OpenAI from "openai";
 export const initialSyncedStoreTaskState = {
   config: {} as {
     isInitialized: boolean;
+    projectVersion: string;
   },
   chat: {} as {
     selectedServiceId: string;

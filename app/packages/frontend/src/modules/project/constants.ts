@@ -1,11 +1,12 @@
 import { FlowNode } from "./types/flow-data";
 
-export const blockTypes = ["text", "list", "run-flow", "prompt"];
+export const blockTypes = ["text", "list", "run-flow", "merge"];
 export const blockNameMap: Record<string, string> = {
   text: "LLM",
   list: "List",
   "run-flow": "Run Flow",
   prompt: "Prompt",
+  merge: "Merge",
 };
 
 export const defaultMainFlow: FlowNode = {
@@ -30,6 +31,8 @@ export const defaultMainFlow: FlowNode = {
   position: { x: 100, y: 100 },
 };
 
-export const defaultResponseSchema=`
+export const defaultResponseSchema = `
 type Response=string[]
-`
+`;
+
+export const currentProjectVersion = "0.1";
