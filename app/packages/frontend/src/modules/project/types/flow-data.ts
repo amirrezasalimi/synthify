@@ -12,6 +12,8 @@ export interface FlowBlock {
   type: "list" | "text" | "run-flow" | "merge";
   prompt: string;
   settings: {
+    response_type?: "json" | "text" | any;
+    response_schema?: string;
     cache?: boolean;
     item_seperator?: string;
     selected_flow?: string;

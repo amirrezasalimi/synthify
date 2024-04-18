@@ -29,3 +29,7 @@ export const defaultMainFlow: FlowNode = {
   },
   position: { x: 100, y: 100 },
 };
+
+export const defaultResponseSchema=`
+type Response=string[]
+`

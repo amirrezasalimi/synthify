@@ -42,7 +42,7 @@ type AiResponseData = {
 };
 type RunFlowData = {
   // used for 'list' type , to cache the results for all dataset flows
-  cache: Record<string, string | string[]>;
+  cache: Record<string, string | string[] | any>;
   // users ai configured ai services
   aiServices: UserAiResponse<unknown, unknown>[];
   // current flow
@@ -59,7 +59,7 @@ type RunFlowData = {
 const runFlow = async (props: RunFlowData) => {
   const { cache, aiServices, flow, flows, log, onAiResponse } = props;
   const flowId = flow.id;
-  const blockCache: Record<string, string | string[]> = {};
+  const blockCache: Record<string, string | string[] | any> = {};
   // run single flow
   const blocks = flow.data.blocks;
   const ordredBlocks = blocks.sort((a, b) => a.order - b.order);
@@ -129,7 +129,20 @@ const runFlow = async (props: RunFlowData) => {
           continue;
         }
       }
+      console.log(`block`, block);
+      if (
+        block.settings.response_type == "json" &&
+        block.settings.response_schema
+      ) {
+        prompt += `
+---
+Response exactly in this type format with json data, no extra talk:
+${block.settings.response_schema}
+`;
+      }
+      console.log(`prompt`, prompt);
 
+      const isJsonMode = block.settings.response_type == "json";
       const aiModelId = ai_config.model ?? "gpt-3.5-turbo";
       const res = await oai.chat.completions.create({
         model: aiModelId,
@@ -139,9 +152,12 @@ const runFlow = async (props: RunFlowData) => {
             content: prompt,
           },
         ],
+        response_format: {
+          type: isJsonMode ? "json_object" : "text",
+        },
       });
 
-      const content = res.choices[0].message?.content;
+      let content = res.choices[0].message?.content;
 
       onAiResponse({
         prompt,
@@ -154,11 +170,20 @@ const runFlow = async (props: RunFlowData) => {
       });
       if (!content) continue;
 
+      if (isJsonMode) {
+        // replace ```json and last ``` with empty string, with regex , multiline
+        const jsonRegex = /```json([\s\S]*?)```/g;
+        content = content.replace(jsonRegex, "$1");
+        content = JSON.parse(content);
+      }
+
       if (block.type == "list") {
         const sep = block.settings.item_seperator ?? "\n";
-        const list = content
-          .split(new RegExp(sep, "g"))
-          .map((t) => t.trim().replace(sep, ""));
+        const list = isJsonMode
+          ? content
+          : (content || "")
+              .split(new RegExp(sep, "g"))
+              .map((t) => t.trim().replace(sep, ""));
 
         cache[`${flowId}-${block.id}`] = list;
         blockCache[block.name] = cache[`${flowId}-${block.id}`];

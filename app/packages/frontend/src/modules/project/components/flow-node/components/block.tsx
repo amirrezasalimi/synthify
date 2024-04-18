@@ -1,9 +1,13 @@
-import { blockNameMap } from "@/modules/project/constants";
+import {
+  blockNameMap,
+  defaultResponseSchema,
+} from "@/modules/project/constants";
 import useBlock from "@/modules/project/hooks/block";
 import { useCommonStore } from "@/modules/project/stores/common";
 import { FlowBlock } from "@/modules/project/types/flow-data";
 import { useSortable } from "@dnd-kit/sortable";
 import {
+  Button,
   Checkbox,
   Dropdown,
   DropdownItem,
@@ -12,8 +16,10 @@ import {
   Input,
   cn,
 } from "@nextui-org/react";
+import { useState } from "react";
 import { TbArrowsMoveVertical, TbPlus } from "react-icons/tb";
 import { RichTextarea, createRegexRenderer } from "rich-textarea";
+import JsonResponseSchemaModal from "./json-response-schema-modal";
 
 const Block = ({
   i,
@@ -41,6 +47,8 @@ const Block = ({
     id,
   });
 
+  const isOutputBlock = block.id == "prompt";
+
   const chooseModel = () => {
     toggleChooseModelModal(true, (service_id, model_id) => {
       if (!block.ai_config) {
@@ -56,6 +64,9 @@ const Block = ({
     [/{((?:[^{}]|{[^{}]*})*?)}/g, { color: "#0EC2FB" }],
   ]);
 
+  const [jsonResponseSchemaModal, toggleJsonResponseSchemaModal] =
+    useState(false);
+
   return (
     <div
       {...attributes}
@@ -67,6 +78,14 @@ const Block = ({
         transform: transform ? `translate3d(0, ${transform?.y}px, 0)` : "none",
       }}
     >
+      <JsonResponseSchemaModal
+        isOpen={jsonResponseSchemaModal}
+        onClose={() => toggleJsonResponseSchemaModal(false)}
+        content={block.settings?.response_schema || defaultResponseSchema}
+        onChange={(content) => {
+          helper.changeResponseSchema(content);
+        }}
+      />
       {/* move */}
       <div className="w-10 h-10 rounded-lg absolute left-[-52px] top-1.5 group overflow-hidden border border-background-600">
         <div
@@ -207,6 +226,32 @@ const Block = ({
             )}
           </div>
         </>
+      )}
+      {type == "text" && !isOutputBlock && (
+        <div className="flex justify-between items-center h-10">
+          {/* json mode */}
+          <Checkbox
+            isSelected={block.settings?.response_type == "json" ?? false}
+            onChange={(e) => {
+              if (!block.settings) {
+                block.settings = {};
+              }
+              helper.changeResponseMode(e.target.checked ? "json" : "text");
+            }}
+          >
+            JSON Response
+          </Checkbox>
+          {block.settings?.response_type == "json" && (
+            <Button
+              size="sm"
+              onClick={() => {
+                toggleJsonResponseSchemaModal(true);
+              }}
+            >
+              Types
+            </Button>
+          )}
+        </div>
       )}
     </div>
   );

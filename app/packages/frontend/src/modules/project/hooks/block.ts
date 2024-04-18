@@ -1,3 +1,4 @@
+import { defaultResponseSchema } from "../constants";
 import { FlowNode } from "../types/flow-data";
 import useSyncedState from "./synced-state";
 
@@ -18,10 +19,26 @@ const useBlock = (flowId: string, blockId: string) => {
     if (!block) return;
     block.settings.selected_flow = flowId;
   };
+
+  const changeResponseMode = (mode: string) => {
+    if (!block) return;
+    if (!block.settings) block.settings = {};
+    block.settings.response_type = mode;
+    if (mode === "json" && !block.settings.response_schema)
+      block.settings.response_schema = defaultResponseSchema;
+  };
+
+  const changeResponseSchema = (schema: string) => {
+    if (!block) return;
+    if (!block.settings) block.settings = {};
+    block.settings.response_schema = schema;
+  };
   return {
     selectedFlow,
     otherFlows,
-    changeFlow
+    changeFlow,
+    changeResponseMode,
+    changeResponseSchema,
   };
 };
 
