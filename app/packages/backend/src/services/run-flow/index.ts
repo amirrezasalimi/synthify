@@ -73,7 +73,7 @@ const runFlow = async (props: RunFlowData) => {
           flow: nextFlow,
         });
         if (res) blockCache[nextFlow.data.name] = res;
-        console.log(`run-flow ${nextFlow.data.name}`, res);
+        // console.log(`run-flow ${nextFlow.data.name}`, res);
       }
       continue;
     }
@@ -109,7 +109,7 @@ const runFlow = async (props: RunFlowData) => {
           const exec = sandbox.compile(code);
 
           const res = exec(context).run() as string;
-          console.log(`exec`, code, res);
+          // console.log(`exec`, code, res);
           return res;
         } catch (e) {
           // console.log(`error`, e);
