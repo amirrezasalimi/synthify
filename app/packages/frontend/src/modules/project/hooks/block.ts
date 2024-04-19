@@ -8,7 +8,7 @@ const useBlock = (flowId: string, blockId: string) => {
     (block) => block.id === blockId
   );
   const otherFlows = Object.values(state.nodes ?? []).filter(
-    (flow) => flow?.id !== flowId
+    (flow) => flow?.id !== flowId && flow?.id != "main"
   ) as FlowNode[];
 
   const selectedFlow = block?.settings?.selected_flow

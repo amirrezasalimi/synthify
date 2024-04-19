@@ -42,12 +42,12 @@ const Block = ({
   );
   const { id, type } = block;
 
-  const canMove = id !== "prompt";
   const { attributes, listeners, setNodeRef, transform } = useSortable({
     id,
   });
 
-  const isOutputBlock = block.id == "prompt";
+  const isOutput = block.id === "output";
+  const canMoveOrDelete = !isOutput || flowId !== "main";
 
   const chooseModel = () => {
     toggleChooseModelModal(true, (service_id, model_id) => {
@@ -95,12 +95,12 @@ const Block = ({
         <div
           className={cn(
             "w-full h-full flex items-center justify-center ",
-            canMove && "group-hover:hidden"
+            canMoveOrDelete && "group-hover:hidden"
           )}
         >
           {i + 1}
         </div>
-        {canMove && (
+        {canMoveOrDelete && (
           <div
             {...listeners}
             className="flex justify-center items-center w-full h-full nodrag group-hover:bg-background-600 text-white"
@@ -110,7 +110,7 @@ const Block = ({
         )}
       </div>
 
-      {canMove && (
+      {canMoveOrDelete && (
         <>
           {/* remove | right */}
 
@@ -136,11 +136,11 @@ const Block = ({
           {type != "run-flow" && (
             <input
               type="text"
-              readOnly={block.id === "prompt"}
+              readOnly={!canMoveOrDelete}
               value={block.name}
               className={cn(
                 "w-1/2 bg-transparent outline-none",
-                block.id === "prompt" ? "cursor-grab select-none" : "nodrag"
+                !canMoveOrDelete ? "cursor-grab select-none" : "nodrag"
               )}
               onChange={(e) => updateBlockName(id, e.target.value)}
             />
@@ -164,7 +164,7 @@ const Block = ({
             </Dropdown>
           )}
         </div>
-        {(type == "text" || type == "list") && canMove && (
+        {(type == "llm" || type == "list") && (
           <div>
             <button
               onClick={chooseModel}
@@ -199,39 +199,41 @@ const Block = ({
           </div>
           {/* settings */}
           <div className="mt-2 flex flex-col gap-2">
+            {!isOutput && (
+              <Checkbox
+                title="Cache"
+                isSelected={block.settings?.cache ?? false}
+                onChange={(e) => {
+                  if (!block.settings) {
+                    block.settings = {};
+                  }
+                  block.settings.cache = e.target.checked;
+                }}
+              >
+                cache
+              </Checkbox>
+            )}
+
+            {/* separator */}
+
             {type == "list" && (
-              <>
-                <Checkbox
-                  title="Cache"
-                  isSelected={block.settings?.cache ?? false}
-                  onChange={(e) => {
-                    if (!block.settings) {
-                      block.settings = {};
-                    }
-                    block.settings.cache = e.target.checked;
-                  }}
-                >
-                  cache
-                </Checkbox>
-                {/* separator */}
-                <Input
-                  label="Item Separator"
-                  variant="flat"
-                  size="sm"
-                  value={block.settings?.item_seperator}
-                  onChange={(e) => {
-                    if (!block.settings) {
-                      block.settings = {};
-                    }
-                    block.settings.item_seperator = e.target.value;
-                  }}
-                />
-              </>
+              <Input
+                label="Item Separator"
+                variant="flat"
+                size="sm"
+                value={block.settings?.item_seperator}
+                onChange={(e) => {
+                  if (!block.settings) {
+                    block.settings = {};
+                  }
+                  block.settings.item_seperator = e.target.value;
+                }}
+              />
             )}
           </div>
         </>
       )}
-      {type == "text" && !isOutputBlock && (
+      {type == "llm" && canMoveOrDelete && (
         <div className="flex justify-between items-center h-10">
           {/* json mode */}
           <Checkbox

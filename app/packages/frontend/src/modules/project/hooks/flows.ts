@@ -5,6 +5,9 @@ import { NodeChange } from "reactflow";
 import { SortableData } from "@dnd-kit/sortable";
 import toast from "react-hot-toast";
 import { defaultMainFlow } from "../constants";
+import { promptBlock } from "../constants";
+import { makeId } from "@/shared/utils/id";
+
 const useFlows = () => {
   const state = useSyncedState();
   const nodes = [...Object.values(state.nodes)] as FlowNode[];
@@ -24,12 +27,16 @@ const useFlows = () => {
   const onSortEnd = (event: DragEndEvent) => {
     const containerId = (event.active.data.current as SortableData).sortable
       .containerId as string;
+    const flowId = containerId.split("-")[0];
     const nodeId = containerId.split("-")[1];
     const sourceBlock = event.active.id;
     const destinationBlock = event.over?.id;
 
-    if (sourceBlock == "prompt" || destinationBlock === "prompt") {
-      toast("Cannot move prompt block");
+    if (
+      (flowId == "main" && sourceBlock == "output") ||
+      destinationBlock === "output"
+    ) {
+      toast("Cannot move output block");
       return;
     }
     const node = state.nodes[nodeId];
@@ -44,14 +51,6 @@ const useFlows = () => {
       const destinationOrder = blocks.find(
         (block) => block.id === destinationBlock
       )?.order;
-
-      console.log(
-        [...blocks.map((block) => [block.id, block.order])],
-        sourceBlock,
-        destinationBlock,
-        sourceOrder,
-        destinationOrder
-      );
 
       const sourceIndex = blocks.findIndex((block) => block.id === sourceBlock);
       const destinationIndex = blocks.findIndex(
@@ -76,7 +75,7 @@ const useFlows = () => {
       y = 100;
     }
     const colors = ["#FF3897", "#1FE9AC", "#E91F1F", "#531FE9"];
-    const id = Math.random().toString(36).substring(7);
+    const id = makeId();
 
     state.nodes[id] = {
       id,
@@ -85,17 +84,7 @@ const useFlows = () => {
         id,
         name: `flow${Object.keys(state.nodes).length + 1}`,
         color: colors[Math.floor(Math.random() * colors.length)],
-        blocks: [
-          {
-            id: "prompt",
-            name: "Prompt",
-            prompt: "",
-            type: "text",
-            order: 0,
-            ai_config: {},
-            settings: {},
-          },
-        ],
+        blocks: [{ ...promptBlock }],
       },
       position: { x, y },
     };

@@ -1,3 +1,4 @@
+import { makeId } from "@/shared/utils/id";
 import { FlowNode } from "../types/flow-data";
 import useSyncedState from "./synced-state";
 
@@ -6,7 +7,7 @@ const useFlow = (id: string) => {
   const state = nodes?.[id] as FlowNode;
 
   const name = state?.data?.name || "Untitled";
-  const blocks = [...state?.data?.blocks??[]]
+  const blocks = [...(state?.data?.blocks ?? [])]
     // from -infinity to +infinity
     .sort((a, b) => a.order - b.order);
 
@@ -23,7 +24,7 @@ const useFlow = (id: string) => {
     }
 
     state.data.blocks.push({
-      id: Math.random().toString(36).substring(7),
+      id: makeId(),
       name: "Untitled",
       type,
       prompt,

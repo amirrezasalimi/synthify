@@ -1,14 +1,21 @@
-import { FlowNode } from "./types/flow-data";
+import { FlowBlock, FlowNode } from "./types/flow-data";
 
-export const blockTypes = ["text", "list", "run-flow", "merge"];
+export const blockTypes = ["llm", "list", "run-flow", "merge"];
 export const blockNameMap: Record<string, string> = {
-  text: "LLM",
+  llm: "LLM",
   list: "List",
   "run-flow": "Run Flow",
-  prompt: "Prompt",
   merge: "Merge",
 };
-
+export const promptBlock: FlowBlock = {
+  id: "output",
+  name: "output",
+  prompt: "",
+  type: "merge",
+  order: 0,
+  ai_config: {},
+  settings: {},
+};
 export const defaultMainFlow: FlowNode = {
   id: "main",
   type: "flow",
@@ -16,17 +23,7 @@ export const defaultMainFlow: FlowNode = {
     id: "main",
     name: "Main Flow",
     color: "#3894FF",
-    blocks: [
-      {
-        id: "prompt",
-        name: "Prompt",
-        prompt: "",
-        type: "text",
-        order: 0,
-        ai_config: {},
-        settings: {},
-      },
-    ],
+    blocks: [{ ...promptBlock }],
   },
   position: { x: 100, y: 100 },
 };

@@ -93,136 +93,145 @@ const runFlow = async (props: RunFlowData) => {
         rand,
       },
     });
-
-    const regex = /{((?:[^{}]|{[^{}]*})*?)}/g;
-    prompt = prompt.replace(regex, (match, p1) => {
-      try {
-        const code = `return ${p1}`;
-        const exec = sandbox.compile(code);
-
-        const res = exec(context).run() as string;
-        console.log(`exec`, code, res);
-        return res;
-      } catch (e) {
-        // console.log(`error`, e);
-        return "";
+    let useCache = false;
+    if (block.settings.cache) {
+      if (cache[`${flowId}-${block.id}`]) {
+        blockCache[block.name] = cache[`${flowId}-${block.id}`];
+        useCache = true;
       }
-    });
-
-    if (block.id == "prompt") {
-      blockCache[block.name] = prompt;
-      return prompt;
     }
 
-    const ai_config = block.ai_config;
-    const service_config = aiServices.find(
-      (service) => service.id === ai_config.service
-    );
-    if (service_config) {
-      const oai = new OpenAI({
-        apiKey: service_config.api_key,
-        baseURL: service_config.endpoint,
-      });
-      if (block.type == "list" && block.settings.cache) {
-        if (cache[`${flowId}-${block.id}`]) {
-          blockCache[block.name] = cache[`${flowId}-${block.id}`];
-          continue;
+    if (!useCache) {
+      const regex = /{((?:[^{}]|{[^{}]*})*?)}/g;
+      prompt = prompt.replace(regex, (match, p1) => {
+        try {
+          const code = `return ${p1}`;
+          const exec = sandbox.compile(code);
+
+          const res = exec(context).run() as string;
+          console.log(`exec`, code, res);
+          return res;
+        } catch (e) {
+          // console.log(`error`, e);
+          return "";
         }
-      }
+      });
 
-      const isJsonMode = block.settings.response_type == "json";
+      const ai_config = block.ai_config;
+      const service_config = aiServices.find(
+        (service) => service.id === ai_config.service
+      );
+      const isAiBlock = block.type == "llm" || block.type == "list";
 
-      if (isJsonMode && block.settings.response_schema) {
-        const sample = block.settings?.response_sample || "";
-        if (sample.trim() != "") {
-          prompt += `
+      if (service_config && isAiBlock) {
+        const oai = new OpenAI({
+          apiKey: service_config.api_key,
+          baseURL: service_config.endpoint,
+        });
+
+        const isJsonMode = block.settings.response_type == "json";
+
+        if (isJsonMode && block.settings.response_schema) {
+          const sample = block.settings?.response_sample || "";
+          if (sample.trim() != "") {
+            prompt += `
 ---
 Sample Json Response:
 ${sample}
 `;
-        }
-        prompt += `
+          }
+          prompt += `
 ---
 Response exactly in this type format with json data, no extra talk, this type should'nt be as parent root:
 ${block.settings.response_schema}
 `;
-      }
-      console.log(`prompt`, prompt);
+        }
+        console.log(`prompt`, prompt);
 
-      const aiModelId = ai_config.model ?? "gpt-3.5-turbo";
-      let content: string | null = null;
-      let usage: AiModelUsage | null = null;
-      try {
-        const res = await oai.chat.completions.create({
-          model: aiModelId,
-          messages: [
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-          response_format: {
-            type: isJsonMode ? "json_object" : "text",
-          },
-        });
-        content = res?.choices?.[0].message?.content;
-        usage = res?.usage as AiModelUsage;
-      } catch (e: any) {
-        console.log(`error`, e);
-
-        log({
-          type: "ai-error",
-          message: e.message,
-          flowId,
-          blockId: block.id,
-        });
-      }
-
-      if (!content || !usage) continue;
-      if (content) {
-        onAiResponse({
-          prompt,
-          response: content ?? "",
-          serviceName: service_config.title,
-          modelId: aiModelId,
-          flowId,
-          blockId: block.id,
-          usages: usage,
-        });
-      }
-      if (isJsonMode) {
-        console.log(`json`, content);
-        // replace ```json and last ``` with empty string, with regex , multiline
-        const jsonRegex = /```json([\s\S]*?)```/g;
-        content = content.replace(jsonRegex, "$1");
+        const aiModelId = ai_config.model ?? "gpt-3.5-turbo";
+        let content: string | null = null;
+        let usage: AiModelUsage | null = null;
         try {
-          content = JSON.parse(content);
-        } catch (e) {
+          const res = await oai.chat.completions.create({
+            model: aiModelId,
+            messages: [
+              {
+                role: "user",
+                content: prompt,
+              },
+            ],
+            response_format: {
+              type: isJsonMode ? "json_object" : "text",
+            },
+          });
+          content = res?.choices?.[0].message?.content;
+          usage = res?.usage as AiModelUsage;
+        } catch (e: any) {
+          console.log(`error`, e);
+
           log({
             type: "ai-error",
-            message: "Invalid JSON response",
+            message: e.message,
             flowId,
             blockId: block.id,
           });
         }
-      }
 
-      if (block.type == "list") {
-        const sep = block.settings.item_seperator ?? "\n";
-        const list = isJsonMode
-          ? content
-          : (content || "")
-              .split(new RegExp(sep, "g"))
-              .map((t) => t.trim().replace(sep, ""));
+        if (!content || !usage) continue;
+        if (content) {
+          onAiResponse({
+            prompt,
+            response: content ?? "",
+            serviceName: service_config.title,
+            modelId: aiModelId,
+            flowId,
+            blockId: block.id,
+            usages: usage,
+          });
+        }
+        if (isJsonMode) {
+          console.log(`json`, content);
+          // replace ```json and last ``` with empty string, with regex , multiline
+          const jsonRegex = /```json([\s\S]*?)```/g;
+          content = content.replace(jsonRegex, "$1");
+          try {
+            content = JSON.parse(content);
+          } catch (e) {
+            log({
+              type: "ai-error",
+              message: "Invalid JSON response",
+              flowId,
+              blockId: block.id,
+            });
+          }
+        }
 
-        cache[`${flowId}-${block.id}`] = list;
-        blockCache[block.name] = cache[`${flowId}-${block.id}`];
-      } else if (block.type == "text") {
-        blockCache[block.name] = content;
+        if (block.type == "list") {
+          const sep = block.settings.item_seperator ?? "\n";
+          const list = isJsonMode
+            ? content
+            : (content || "")
+                .split(new RegExp(sep, "g"))
+                .map((t) => t.trim().replace(sep, ""));
+
+          cache[`${flowId}-${block.id}`] = list;
+          blockCache[block.name] = list;
+        } else {
+          blockCache[block.name] = content;
+          blockCache[`${flowId}-${block.id}`] = content;
+        }
+        //
+      } else {
+        blockCache[block.name] = prompt;
+        cache[`${flowId}-${block.id}`] = prompt;
       }
-      //
-    } else {
-      blockCache[block.name] = prompt;
+    }
+    if (ordredBlocks[ordredBlocks.length - 1].id == block.id) {
+      if (flowId == "main") {
+        return prompt;
+      } else {
+        return blockCache;
+      }
     }
   }
 };
@@ -294,16 +303,16 @@ const runDataTask = async ({
 
   for (let i = 0; i < count; i++) {
     let error = "";
-    let result: string | null | undefined = "";
+    let result: string | null | undefined;
     try {
-      result = await runFlow({
+      result = (await runFlow({
         cache,
         flow: mainFlow,
         flows,
         aiServices: aiServices,
         log,
         onAiResponse,
-      });
+      })) as string;
       result && dataset.push(result);
     } catch (e) {
       // @ts-ignore
