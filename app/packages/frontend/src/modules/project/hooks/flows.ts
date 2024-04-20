@@ -69,7 +69,7 @@ const useFlows = () => {
     let x, y;
     if (lastFlow) {
       x = lastFlow?.position.x + 200 || 100;
-      y = lastFlow?.position.y + 200 || 100;
+      y = lastFlow?.position.y +50 || 100;
     } else {
       x = 100;
       y = 100;
@@ -84,7 +84,7 @@ const useFlows = () => {
         id,
         name: `flow${Object.keys(state.nodes).length + 1}`,
         color: colors[Math.floor(Math.random() * colors.length)],
-        blocks: [{ ...promptBlock }],
+        blocks: [],
       },
       position: { x, y },
     };

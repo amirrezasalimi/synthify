@@ -8,6 +8,7 @@ import type { RecordService } from 'pocketbase'
 export enum Collections {
 	AiUsages = "ai_usages",
 	Datas = "datas",
+	Presets = "presets",
 	Projects = "projects",
 	TaskLogs = "task_logs",
 	Tasks = "tasks",
@@ -65,6 +66,16 @@ export type DatasRecord<Tdata = unknown, Tmeta = unknown> = {
 	user?: RecordIdString
 }
 
+export enum PresetsCategoryOptions {
+	"Question Answer" = "Question Answer",
+	"Function Calling" = "Function Calling",
+}
+export type PresetsRecord<Tdata = unknown> = {
+	category?: PresetsCategoryOptions
+	data?: null | Tdata
+	title?: string
+}
+
 export type ProjectsRecord<Tjson_data = unknown> = {
 	data?: string
 	json_data?: null | Tjson_data
@@ -116,6 +127,7 @@ export type UsersRecord = {
 // Response types include system fields and match responses from the PocketBase API
 export type AiUsagesResponse<Tusages = unknown, Texpand = unknown> = Required<AiUsagesRecord<Tusages>> & BaseSystemFields<Texpand>
 export type DatasResponse<Tdata = unknown, Tmeta = unknown, Texpand = unknown> = Required<DatasRecord<Tdata, Tmeta>> & BaseSystemFields<Texpand>
+export type PresetsResponse<Tdata = unknown, Texpand = unknown> = Required<PresetsRecord<Tdata>> & BaseSystemFields<Texpand>
 export type ProjectsResponse<Tjson_data = unknown, Texpand = unknown> = Required<ProjectsRecord<Tjson_data>> & BaseSystemFields<Texpand>
 export type TaskLogsResponse<Tmeta = unknown, Texpand = unknown> = Required<TaskLogsRecord<Tmeta>> & BaseSystemFields<Texpand>
 export type TasksResponse<Tflows = unknown, Tmeta = unknown, Texpand = unknown> = Required<TasksRecord<Tflows, Tmeta>> & BaseSystemFields<Texpand>
@@ -127,6 +139,7 @@ export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSyste
 export type CollectionRecords = {
 	ai_usages: AiUsagesRecord
 	datas: DatasRecord
+	presets: PresetsRecord
 	projects: ProjectsRecord
 	task_logs: TaskLogsRecord
 	tasks: TasksRecord
@@ -137,6 +150,7 @@ export type CollectionRecords = {
 export type CollectionResponses = {
 	ai_usages: AiUsagesResponse
 	datas: DatasResponse
+	presets: PresetsResponse
 	projects: ProjectsResponse
 	task_logs: TaskLogsResponse
 	tasks: TasksResponse
@@ -150,6 +164,7 @@ export type CollectionResponses = {
 export type TypedPocketBase = PocketBase & {
 	collection(idOrName: 'ai_usages'): RecordService<AiUsagesResponse>
 	collection(idOrName: 'datas'): RecordService<DatasResponse>
+	collection(idOrName: 'presets'): RecordService<PresetsResponse>
 	collection(idOrName: 'projects'): RecordService<ProjectsResponse>
 	collection(idOrName: 'task_logs'): RecordService<TaskLogsResponse>
 	collection(idOrName: 'tasks'): RecordService<TasksResponse>

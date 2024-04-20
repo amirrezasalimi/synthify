@@ -260,7 +260,9 @@ const runDataTask = async ({
   } as TasksRecord);
   const taskId = res.id;
 
-  const aiServices = await pb.collection("user_ai").getFullList();
+  const aiServices = await pb.collection("user_ai").getFullList({
+    user: userId,
+  });
 
   const cache: Record<string, string | string[]> = {};
 

@@ -12,8 +12,14 @@ import {
   ModalFooter,
   ModalHeader,
   Spinner,
+  cn,
 } from "@nextui-org/react";
+import {
+  PresetsRecord,
+  PresetsResponse,
+} from "@synthify/backend/src/types/pocketbase";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
@@ -28,18 +34,82 @@ const Dashboard = () => {
   const create = () => {
     addProject.mutateAsync({ title: projectName }).then((id) => {
       setAddProjectModalOpen(false);
-      nav(makeUrl(LINKS.PROJECT, { id }));
+      let params = "";
+      if (selectedPresetId) {
+        params = `?preset=${selectedPresetId}`;
+      }
+      nav(`${makeUrl(LINKS.PROJECT, { id })}${params}`);
     });
   };
+  const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
+
+  const presets = trpc.project.presets.useQuery();
+
+  const groupBycategory = (
+    presets: Partial<PresetsResponse<unknown, unknown>>[]
+  ) => {
+    const categories: Record<
+      string,
+      Partial<PresetsResponse<unknown, unknown>>[]
+    > = {};
+    presets.forEach((p) => {
+      const cat = p.category ?? "Uncategorized";
+      if (!categories[cat]) {
+        categories[cat] = [];
+      }
+      categories[cat].push(p);
+    });
+    return categories;
+  };
+  const categories = groupBycategory(presets.data ?? []) as Record<
+    string,
+    PresetsResponse[]
+  >;
+
   return (
     <>
       <Modal
+        size="lg"
         isOpen={addProjectModalOpen}
         onClose={() => setAddProjectModalOpen(false)}
       >
         <ModalContent>
           <ModalHeader>Add Project</ModalHeader>
           <ModalBody>
+            <h2 className="font-bold">Presets</h2>
+            <div className="flex gap-3">
+              {Object.entries(categories).map(([cat, presets]) => (
+                <div
+                  key={cat}
+                  className="border border-background-700 p-3 rounded-md py-4 w-1/2"
+                >
+                  <h3 className="font-bold pb-2">{cat}</h3>
+                  <div className="flex gap-3 flex-wrap">
+                    {presets.map((p) => {
+                      const data = p?.data || {};
+                      const hasData = Object.keys(data).length > 0;
+
+                      return (
+                        <div
+                          key={p.id}
+                          className={cn(
+                            "w-full bg-background-800 p-2 rounded-xl cursor-pointer border border-background-600",
+                            selectedPresetId === p.id && "bg-background-700",
+                            !hasData && "opacity-50"
+                          )}
+                          onClick={() => {
+                            if (!hasData) return toast("coming soon");
+                            setSelectedPresetId(p.id);
+                          }}
+                        >
+                          {p.title}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
             <Input
               placeholder="Project name"
               value={projectName}
