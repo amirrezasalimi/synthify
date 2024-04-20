@@ -24,7 +24,7 @@ export const projectRouter = router({
 
       // check name or endpoint already exists
       const exists = await pb.collection("user_ai").getFullList({
-        filter: `(endpoint = "${endpoint}" || title = "${name}")`,
+        filter: `user = "${user}" && (endpoint = "${endpoint}" || title = "${name}")`,
       });
 
       if (exists.length > 0) {
@@ -57,12 +57,27 @@ export const projectRouter = router({
     }),
   list_ai_services: userProcedure.query(async ({ ctx }) => {
     const user = ctx.user.id;
+
+    // load all system services
+    const systemServices = await pb.collection("user_ai").getFullList({
+      filter: `add_by = "${UserAiAddByOptions.system}"`,
+      fields: "id,title,models",
+    });
+
     const res = await pb.collection("user_ai").getFullList({
       filter: `user = "${user}"`,
       fields: "id,title,models,add_by",
       sort: "-created",
     });
-    const list = res.map((r) => ({
+    let uniqueServices = [...systemServices, ...res]
+      .filter((v, i, a) => a.findIndex((t) => t.title === v.title) === i)
+      .sort((a, b) => {
+        if (a.add_by == UserAiAddByOptions.system) {
+          return -1;
+        }
+        return 1;
+      });
+    const list = uniqueServices.map((r) => ({
       ...r,
       models: ((r.models as AiModel[]) ?? []).map(
         (m) =>
