@@ -94,7 +94,7 @@ const Dashboard = () => {
                           key={p.id}
                           className={cn(
                             "w-full bg-background-800 p-2 rounded-xl cursor-pointer border border-background-600",
-                            selectedPresetId === p.id && "bg-background-700",
+                            selectedPresetId === p.id && " border-cyan-700",
                             !hasData && "opacity-50"
                           )}
                           onClick={() => {
