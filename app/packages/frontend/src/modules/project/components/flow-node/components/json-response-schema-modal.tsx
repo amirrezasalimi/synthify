@@ -47,8 +47,7 @@ const JsonResponseSchemaModal = ({
         <ModalHeader>Response Schema</ModalHeader>
         <ModalBody className="flex flex-col gap-1 py-4 h-[60vh]">
           <span className="text-sm">
-            with provided Typescript Schema,the llm will generate json response
-            your schema format.
+            with provided Typescript Schema,the llm will generate json response in your schema format.
           </span>
 
           <RichTextarea
