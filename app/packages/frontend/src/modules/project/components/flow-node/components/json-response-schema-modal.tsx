@@ -38,7 +38,9 @@ const JsonResponseSchemaModal = ({
     [/\b(string|number|boolean|object|any)\b/g, { color: "#00FF00" }],
   ]);
 
-  const [showSample, setShowSample] = useState(false);
+  const [showSample, setShowSample] = useState(
+    sample ? true : false
+  );
   return (
     <Modal size="lg" isOpen={isOpen} onClose={onClose}>
       <ModalContent>
@@ -66,6 +68,9 @@ const JsonResponseSchemaModal = ({
             isSelected={showSample}
             onChange={(e) => {
               setShowSample(e.target.checked);
+              if (!e.target.checked) {
+                onChangeSample?.("");
+              }
             }}
           >
             Add Sample

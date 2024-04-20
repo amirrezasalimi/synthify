@@ -444,6 +444,7 @@ export const projectRouter = router({
       }
       const res = await pb.collection("datas").getList(input.page, 20, {
         filter: `task = "${input.task}"`,
+        sort: "-created",
       });
       return res;
     }),
