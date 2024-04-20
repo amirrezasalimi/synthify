@@ -218,7 +218,7 @@ ${block.settings.response_schema}
           blockCache[block.name] = list;
         } else {
           blockCache[block.name] = content;
-          blockCache[`${flowId}-${block.id}`] = content;
+          cache[`${flowId}-${block.id}`] = content;
         }
         //
       } else {
