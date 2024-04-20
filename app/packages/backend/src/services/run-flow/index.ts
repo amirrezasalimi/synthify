@@ -323,6 +323,7 @@ const runDataTask = async ({
     if (result) {
       await pb.collection("datas").create({
         task: taskId,
+        user: userId,
         data: {
           content: result ?? "",
         },

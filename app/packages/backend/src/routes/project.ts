@@ -211,7 +211,7 @@ export const projectRouter = router({
           userId: user,
           projectId,
           count,
-          flows: flows,
+          flows,
           title,
         });
         return "ok";
