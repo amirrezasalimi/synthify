@@ -49,6 +49,7 @@ export const projectRouter = router({
           api_key: apikey,
           oai_schema: true,
           models: models,
+          add_by: UserAiAddByOptions.user,
         });
       } catch (e) {
         throw new Error("Failed to add service");
