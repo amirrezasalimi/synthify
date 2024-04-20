@@ -5,7 +5,12 @@ import clsx from "clsx";
 import { Button, CircularProgress, Input } from "@nextui-org/react";
 import { useMutation } from "@tanstack/react-query";
 import useAuthFlow from "./hooks/auth-flow";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { trpc } from "@/shared/utils/trpc";
 import toast from "react-hot-toast";
 import { pb_client } from "@/shared/utils/pb_client";
@@ -41,6 +46,13 @@ const ProviderItem = ({
   );
 };
 const Auth = ({ head = true }: { head?: boolean }) => {
+  const [params] = useSearchParams();
+
+  if (params.get("token")) {
+    pb_client.authStore.save(params.get("token")!);
+    window.location.href = LINKS.DASHBOARD;
+  }
+
   const auth = useAuthFlow();
   const { isLogin, refresh, logout, user, status } = useAuth();
   const nav = useNavigate();

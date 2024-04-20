@@ -40,23 +40,33 @@
                     "maxSize": 5242880,
                     "protected": false
                 }
+            },
+            {
+                "system": false,
+                "id": "g2m4bmyk",
+                "name": "external",
+                "type": "bool",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {}
             }
         ],
         "indexes": [],
         "listRule": "id = @request.auth.id",
         "viewRule": "id = @request.auth.id",
-        "createRule": "",
+        "createRule": null,
         "updateRule": "id = @request.auth.id",
         "deleteRule": "id = @request.auth.id",
         "options": {
             "allowEmailAuth": true,
-            "allowOAuth2Auth": true,
-            "allowUsernameAuth": true,
+            "allowOAuth2Auth": false,
+            "allowUsernameAuth": false,
             "exceptEmailDomains": null,
             "manageRule": null,
             "minPasswordLength": 8,
             "onlyEmailDomains": null,
-            "onlyVerified": false,
+            "onlyVerified": true,
             "requireEmail": false
         }
     },
@@ -206,6 +216,49 @@
         "options": {}
     },
     {
+        "id": "yxplx4ep13z2c02",
+        "name": "config",
+        "type": "base",
+        "system": false,
+        "schema": [
+            {
+                "system": false,
+                "id": "ixrd7nti",
+                "name": "key",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "system": false,
+                "id": "ydgguzqc",
+                "name": "value",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            }
+        ],
+        "indexes": [],
+        "listRule": null,
+        "viewRule": null,
+        "createRule": null,
+        "updateRule": null,
+        "deleteRule": null,
+        "options": {}
+    },
+    {
         "id": "yya8tn9ykw3taig",
         "name": "datas",
         "type": "base",
@@ -301,6 +354,82 @@
         ],
         "indexes": [
             "CREATE INDEX `idx_xL8aENf` ON `datas` (`task`)"
+        ],
+        "listRule": null,
+        "viewRule": null,
+        "createRule": null,
+        "updateRule": null,
+        "deleteRule": null,
+        "options": {}
+    },
+    {
+        "id": "2rgxt4ou15idv92",
+        "name": "external_users",
+        "type": "base",
+        "system": false,
+        "schema": [
+            {
+                "system": false,
+                "id": "u7cnok7l",
+                "name": "user",
+                "type": "relation",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "collectionId": "_pb_users_auth_",
+                    "cascadeDelete": false,
+                    "minSelect": null,
+                    "maxSelect": 1,
+                    "displayFields": null
+                }
+            },
+            {
+                "system": false,
+                "id": "izyll4eg",
+                "name": "external_user_id",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "system": false,
+                "id": "iduchmhv",
+                "name": "referral",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "system": false,
+                "id": "8ucwyx8m",
+                "name": "pass_key",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            }
+        ],
+        "indexes": [
+            "CREATE INDEX `idx_HNCdUwW` ON `external_users` (`user`)",
+            "CREATE INDEX `idx_nvxcZZw` ON `external_users` (`referral`)"
         ],
         "listRule": null,
         "viewRule": null,
