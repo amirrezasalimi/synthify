@@ -104,12 +104,17 @@ export const userRouter = router({
       }
 
       // check user should'nt exists
+      let existsingUser: UsersRecord | null = null;
       try {
-        const user = await pb
+        existsingUser = await pb
           .collection("users")
           .getFirstListItem(`email = "${input.email}"`);
-        throw "user already exists";
-      } catch (e) {}
+      } catch (e) {
+        // user not found
+      }
+      if (existsingUser && !existsingUser.external) {
+        throw `user already exists with other auth method`;
+      }
 
       // check user exists
       let userId: string | null = null;
