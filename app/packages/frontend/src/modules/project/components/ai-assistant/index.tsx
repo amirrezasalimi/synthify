@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { TbSend, TbSettings } from "react-icons/tb";
 import { useLocalStorage } from "react-use";
 import useChat from "./hooks/chat";
+import toast from "react-hot-toast";
 
 const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
   const [message, setMessage] = useLocalStorage("chat-message", "");
@@ -147,7 +148,10 @@ const AiAssistant = () => {
     <>
       <AiAssistantChat isOpen={isOpen} />
       <motion.div
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => {
+          return toast("coming soon");
+          setIsOpen((prev) => !prev);
+        }}
         className="absolute z-10 bottom-0 right-0 mb-6 px-4 flex gap-3 justify-center items-center rounded-md h-10  border bg-secondary border-secondary-700 text-background cursor-pointer overflow-hidden select-none"
         initial={{
           width: "fit-content",
