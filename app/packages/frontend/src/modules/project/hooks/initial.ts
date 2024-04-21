@@ -2,11 +2,7 @@ import { useLayoutEffect, useState } from "react";
 import YPartyKitProvider from "y-partykit/provider";
 import { useProjectStore } from "../stores/project-context";
 import { useStore } from "zustand";
-import {
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import useSyncedState from "./synced-state";
 import { LINKS } from "@/shared/constants";
 import useProject from "./project";
@@ -29,6 +25,9 @@ const useInitial = () => {
   const nav = useNavigate();
   const project = useProject();
 
+  useLayoutEffect(() => {
+    project.project.refetch();
+  }, []);
   useLayoutEffect(() => {
     const isOk = typeof project.project.data != "undefined";
 

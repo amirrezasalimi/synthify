@@ -14,7 +14,7 @@ import chroma from "chroma-js";
 import { SortableContext } from "@dnd-kit/sortable";
 import Block from "./components/block";
 import { blockNameMap, blockTypes } from "../../constants";
-
+import "./styles.css";
 const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
   const {
     name,
@@ -38,7 +38,7 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
       >
         {/* remove */}
         {id !== "main" && (
-          <div className="absolute w-[100px] h-10 left-[-36px] top-2 z-10  flex items-center">
+          <div className="remove-flow absolute w-[100px] h-10 left-[-36px] top-2 z-10  flex items-center">
             <TbTrash
               size={24}
               className="hover:text-red-500 cursor-pointer group-hover:visible invisible"

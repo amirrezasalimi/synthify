@@ -7,6 +7,7 @@ import type { RecordService } from 'pocketbase'
 
 export enum Collections {
 	AiUsages = "ai_usages",
+	BlockData = "block_data",
 	Config = "config",
 	Datas = "datas",
 	ExternalUsers = "external_users",
@@ -51,6 +52,12 @@ export type AiUsagesRecord<Tusages = unknown> = {
 	project?: RecordIdString
 	service_name?: string
 	usages?: null | Tusages
+	user?: RecordIdString
+}
+
+export type BlockDataRecord = {
+	file?: string
+	project?: RecordIdString
 	user?: RecordIdString
 }
 
@@ -141,6 +148,7 @@ export type UsersRecord = {
 
 // Response types include system fields and match responses from the PocketBase API
 export type AiUsagesResponse<Tusages = unknown, Texpand = unknown> = Required<AiUsagesRecord<Tusages>> & BaseSystemFields<Texpand>
+export type BlockDataResponse<Texpand = unknown> = Required<BlockDataRecord> & BaseSystemFields<Texpand>
 export type ConfigResponse<Texpand = unknown> = Required<ConfigRecord> & BaseSystemFields<Texpand>
 export type DatasResponse<Tdata = unknown, Tmeta = unknown, Texpand = unknown> = Required<DatasRecord<Tdata, Tmeta>> & BaseSystemFields<Texpand>
 export type ExternalUsersResponse<Texpand = unknown> = Required<ExternalUsersRecord> & BaseSystemFields<Texpand>
@@ -155,6 +163,7 @@ export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSyste
 
 export type CollectionRecords = {
 	ai_usages: AiUsagesRecord
+	block_data: BlockDataRecord
 	config: ConfigRecord
 	datas: DatasRecord
 	external_users: ExternalUsersRecord
@@ -168,6 +177,7 @@ export type CollectionRecords = {
 
 export type CollectionResponses = {
 	ai_usages: AiUsagesResponse
+	block_data: BlockDataResponse
 	config: ConfigResponse
 	datas: DatasResponse
 	external_users: ExternalUsersResponse
@@ -184,6 +194,7 @@ export type CollectionResponses = {
 
 export type TypedPocketBase = PocketBase & {
 	collection(idOrName: 'ai_usages'): RecordService<AiUsagesResponse>
+	collection(idOrName: 'block_data'): RecordService<BlockDataResponse>
 	collection(idOrName: 'config'): RecordService<ConfigResponse>
 	collection(idOrName: 'datas'): RecordService<DatasResponse>
 	collection(idOrName: 'external_users'): RecordService<ExternalUsersResponse>

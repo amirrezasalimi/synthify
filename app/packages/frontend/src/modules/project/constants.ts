@@ -1,11 +1,12 @@
 import { FlowBlock, FlowNode } from "./types/flow-data";
 
-export const blockTypes = ["llm", "list", "run-flow", "merge"];
+export const blockTypes = ["llm", "list", "run-flow", "merge","data"];
 export const blockNameMap: Record<string, string> = {
   llm: "LLM",
   list: "List",
   "run-flow": "Run Flow",
   merge: "Merge",
+  data: "Data",
 };
 export const promptBlock: FlowBlock = {
   id: "output",

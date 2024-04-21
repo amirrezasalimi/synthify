@@ -1,5 +1,5 @@
 import { makeId } from "@/shared/utils/id";
-import { FlowNode } from "../types/flow-data";
+import { FlowBlock, FlowNode } from "../types/flow-data";
 import useSyncedState from "./synced-state";
 
 const useFlow = (id: string) => {
@@ -22,6 +22,17 @@ const useFlow = (id: string) => {
       prompt =
         "make a list of 20 different categories about shopping ,no extra talk ,sepereated by comma:";
     }
+    let settings: FlowBlock["settings"] = {
+      cache: type == "list",
+      item_seperator: ",",
+    };
+    if (type == "data") {
+      settings = {
+        data_type: "json",
+        data_from: "raw",
+        data_raw: "{}",
+      };
+    }
 
     state.data.blocks.push({
       id: makeId(),
@@ -30,10 +41,7 @@ const useFlow = (id: string) => {
       prompt,
       order: lowestOrder - 1,
       ai_config: {},
-      settings: {
-        cache: type == "list",
-        item_seperator: ",",
-      },
+      settings,
     });
   };
   const updateFlowName = (name: string) => {

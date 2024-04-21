@@ -8,6 +8,8 @@ const useProject = () => {
     staleTime: Infinity,
     cacheTime: Infinity,
     retry: 0,
+    enabled: false,
+    refetchOnMount: false,
   });
   return {
     id,

@@ -1,0 +1,16 @@
+.react-flow__container .dragging * {
+    cursor: grabbing !important;
+    pointer-events: none;
+}
+.react-flow__container .dragging .remove-flow{
+    display: none;
+}
+.react-flow__container .dragging .move-block{
+    display: none;
+}
+.react-flow__container .dragging .remove-block{
+    display: none;
+}
+.prism-code{
+    background: transparent !important ;
+}

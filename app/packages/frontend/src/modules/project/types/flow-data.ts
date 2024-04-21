@@ -9,9 +9,14 @@ export interface FlowData {
 export interface FlowBlock {
   id: string;
   name: string;
-  type: "list" | "llm" | "run-flow" | "merge" ;
+  type: "list" | "llm" | "run-flow" | "merge" | "data";
   prompt: string;
   settings: {
+    data_type?: "json" | "text" | "parquet";
+    data_from?: "file" | "hugginface" | "raw";
+    data_raw?: string;
+    block_data_id?: string | null;
+    //
     response_type?: "json" | "text" | any;
     response_schema?: string;
     response_sample?: string;

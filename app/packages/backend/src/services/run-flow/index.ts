@@ -52,7 +52,6 @@ type RunFlowData = {
 
   //
   log: (data: LogData) => void;
-
   onAiResponse: (data: AiResponseData) => void;
 };
 
@@ -65,7 +64,9 @@ const runFlow = async (props: RunFlowData) => {
   const ordredBlocks = blocks.sort((a, b) => a.order - b.order);
 
   for (const block of ordredBlocks) {
-    if (block.type == "run-flow") {
+    const { type } = block;
+
+    if (type == "run-flow") {
       const nextFlow = flows.find((f) => f.id === block.settings.selected_flow);
       if (nextFlow) {
         const res = await runFlow({
@@ -77,9 +78,9 @@ const runFlow = async (props: RunFlowData) => {
       }
       continue;
     }
-    let prompt = "";
+    let content = "";
     // prompt block
-    prompt = block.prompt;
+    content = block.prompt;
     //  eval {x} of the prompt and replace
     const context: Object = {};
     for (const key in blockCache) {
@@ -94,6 +95,7 @@ const runFlow = async (props: RunFlowData) => {
       },
     });
     let useCache = false;
+    const cacheBlock = block.settings.cache || false;
     if (block.settings.cache) {
       if (cache[`${flowId}-${block.id}`]) {
         blockCache[block.name] = cache[`${flowId}-${block.id}`];
@@ -102,26 +104,46 @@ const runFlow = async (props: RunFlowData) => {
     }
 
     if (!useCache) {
-      const regex = /{((?:[^{}]|{[^{}]*})*?)}/g;
-      prompt = prompt.replace(regex, (match, p1) => {
-        try {
-          const code = `return ${p1}`;
-          const exec = sandbox.compile(code);
-
-          const res = exec(context).run() as string;
-          // console.log(`exec`, code, res);
-          return res;
-        } catch (e) {
-          // console.log(`error`, e);
-          return "";
+      if (type == "data") {
+        const dataType = block.settings.data_type;
+        const dataFrom = block.settings.data_from;
+        const data_raw = block.settings.data_raw || "";
+        if (dataFrom == "raw" && data_raw != "") {
+          if (dataType == "json") {
+            try {
+              content = JSON.parse(data_raw);
+            } catch (e) {
+              log({
+                type: "debug",
+                message: `Invalid JSON data`,
+                flowId,
+                blockId: block.id,
+              });
+            }
+          } else {
+            content = data_raw;
+          }
         }
-      });
-
+        if (cacheBlock) cache[`${flowId}-${block.id}`] = content;
+      } else {
+        const regex = /{((?:[^{}]|{[^{}]*})*?)}/g;
+        content = content.replace(regex, (match, p1) => {
+          try {
+            const code = `return ${p1}`;
+            const exec = sandbox.compile(code);
+            const res = exec(context).run() as string;
+            return res;
+          } catch (e) {
+            // console.log(`error`, e);
+            return "";
+          }
+        });
+      }
       const ai_config = block.ai_config;
       const service_config = aiServices.find(
         (service) => service.id === ai_config.service
       );
-      const isAiBlock = block.type == "llm" || block.type == "list";
+      const isAiBlock = type === "llm" || type === "list";
 
       if (service_config && isAiBlock) {
         const oai = new OpenAI({
@@ -131,25 +153,25 @@ const runFlow = async (props: RunFlowData) => {
 
         const isJsonMode = block.settings.response_type == "json";
 
+        let ai_prompt = content;
         if (isJsonMode && block.settings.response_schema) {
           const sample = block.settings?.response_sample || "";
           if (sample.trim() != "") {
-            prompt += `
+            ai_prompt += `
 ---
 Sample Json Response:
 ${sample}
 `;
           }
-          prompt += `
+          ai_prompt += `
 ---
 Response exactly in this type format with json data, no extra talk, this type should'nt be as parent root:
 ${block.settings.response_schema}
 `;
         }
-        console.log(`prompt`, prompt);
 
         const aiModelId = ai_config.model ?? "gpt-3.5-turbo";
-        let content: string | null = null;
+        let ai_res: string | null = null;
         let usage: AiModelUsage | null = null;
         try {
           const res = await oai.chat.completions.create({
@@ -157,18 +179,16 @@ ${block.settings.response_schema}
             messages: [
               {
                 role: "user",
-                content: prompt,
+                content: ai_prompt,
               },
             ],
             response_format: {
               type: isJsonMode ? "json_object" : "text",
             },
           });
-          content = res?.choices?.[0].message?.content;
+          ai_res = res?.choices?.[0].message?.content;
           usage = res?.usage as AiModelUsage;
         } catch (e: any) {
-          console.log(`error`, e);
-
           log({
             type: "ai-error",
             message: e.message,
@@ -177,10 +197,10 @@ ${block.settings.response_schema}
           });
         }
 
-        if (!content || !usage) continue;
-        if (content) {
+        if (!ai_res || !usage) continue;
+        if (ai_res) {
           onAiResponse({
-            prompt,
+            prompt: content,
             response: content ?? "",
             serviceName: service_config.title,
             modelId: aiModelId,
@@ -190,12 +210,11 @@ ${block.settings.response_schema}
           });
         }
         if (isJsonMode) {
-          console.log(`json`, content);
           // replace ```json and last ``` with empty string, with regex , multiline
           const jsonRegex = /```json([\s\S]*?)```/g;
-          content = content.replace(jsonRegex, "$1");
+          ai_res = ai_res.replace(jsonRegex, "$1");
           try {
-            content = JSON.parse(content);
+            ai_res = JSON.parse(ai_res);
           } catch (e) {
             log({
               type: "ai-error",
@@ -206,34 +225,38 @@ ${block.settings.response_schema}
           }
         }
 
-        if (block.type == "list") {
+        if (type == "list") {
           const sep = block.settings.item_seperator ?? "\n";
           const list = isJsonMode
-            ? content
-            : (content || "")
+            ? ai_res
+            : (ai_res || "")
                 .split(new RegExp(sep, "g"))
                 .map((t) => t.trim().replace(sep, ""));
 
-          cache[`${flowId}-${block.id}`] = list;
+          if (cacheBlock) {
+            cache[`${flowId}-${block.id}`] = list;
+          }
           blockCache[block.name] = list;
         } else {
-          blockCache[block.name] = content;
-          cache[`${flowId}-${block.id}`] = content;
+          blockCache[block.name] = ai_res;
+          if (cacheBlock) cache[`${flowId}-${block.id}`] = ai_res;
         }
         //
       } else {
-        blockCache[block.name] = prompt;
-        cache[`${flowId}-${block.id}`] = prompt;
+        blockCache[block.name] = content;
+        if (cacheBlock) cache[`${flowId}-${block.id}`] = content;
       }
     }
+
     if (ordredBlocks[ordredBlocks.length - 1].id == block.id) {
       if (flowId == "main") {
-        return prompt;
+        return content;
       } else {
         return blockCache;
       }
     }
   }
+  2;
 };
 
 const runDataTask = async ({

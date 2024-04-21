@@ -19,6 +19,7 @@ const pocketbase = async () => {
   return _;
 };
 const pb = await pocketbase();
+pb.autoCancellation(false)
 const pbInstance = () => {
   return new Pocketbase(process.env.POCKETBASE_HOST) as TypedPocketBase;
 };

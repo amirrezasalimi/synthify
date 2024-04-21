@@ -7,7 +7,12 @@ import { UserAiAddByOptions, UsersResponse } from "@/types/pocketbase";
 import { FlowNode } from "@/types/flow-data";
 import runDataTask from "@/services/run-flow";
 import { TRPCError } from "@trpc/server";
-
+import fs from "fs";
+import {
+  fileTypeFromBlob,
+  fileTypeFromBuffer,
+  fileTypeFromFile,
+} from "file-type";
 // routes
 export const projectRouter = router({
   // user ai's
@@ -85,7 +90,7 @@ export const projectRouter = router({
           ({
             id: m.id,
             name: m?.name,
-          } as AiModel)
+          }) as AiModel
       ),
     }));
     return list;
@@ -494,4 +499,74 @@ export const projectRouter = router({
   getPreset: userProcedure.input(z.string()).mutation(async ({ input: id }) => {
     return await pb.collection("presets").getOne(id);
   }),
+  // data
+  add_block_file: userProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        file_name: z.string(),
+        file_base64: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // check access
+      const project = await pb.collection("projects").getOne(input.projectId);
+      if (project.user !== ctx.user.id) {
+        throw new Error("Access denied");
+      }
+
+      const mimeMap = {
+        json: "application/json",
+        txt: "text/plain",
+        parquet: "application/x-parquet",
+      };
+      const ext = input.file_name.match(/\.([0-9a-z]+)(?:[\?#]|$)/i)?.[1];
+
+      // check
+      if (!ext) {
+        throw new Error("Invalid file type");
+      }
+      if (!mimeMap?.[(ext ?? "") as keyof typeof mimeMap]) {
+        throw new Error("Invalid file type");
+      }
+
+      // base64 to file
+      let formData = new FormData();
+      const base64 = input.file_base64;
+      const buffer = Buffer.from(base64, "base64");
+      const blob = new Blob([buffer], {
+        type: mimeMap?.[(ext ?? "") as keyof typeof mimeMap],
+      });
+      const user = ctx.user.id;
+
+      formData.append("file", blob, input.file_name);
+      formData.append("user", user);
+      formData.append("project", input.projectId);
+
+      const res = await pb.collection("block_data").create(formData);
+      return res;
+    }),
+  removeBlockFile: userProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input: id }) => {
+      const user = ctx.user.id;
+      const blockData = await pb.collection("block_data").getOne(id);
+      // check access
+      if (blockData.user !== user) {
+        throw new Error("Access denied");
+      }
+      const res = await pb.collection("block_data").delete(id);
+      return res;
+    }),
+  getBlockFile: userProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input: id }) => {
+      const user = ctx.user.id;
+      const blockData = await pb.collection("block_data").getOne(id);
+      // check access
+      if (blockData.user !== user) {
+        throw new Error("Access denied");
+      }
+      return blockData;
+    }),
 });
