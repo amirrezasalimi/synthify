@@ -47,9 +47,11 @@ Now, let's start Synthify using Docker:
 
 5. Set `POCKETBASE_EMAIL` to the email you just created and `POCKETBASE_PASSWORD` to the password.
 
-6. Save the `.env` file.
+6. Set `BACKEND_HOST`, `PARTY_HOST`, and `POCKETBASE_HOST` to `https://backend.example.io`, `https://party.example.io`, and `https://pb.example.io` respectively.
 
-7. Restart Docker Compose by typing `docker-compose restart` and pressing Enter.
+7. Save the `.env` file.
+
+8. Restart Docker Compose by typing `docker-compose restart` and pressing Enter.
 
 #### Step 4: Importing Database Schema
 
@@ -69,7 +71,7 @@ Now, let's start Synthify using Docker:
 
 ### Contributing
 
-We love contributions! Feel free to open issues, submit pull requests, or suggest new features.
+We love contributions! Feel free to open issues, submit pull requests, or suggest new features on our [GitHub repository](https://github.com/amirrezasalimi/synthify).
 
 ### License
 
