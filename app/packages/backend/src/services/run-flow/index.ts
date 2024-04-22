@@ -187,8 +187,6 @@ ${block.settings.response_schema}
           if (ai_config.temperature) {
             temperature = ai_config.temperature;
             temperature = evalExp(temperature, {});
-            console.log(`temperature`, temperature);
-            
           }
           const res = await oai.chat.completions.create({
             temperature: Number(temperature),
