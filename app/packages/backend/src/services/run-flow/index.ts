@@ -23,6 +23,9 @@ const rand = (a: number | any[], b?: number) => {
   }
   return Math.floor(Math.random() * (b - a + 1) + a);
 };
+const rand_float = (a: number, b: number, digits: number = 2) => {
+  return (Math.random() * (b - a) + a).toFixed(digits);
+};
 
 type LogData = {
   type: "debug" | "ai-error";
@@ -92,6 +95,7 @@ const runFlow = async (props: RunFlowData) => {
       globals: {
         ...Sandbox.SAFE_GLOBALS,
         rand,
+        rand_float,
       },
     });
     let useCache = false;
