@@ -3,6 +3,8 @@ import { trpc } from "@elysiajs/trpc";
 import { cors } from "@elysiajs/cors";
 import createTrpcContext from "./libs/trpc/context";
 import { routes } from "@/routes";
+import ImportPresets from "./services/import-presets";
+ImportPresets();
 const elysia = new Elysia()
   .use(
     cors({

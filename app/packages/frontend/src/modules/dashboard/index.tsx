@@ -85,27 +85,36 @@ const Dashboard = () => {
                 >
                   <h3 className="font-bold pb-2">{cat}</h3>
                   <div className="flex gap-3 flex-wrap">
-                    {presets.map((p) => {
-                      const data = p?.data || {};
-                      const hasData = Object.keys(data).length > 0;
+                    {
+                      // sort by date
+                      presets
+                        .sort(
+                          (a, b) =>
+                            new Date(b.created).getTime() -
+                            new Date(a.created).getTime()
+                        )
+                        .map((p) => {
+                          const data = p?.data || {};
+                          const hasData = Object.keys(data).length > 0;
 
-                      return (
-                        <div
-                          key={p.id}
-                          className={cn(
-                            "w-full bg-background-800 p-2 rounded-xl cursor-pointer border border-background-600",
-                            selectedPresetId === p.id && " border-cyan-700",
-                            !hasData && "opacity-50"
-                          )}
-                          onClick={() => {
-                            if (!hasData) return toast("coming soon");
-                            setSelectedPresetId(p.id);
-                          }}
-                        >
-                          {p.title}
-                        </div>
-                      );
-                    })}
+                          return (
+                            <div
+                              key={p.id}
+                              className={cn(
+                                "w-full bg-background-800 p-2 rounded-xl cursor-pointer border border-background-600",
+                                selectedPresetId === p.id && " border-cyan-700",
+                                !hasData && "opacity-50"
+                              )}
+                              onClick={() => {
+                                if (!hasData) return toast("coming soon");
+                                setSelectedPresetId(p.id);
+                              }}
+                            >
+                              {p.title}
+                            </div>
+                          );
+                        })
+                    }
                   </div>
                 </div>
               ))}
