@@ -28,12 +28,13 @@ const TopToolBar = () => {
           <ModalBody>
             <div className="flex flex-col gap-2">
               <Input
+                label="Title"
                 variant="bordered"
-                placeholder="Title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
               <Input
+                label="Data Count"
                 variant="bordered"
                 placeholder="Data Count"
                 type="number"
