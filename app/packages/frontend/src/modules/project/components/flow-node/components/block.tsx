@@ -315,6 +315,25 @@ const Block = ({
         </div>
       )}
 
+      {/* temp */}
+      {(type == "list" || type == "llm") && (
+        <div className="flex flex-col gap-2 mb-2">
+          <Input
+            label="Temp"
+            variant="flat"
+            size="sm"
+            className="nowheel nodrag"
+            value={String(block.ai_config?.temperature)}
+            onChange={(e) => {
+              if (!block.settings) {
+                block.settings = {};
+              }
+              block.ai_config.temperature = e.target.value;
+            }}
+          />
+        </div>
+      )}
+
       {/* data */}
       {
         // @ts-ignore
@@ -367,10 +386,10 @@ const Block = ({
                   dataFrom == "file" && (
                     <div className="w-full flex justify-center py-2">
                       <DataFile
-                      type={dataType}
-                      block_data_id={block.settings?.block_data_id || ""}
-                      onChangeDataId={onChangeDataId}
-                    />
+                        type={dataType}
+                        block_data_id={block.settings?.block_data_id || ""}
+                        onChangeDataId={onChangeDataId}
+                      />
                     </div>
                   )
                 }

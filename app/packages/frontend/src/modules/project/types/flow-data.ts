@@ -27,7 +27,7 @@ export interface FlowBlock {
   ai_config: {
     service?: string;
     model?: string;
-    temprature?: number;
+    temperature?: string;
   };
   data?: {
     content: string;

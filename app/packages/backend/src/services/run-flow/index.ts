@@ -26,6 +26,30 @@ const rand = (a: number | any[], b?: number) => {
 const rand_float = (a: number, b: number, digits: number = 2) => {
   return (Math.random() * (b - a) + a).toFixed(digits);
 };
+//
+const evalExp = (content: string, context: Object) => {
+  const sandbox = new Sandbox({
+    globals: {
+      ...Sandbox.SAFE_GLOBALS,
+      rand,
+      rand_float,
+    },
+  });
+
+  const regex = /{((?:[^{}]|{[^{}]*})*?)}/g;
+  content = content.replace(regex, (match, p1) => {
+    try {
+      const code = `return ${p1}`;
+      const exec = sandbox.compile(code);
+      const res = exec(context).run() as string;
+      return res;
+    } catch (e) {
+      // console.log(`error`, e);
+      return "";
+    }
+  });
+  return content;
+};
 
 type LogData = {
   type: "debug" | "ai-error";
@@ -84,20 +108,7 @@ const runFlow = async (props: RunFlowData) => {
     let content = "";
     // prompt block
     content = block.prompt;
-    //  eval {x} of the prompt and replace
-    const context: Object = {};
-    for (const key in blockCache) {
-      // @ts-ignore
-      context[key] = blockCache[key];
-    }
 
-    const sandbox = new Sandbox({
-      globals: {
-        ...Sandbox.SAFE_GLOBALS,
-        rand,
-        rand_float,
-      },
-    });
     let useCache = false;
     const cacheBlock = block.settings.cache || false;
     if (block.settings.cache) {
@@ -130,18 +141,12 @@ const runFlow = async (props: RunFlowData) => {
         }
         if (cacheBlock) cache[`${flowId}-${block.id}`] = content;
       } else {
-        const regex = /{((?:[^{}]|{[^{}]*})*?)}/g;
-        content = content.replace(regex, (match, p1) => {
-          try {
-            const code = `return ${p1}`;
-            const exec = sandbox.compile(code);
-            const res = exec(context).run() as string;
-            return res;
-          } catch (e) {
-            // console.log(`error`, e);
-            return "";
-          }
-        });
+        const context: Object = {};
+        for (const key in blockCache) {
+          // @ts-ignore
+          context[key] = blockCache[key];
+        }
+        content = evalExp(content, context);
       }
       const ai_config = block.ai_config;
       const service_config = aiServices.find(
@@ -178,7 +183,15 @@ ${block.settings.response_schema}
         let ai_res: string | null = null;
         let usage: AiModelUsage | null = null;
         try {
+          let temperature = "0.5";
+          if (ai_config.temperature) {
+            temperature = ai_config.temperature;
+            temperature = evalExp(temperature, {});
+            console.log(`temperature`, temperature);
+            
+          }
           const res = await oai.chat.completions.create({
+            temperature: Number(temperature),
             model: aiModelId,
             messages: [
               {
