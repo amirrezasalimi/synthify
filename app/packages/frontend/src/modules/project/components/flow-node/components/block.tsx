@@ -62,10 +62,13 @@ const Block = ({
       block.ai_config.model = model_id;
     });
   };
+  const regex = new RegExp("{((?:[^{}]|{(?:[^{}]|{[^{}]*})*})*)}(?![^#]*#END_NO_EXP)", "gm");
 
   const promptRender = createRegexRenderer([
     // anything between {} highlight
-    [/{((?:[^{}]|{[^{}]*})*?)}/g, { color: "#0EC2FB" }],
+    [regex, { color: "#0EC2FB" }],
+    [/^#END_NO_EXP/gm, { color: "#FF3333" }],
+    [/^#NO_EXP/gm, { color: "#FF3333" }],
   ]);
 
   const [jsonResponseSchemaModal, toggleJsonResponseSchemaModal] =

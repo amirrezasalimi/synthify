@@ -36,7 +36,7 @@ const evalExp = (content: string, context: Object) => {
     },
   });
 
-  const regex = /{((?:[^{}]|{[^{}]*})*?)}/g;
+  const regex = new RegExp('{((?:[^{}]|{(?:[^{}]|{[^{}]*})*})*)}(?![^#]*#END_NO_EXP)', 'gm');
   content = content.replace(regex, (match, p1) => {
     try {
       const code = `return ${p1}`;
@@ -48,6 +48,8 @@ const evalExp = (content: string, context: Object) => {
       return "";
     }
   });
+  content = content.replace(/#NO_EXP/g, '');
+  content = content.replace(/#END_NO_EXP/g, '');
   return content;
 };
 
