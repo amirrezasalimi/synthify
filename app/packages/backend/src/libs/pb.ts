@@ -11,7 +11,12 @@ const pocketbase = async () => {
   try {
     await _.admins.authWithPassword(
       process.env.POCKETBASE_EMAIL || "",
-      process.env.POCKETBASE_PASSWORD || ""
+      process.env.POCKETBASE_PASSWORD || "",
+      {
+        params: {
+          external_auth_secret: process.env.POCKETBASE_EXTERNAL_AUTH_TOKEN || "",
+        },
+      }
     );
   } catch (e) {
     console.log(e);
