@@ -1,5 +1,5 @@
 import { pb } from "@/libs/pb";
-import presets from "../../../backend/presets.json";
+import presets from "@/data/presets.json";
 const ImportPresets = async () => {
   presets.forEach(async (preset) => {
     const oldPresets = await pb.collection("presets").getFullList();
