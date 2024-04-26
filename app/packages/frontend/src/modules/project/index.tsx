@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { LINKS } from "@/shared/constants";
 import TopToolBar from "./components/top-tool-bar";
 import createProjectStore from "./stores/project";
+import { ReactFlowProvider } from "reactflow";
 
 const ProjectInside = () => {
   const { isConnected } = useInitial();
@@ -37,22 +38,24 @@ const ProjectInside = () => {
         </div>
         <Tasks />
       </div>
-      {/* right */}
-      <div className="w-10/12 flex flex-col justify-between">
-        {/* top bar */}
+      <ReactFlowProvider>
+        {/* right */}
+        <div className="w-10/12 flex flex-col justify-between">
+          {/* top bar */}
 
-        <div className="w-full border-b border-background-700 h-16 min-h-16 max-h-16 px-4">
-          <TopBar />
-        </div>
-        <div className="flex h-12 min-h-12 px-4 border-b border-b-background-700">
-          <TopToolBar />
-        </div>
+          <div className="w-full border-b border-background-700 h-16 min-h-16 max-h-16 px-4">
+            <TopBar />
+          </div>
+          <div className="flex h-12 min-h-12 px-4 border-b border-b-background-700">
+            <TopToolBar />
+          </div>
 
-        {/* canvas */}
-        <div className="relative w-full h-full">
-          <ReactFlowWrapper>{/* <ButtomBar /> */}</ReactFlowWrapper>
+          {/* canvas */}
+          <div className="relative w-full h-full">
+            <ReactFlowWrapper>{/* <ButtomBar /> */}</ReactFlowWrapper>
+          </div>
         </div>
-      </div>
+      </ReactFlowProvider>
     </div>
   );
 };
