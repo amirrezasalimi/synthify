@@ -569,4 +569,33 @@ export const projectRouter = router({
       }
       return blockData;
     }),
+  // logs
+  getTaskLogs: userProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        page: z.number().optional(),
+      })
+    )
+    .query(async ({ ctx, input: { id, page = 1 } }) => {
+      const user = ctx.user.id;
+      // check access
+      const task = await pb.collection("tasks").getOne(id);
+      if (task.user !== user) {
+        throw new Error("Access denied");
+      }
+      
+      try {
+        const logs = await pb.collection("task_logs").getList(page, 20, {
+          filter: `task = "${id}"`,
+          sort: "-created",
+        });
+        return logs;
+      } catch (e) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Logs not found",
+        });
+      }
+    }),
 });

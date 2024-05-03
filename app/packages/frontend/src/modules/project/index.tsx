@@ -26,7 +26,6 @@ const ProjectInside = () => {
   return (
     <div className="w-screen h-screen flex">
       <ChooseModelModal />
-      <DatasetModal />
       <ModelsModal />
       {/* left */}
       <div className="flex flex-col h-full flex-1 w-2/12  border-r-background-700 border-r min-w-[250px]">
@@ -39,6 +38,8 @@ const ProjectInside = () => {
         <Tasks />
       </div>
       <ReactFlowProvider>
+        <DatasetModal />
+
         {/* right */}
         <div className="w-10/12 flex flex-col justify-between">
           {/* top bar */}

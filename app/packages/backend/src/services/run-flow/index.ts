@@ -1,5 +1,5 @@
 import { pb } from "../../libs/pb";
-import { FlowNode } from "../../types/flow-data";
+import { FlowBlock, FlowNode } from "../../types/flow-data";
 import {
   AiUsagesRecord,
   DatasRecord,
@@ -27,37 +27,13 @@ const rand_float = (a: number, b: number, digits: number = 2) => {
   return (Math.random() * (b - a) + a).toFixed(digits);
 };
 //
-const evalExp = (content: string, context: Object) => {
-  const sandbox = new Sandbox({
-    globals: {
-      ...Sandbox.SAFE_GLOBALS,
-      rand,
-      rand_float,
-    },
-  });
-
-  const regex = new RegExp('{((?:[^{}]|{(?:[^{}]|{[^{}]*})*})*)}(?![^#]*#END_NO_EXP)', 'gm');
-  content = content.replace(regex, (match, p1) => {
-    try {
-      const code = `return ${p1}`;
-      const exec = sandbox.compile(code);
-      const res = exec(context).run() as string;
-      return res;
-    } catch (e) {
-      // console.log(`error`, e);
-      return "";
-    }
-  });
-  content = content.replace(/#NO_EXP/g, '');
-  content = content.replace(/#END_NO_EXP/g, '');
-  return content;
-};
 
 type LogData = {
-  type: "debug" | "ai-error";
+  type: "debug" | "ai-error" | "llm-success" | "error";
   message: string;
   flowId: string;
   blockId: string;
+  custom?: any;
 };
 type AiResponseData = {
   prompt: string;
@@ -91,6 +67,51 @@ const runFlow = async (props: RunFlowData) => {
   // run single flow
   const blocks = flow.data.blocks;
   const ordredBlocks = blocks.sort((a, b) => a.order - b.order);
+
+  const evalExp = (content: string, context: Object, block: FlowBlock) => {
+    try {
+      const sandbox = new Sandbox({
+        globals: {
+          ...Sandbox.SAFE_GLOBALS,
+          rand,
+          rand_float,
+        },
+      });
+
+      const regex = new RegExp(
+        "{((?:[^{}]|{(?:[^{}]|{[^{}]*})*})*)}(?![^#]*#END_NO_EXP)",
+        "gm"
+      );
+      content = content.replace(regex, (match, p1) => {
+        try {
+          const code = `return ${p1}`;
+          const exec = sandbox.compile(code);
+          const res = exec(context).run() as string;
+          return res;
+        } catch (e) {
+          log({
+            type: "error",
+            // @ts-ignore
+            message: `Error in evalExp: ${e?.message ?? ""}`,
+            flowId,
+            blockId: block.id,
+          });
+          return "";
+        }
+      });
+      content = content.replace(/#NO_EXP/g, "");
+      content = content.replace(/#END_NO_EXP/g, "");
+    } catch (e) {
+      log({
+        type: "error",
+        // @ts-ignore
+        message: `Error in evalExp: ${e?.message ?? ""}`,
+        flowId,
+        blockId: block.id,
+      });
+    }
+    return content;
+  };
 
   for (const block of ordredBlocks) {
     const { type } = block;
@@ -148,7 +169,7 @@ const runFlow = async (props: RunFlowData) => {
           // @ts-ignore
           context[key] = blockCache[key];
         }
-        content = evalExp(content, context);
+        content = evalExp(content, context, block);
       }
       const ai_config = block.ai_config;
       const service_config = aiServices.find(
@@ -188,10 +209,10 @@ ${block.settings.response_schema}
           let temperature = "0.5";
           if (ai_config.temperature) {
             temperature = ai_config.temperature;
-            temperature = evalExp(temperature, {});
+            temperature = evalExp(temperature, {}, block);
           }
           const res = await oai.chat.completions.create({
-            temperature: Number(temperature),
+            temperature: Number(temperature ?? 0.5),
             model: aiModelId,
             messages: [
               {
@@ -313,12 +334,13 @@ const runDataTask = async ({
 
     try {
       await pb.collection("task_logs").create({
-        task_id: taskId,
-        type: "debug",
+        task: taskId,
+        type: data.type,
         message: data.message,
         meta: {
           blockId: data.blockId,
           flowId: data.flowId,
+          ...data.custom,
         },
       } as TaskLogsRecord);
     } catch (e) {
@@ -327,6 +349,16 @@ const runDataTask = async ({
   };
   const onAiResponse = async (data: AiResponseData) => {
     try {
+      await log({
+        type: "llm-success",
+        message: `AI Response`,
+        flowId: data.flowId,
+        blockId: data.blockId,
+        custom: {
+          serviceName: data.serviceName,
+          modelId: data.modelId,
+        },
+      });
       await pb.collection("ai_usages").create({
         project: projectId,
         user: userId,
