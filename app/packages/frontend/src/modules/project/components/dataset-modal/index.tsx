@@ -147,7 +147,7 @@ const DatasetModal = () => {
                     <Tab key="Logs" title={`Logs`}>
                       <Card className="w-full max-h-[60vh] h-full overflow-scroll">
                         <CardBody>
-                          <div className="flex flex-col gap-2 h-full overflow-scroll">
+                          <div className="flex flex-col gap-2 h-full">
                             {logs.data?.totalItems === 0 && (
                               <div className="w-full flex gap-2 justify-center p-4 max-h-[30vh] overflow-scroll">
                                 No logs
@@ -162,7 +162,7 @@ const DatasetModal = () => {
                               return (
                                 <div
                                   key={log.id}
-                                  className="w-full flex gap-4 items-center p-2 max-h-[30vh] overflow-scroll"
+                                  className="w-full flex gap-4 items-center p-2 h-full max-h-[30vh] overflow-hidden"
                                 >
                                   <span
                                     className={cn(
