@@ -90,6 +90,7 @@ export type ExternalUsersRecord = {
 export enum PresetsCategoryOptions {
 	"Question Answer" = "Question Answer",
 	"Function Calling" = "Function Calling",
+	"Json Extraction" = "Json Extraction",
 }
 export type PresetsRecord<Tdata = unknown> = {
 	category?: PresetsCategoryOptions
@@ -107,7 +108,7 @@ export type ProjectsRecord<Tjson_data = unknown> = {
 export type TaskLogsRecord<Tmeta = unknown> = {
 	message?: string
 	meta?: null | Tmeta
-	task_id?: RecordIdString
+	task?: RecordIdString
 	type?: string
 }
 

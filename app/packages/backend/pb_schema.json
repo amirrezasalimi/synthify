@@ -545,7 +545,8 @@
                     "maxSelect": 1,
                     "values": [
                         "Question Answer",
-                        "Function Calling"
+                        "Function Calling",
+                        "Json Extraction"
                     ]
                 }
             }
@@ -638,7 +639,7 @@
             {
                 "system": false,
                 "id": "ncuj6lgj",
-                "name": "task_id",
+                "name": "task",
                 "type": "relation",
                 "required": false,
                 "presentable": false,
@@ -693,8 +694,8 @@
             }
         ],
         "indexes": [
-            "CREATE INDEX `idx_au2oPrD` ON `task_logs` (\n  `type`,\n  `task_id`,\n  `created`\n)",
-            "CREATE INDEX `idx_qQnnO2F` ON `task_logs` (`task_id`)"
+            "CREATE INDEX `idx_au2oPrD` ON `task_logs` (\n  `type`,\n  `task`,\n  `created`\n)",
+            "CREATE INDEX `idx_qQnnO2F` ON `task_logs` (`task`)"
         ],
         "listRule": null,
         "viewRule": null,
