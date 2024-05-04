@@ -34,8 +34,8 @@ services:
       - traefik.enable=true
       # Certificate Resolver Configuration
       - "traefik.http.routers.traefik.tls.certresolver=myresolver"
-      - "traefik.http.routers.traefik.tls.domains[0].main=example.io" # Replace yourdomain.com with your domain
-      - "traefik.http.routers.traefik.tls.domains[0].sans=*.example.io" # Replace yourdomain.com with your domain
+      - "traefik.http.routers.traefik.tls.domains[0].main=synthify.io" # Replace yourdomain.com with your domain
+      - "traefik.http.routers.traefik.tls.domains[0].sans=*.synthify.io" # Replace yourdomain.com with your domain
 
       # Certificate Resolver Middleware
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
@@ -59,7 +59,7 @@ services:
       - "8100:8090" # Internal access
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pocketbase.rule=Host(`pb.example.io`)"
+      - "traefik.http.routers.pocketbase.rule=Host(`pb.synthify.io`)"
       - "traefik.http.routers.pocketbase.entrypoints=websecure"
       - "traefik.http.routers.pocketbase.tls=true"
       - "traefik.http.routers.pocketbase.tls.certresolver=myresolver"
@@ -73,7 +73,7 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.synthifybackend.rule=Host(`backend.example.io`)"
+      - "traefik.http.routers.synthifybackend.rule=Host(`backend.synthify.io`)"
       - "traefik.http.routers.synthifybackend.entrypoints=websecure"
       - "traefik.http.routers.synthifybackend.tls=true"
       - "traefik.http.routers.synthifybackend.tls.certresolver=myresolver"
@@ -99,7 +99,7 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.party.rule=Host(`party.example.io`)"
+      - "traefik.http.routers.party.rule=Host(`party.synthify.io`)"
       - "traefik.http.routers.party.entrypoints=websecure"
       - "traefik.http.routers.party.tls=true"
       - "traefik.http.routers.party.tls.certresolver=myresolver"
@@ -118,7 +118,7 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`example.io`)"
+      - "traefik.http.routers.frontend.rule=Host(`synthify.io`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls=true"
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"

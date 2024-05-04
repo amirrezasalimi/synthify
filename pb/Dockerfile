@@ -17,6 +17,9 @@ COPY ./pb_migrations /pb/pb_migrations
 # uncomment to copy the local pb_hooks dir into the image
 COPY ./pb_hooks /pb/pb_hooks
 
+# create admin account
+RUN ./pb/pocketbase admin create backend@gmail.com 12345678
+
 EXPOSE 8090
 
 # start PocketBase
