@@ -6,6 +6,7 @@ const pocketbase = async () => {
   console.log("Connecting to Pocketbase...", process.env.POCKETBASE_HOST);
 
   const _ = new Pocketbase(process.env.POCKETBASE_HOST) as TypedPocketBase;
+  _.autoCancellation(false);
 
   try {
     if (authToken) {
@@ -19,16 +20,20 @@ const pocketbase = async () => {
       )
       .then((res) => {
         authToken = res.token;
-      });
+      }).catch(e=>{
+        console.log("e:",e?.message);
+        
+      })
   } catch (e) {
-    console.log(e);
+    console.log(e?.message);
   }
   return _;
 };
 const pb = await pocketbase();
-pb.autoCancellation(false);
 const pbInstance = () => {
-  return new Pocketbase(process.env.POCKETBASE_HOST) as TypedPocketBase;
+  const _= new Pocketbase(process.env.POCKETBASE_HOST) as TypedPocketBase;
+  _.autoCancellation(false);
+  return _;
 };
 const initPB = async () => {
   await pocketbase();
