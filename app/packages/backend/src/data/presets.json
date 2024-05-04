@@ -245,5 +245,168 @@
         }
       }
     }
+  },
+  {
+    "title": "experimental",
+    "category": "Function Calling",
+    "data": {
+      "config": {
+        "isInitialized": true,
+        "projectVersion": "0.1"
+      },
+      "nodes": {
+        "SdqfWlpi": {
+          "data": {
+            "blocks": [
+              {
+                "ai_config": {
+                  "model": "meta-llama/llama-3-70b-instruct",
+                  "service": "d8f3w0dybvkbay8",
+                  "temperature": "0.6"
+                },
+                "id": "PzahRpAi",
+                "name": "functions",
+                "order": -2,
+                "prompt": "you are helpful assistant , your task is to generate schema for function calling in '{cats.selected}' topic\nrules\n- make a json schema in the format like sample.\n- make {rand(2,5)} functions .\n- only response the generated schema , no extra chat or talk \n#NO_EXP\nsample response (valid json format):\n[\n    {\n      \"type\": \"function\",\n      \"function\": {\n        \"name\": \"get_temperature\",\n        \"description\": \"get temperature of a city\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"city\": {\n              \"type\": \"string\",\n              \"description\": \"name\"\n            }\n          },\n          \"required\": [\n            \"city\"\n          ]\n        }\n      }\n    }\n]\n#END_NO_EXP",
+                "settings": {
+                  "cache": false,
+                  "item_seperator": ",",
+                  "response_schema": "\ntype Response=string[]\n",
+                  "response_type": "json"
+                },
+                "type": "llm"
+              },
+              {
+                "ai_config": {},
+                "id": "gnMT7SDB",
+                "name": "Untitled",
+                "order": -3,
+                "prompt": "",
+                "settings": {
+                  "cache": false,
+                  "item_seperator": ",",
+                  "selected_flow": "txK02zAY"
+                },
+                "type": "run-flow"
+              },
+              {
+                "ai_config": {},
+                "id": "awDypFCn",
+                "name": "system",
+                "order": -1,
+                "prompt": "You are a helpful assistant with access to the following functions:\n{JSON.stringify(functions)}\n#NO_EXP\nTo use these functions respond with:\n<functioncall> { \"name\": \"function_name\", \"arguments\": { \"arg_1\": \"value_1\", \"arg_1\": \"value_1\", ... } } </functioncall>\n#END_NO_EXP\nEdge cases you must handle:\n- If there are no functions that match the user request, you will respond politely that you cannot help.",
+                "settings": {
+                  "cache": false,
+                  "item_seperator": ","
+                },
+                "type": "merge"
+              }
+            ],
+            "color": "#531FE9",
+            "id": "SdqfWlpi",
+            "name": "base"
+          },
+          "id": "SdqfWlpi",
+          "position": {
+            "x": 479.141067253306,
+            "y": 20.3253380035149
+          },
+          "type": "flow"
+        },
+        "main": {
+          "data": {
+            "blocks": [
+              {
+                "ai_config": {},
+                "id": "output",
+                "name": "output",
+                "order": 0,
+                "prompt": "{base.system}\n\n{conversations}",
+                "settings": {},
+                "type": "merge"
+              },
+              {
+                "ai_config": {},
+                "id": "WwUoXhsR",
+                "name": "Untitled",
+                "order": -2,
+                "prompt": "",
+                "settings": {
+                  "cache": false,
+                  "item_seperator": ",",
+                  "selected_flow": "SdqfWlpi"
+                },
+                "type": "run-flow"
+              },
+              {
+                "ai_config": {
+                  "model": "openai/gpt-4-turbo",
+                  "service": "d8f3w0dybvkbay8",
+                  "temperature": "0.1"
+                },
+                "id": "IXy3vvAQ",
+                "name": "conversations",
+                "order": -1,
+                "prompt": "Generate a conversation between a user and an AI assistant on the topic of {cats.selected}. Follow these rules:\n\nConversation format:\nuser: [user message]\n\nassistant: [assistant response]\n\n- Include at least {rand(3,10)} messages\n- Leave one blank line between user and assistant messages\n- The user starts the conversation, and the assistant responds\n- The assistant can call functions, and the user should respond with:\n  <function_response> [function output] </function_response>\n- The assistant should comment on the function output in the next message\n- Use only the 'user' and 'assistant' keywords\n- Ensure data used in functions is realistic, not fake\n\nconversation:\n{base.system}\n",
+                "settings": {
+                  "cache": false,
+                  "item_seperator": ","
+                },
+                "type": "llm"
+              }
+            ],
+            "color": "#3894FF",
+            "id": "main",
+            "name": "Main Flow"
+          },
+          "id": "main",
+          "position": {
+            "x": -22.695799053656174,
+            "y": 22.431580630295656
+          },
+          "type": "flow"
+        },
+        "txK02zAY": {
+          "data": {
+            "blocks": [
+              {
+                "ai_config": {},
+                "id": "S7NWOdUe",
+                "name": "data",
+                "order": -2,
+                "prompt": "",
+                "settings": {
+                  "data_from": "raw",
+                  "data_raw": "[\n    \"Personal Scheduling\",\n    \"Email Management\",\n    \"Task Reminders\",\n    \"Flight Booking\",\n    \"Hotel Reservations\",\n    \"Restaurant Recommendations\",\n    \"Music Playback\",\n    \"Video Streaming\",\n    \"News Updates\",\n    \"Weather Forecasts\",\n    \"Event Planning\",\n    \"Birthday Reminders\",\n    \"Workout Tracking\",\n    \"Diet Monitoring\",\n    \"Recipe Suggestions\",\n    \"Shopping Assistance\",\n    \"Online Order Tracking\",\n    \"Invoice Management\",\n    \"Budgeting\",\n    \"Expense Reports\",\n    \"Education Learning\",\n    \"Online Courses\",\n    \"Reading List Management\",\n    \"Article Summarization\",\n    \"Ebook Recommendations\",\n    \"Podcast Playback\",\n    \"Language Translation\",\n    \"Language Learning\",\n    \"Math Problem Solving\",\n    \"Scientific Research\",\n    \"Health Advice\",\n    \"Symptom Check\",\n    \"Medication Reminders\",\n    \"Appointment Scheduling\",\n    \"Therapy Sessions\",\n    \"Mental Health Checks\",\n    \"Pet Care Advice\",\n    \"Veterinary Appointment Booking\",\n    \"Pet Food Recommendations\",\n    \"Gardening Tips\",\n    \"Plant Care\",\n    \"Home Improvement Ideas\",\n    \"Furniture Assembly Assistance\",\n    \"DIY Project Guides\",\n    \"Art and Craft Ideas\",\n    \"Photography Tips\",\n    \"Travel Guides\",\n    \"Local Attractions\",\n    \"Public Transit Info\",\n    \"Tax Filing\",\n    \"Legal Advice\",\n    \"Insurance Queries\",\n    \"Credit Score Checks\",\n    \"Investment Tips\",\n    \"Stock Market Updates\",\n    \"Cryptocurrency Advice\",\n    \"Smart Home Control\",\n    \"Security System Management\",\n    \"Lighting Control\",\n    \"Thermostat Adjustment\",\n    \"IoT Device Management\",\n    \"Car Maintenance Reminders\",\n    \"Driver Route Optimization\",\n    \"Parking Spot Finder\",\n    \"Electric Vehicle Charging Stations\",\n    \"Tide Schedules\",\n    \"Fishing Guides\",\n    \"Hiking Trail Information\",\n    \"Camping Gear Recommendations\",\n    \"Sport Scores\",\n    \"Team Schedules\",\n    \"Fitness Challenges\",\n    \"Yoga Routines\",\n    \"Meditation Sessions\",\n    \"Beauty Tips\",\n    \"Makeup Tutorials\",\n    \"Fashion Advice\",\n    \"Laundry Tips\",\n    \"Cleaning Hacks\",\n    \"Recycling Guidelines\",\n    \"Waste Management\",\n    \"Environmental News\",\n    \"Charity Information\",\n    \"Volunteering Opportunities\",\n    \"Cultural Events\",\n    \"Music Lessons\",\n    \"Instrument Tuning\",\n    \"Virtual Tours\",\n    \"Museum Listings\",\n    \"Theater Showtimes\",\n    \"Movie Reviews\",\n    \"TV Show Recommendations\",\n    \"Comic Book Releases\",\n    \"Graphic Novel Suggestions\",\n    \"Board Game Rules\",\n    \"Video Game Releases\",\n    \"Gaming Strategy Tips\",\n    \"Tech Support\",\n    \"Software Updates\",\n    \"Hardware Reviews\",\n    \"Gadget Recommendations\",\n    \"Coding Tutorials\",\n    \"Web Development\",\n    \"App Development\",\n    \"AI Learning Modules\",\n    \"Data Analysis\",\n    \"Project Management\",\n    \"Collaboration Tools\",\n    \"Team Communication\",\n    \"Meeting Notes\",\n    \"Presentation Preparation\",\n    \"Public Speaking Tips\",\n    \"Negotiation Techniques\",\n    \"Resume Building\",\n    \"Job Search\",\n    \"Interview Prep\",\n    \"Career Advice\",\n    \"Networking Opportunities\",\n    \"Start-up Tips\",\n    \"Business News\",\n    \"Market Trends\",\n    \"Competitor Analysis\",\n    \"Patent Filing\",\n    \"Product Development\",\n    \"Quality Control Tips\",\n    \"Shipping and Logistics\",\n    \"Supplier Search\",\n    \"Inventory Management\",\n    \"Order Fulfillment\",\n    \"Customer Service\",\n    \"Feedback Collection\",\n    \"Complaint Resolution\",\n    \"Loyalty Program Management\",\n    \"Event Ticketing\",\n    \"Public Speaking Engagements\",\n    \"Workshop Organization\",\n    \"Conference Attendee Management\",\n    \"Academic Research\",\n    \"Study Group Finder\",\n    \"Library Database Access\",\n    \"Scholarship Information\",\n    \"Grant Applications\",\n    \"Allergy Alerts\",\n    \"Pollen Count Updates\",\n    \"Air Quality Reports\",\n    \"Sunrise/Sunset Times\",\n    \"Moon Phase Calendar\",\n    \"Astronomy Events\",\n    \"Document Translation\",\n    \"Proofreading\",\n    \"Copyediting\",\n    \"Grant Writing Assistance\",\n    \"Historical Facts\",\n    \"Ancestry Research\",\n    \"Genealogy Trees\",\n    \"Local Cultural Norms\",\n    \"Travel Safety Tips\",\n    \"Embassy Locations\",\n    \"Customs Regulations\",\n    \"Luggage Packing Tips\",\n    \"Currency Conversion\",\n    \"International Payment Solutions\",\n    \"Time Zone Management\",\n    \"Virtual Meeting Planner\",\n    \"World Clock Setup\",\n    \"Daily Motivation\",\n    \"Mindfulness Exercises\",\n    \"Breathing Guides\",\n    \"Sleep Sounds\",\n    \"Sleep Tracking\",\n    \"Dream Interpretation\",\n    \"Horoscope Readings\",\n    \"Tarot Card Readings\",\n    \"Numerology Insights\",\n    \"Feng Shui Advice\",\n    \"Vaastu Consultation\",\n    \"Life Coaching\",\n    \"Personality Development\",\n    \"Etiquette Training\",\n    \"Social Skills Coaching\",\n    \"Conflict Resolution\",\n    \"Relationship Advice\",\n    \"Wedding Planning\",\n    \"Anniversary Reminders\",\n    \"Gift Suggestions\",\n    \"Party Themes\",\n    \"Event Catering Coordination\",\n    \"Bartender Recipes\",\n    \"Craft Beer Advice\",\n    \"Wine Pairing Suggestions\",\n    \"Diet-Specific Cooking\",\n    \"Nutrition Facts\",\n    \"Vitamin Tracker\",\n    \"Water Intake Reminder\",\n    \"Juicing Recipes\",\n    \"Detox Plans\",\n    \"Herbal Remedies\",\n    \"First Aid Instructions\",\n    \"Urgent Care Locator\",\n    \"Hospital Reviews\",\n    \"Doctor Appointment Booking\",\n    \"Dental Care Tips\",\n    \"Eyecare Consultations\",\n    \"Skincare Routines\",\n    \"Personal Stylist\",\n    \"Custom Tailoring\",\n    \"Closet Organization\",\n    \"Laundry Service Booking\",\n    \"Housekeeping Coordination\",\n    \"Interactive Storytelling\",\n    \"Children’s Games\",\n    \"Educational Quizzes\",\n    \"Homework Help\",\n    \"College Application Assistance\",\n    \"Internship Finder\",\n    \"Research Publication\",\n    \"Journal Subscription\",\n    \"Academic Conference Alerts\",\n    \"Patent Research\",\n    \"Literature Reviews\",\n    \"Science Experiment Ideas\",\n    \"Math Tutoring\",\n    \"Language Exchange Partner\",\n    \"Sign Language Learning\",\n    \"Public Library Services\",\n    \"Book Club Coordination\",\n    \"Craft Supplies\",\n    \"Home Gardening Kits\",\n    \"Pet Adoption Guidance\",\n    \"Wildlife Conservation\",\n    \"Eco-friendly Products\",\n    \"Sustainable Living Tips\",\n    \"Renewable Energy Solutions\",\n    \"Electric Car Incentives\",\n    \"Bike-sharing Locations\",\n    \"Car Rental Options\",\n    \"Real Estate Listings\",\n    \"Mortgage Calculators\",\n    \"Home Decor Ideas\",\n    \"Furniture Restoration\",\n    \"Antique Appraisal\",\n    \"Art Auctions\",\n    \"Concert Ticket Booking\",\n    \"Music Instrument Store\",\n    \"Virtual Museum Tours\",\n    \"Online Art Classes\"\n]",
+                  "data_type": "json"
+                },
+                "type": "data"
+              },
+              {
+                "ai_config": {},
+                "id": "EgbaSpWa",
+                "name": "selected",
+                "order": -1,
+                "prompt": "{rand(data)}",
+                "settings": {
+                  "cache": false,
+                  "item_seperator": ","
+                },
+                "type": "merge"
+              }
+            ],
+            "color": "#FF3897",
+            "id": "txK02zAY",
+            "name": "cats"
+          },
+          "id": "txK02zAY",
+          "position": {
+            "x": 959.3269404209657,
+            "y": 16.52068102057271
+          },
+          "type": "flow"
+        }
+      }
+    }
   }
 ]
