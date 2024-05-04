@@ -11,7 +11,6 @@ services:
       - traefik_network
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - letsencrypt:/letsencrypt
       #- /var/log:/var/log
     command:
       - --api.dashboard=true
@@ -22,14 +21,7 @@ services:
       - --providers.docker.network=traefik_network
       - --providers.docker.exposedByDefault=false
       - --entrypoints.web.address=:80
-      # - --entrypoints.web.http.redirections.entrypoint.to=websecure
-      # - --entryPoints.web.http.redirections.entrypoint.scheme=https
-      - --entrypoints.websecure.address=:443
-      - --entrypoints.websecure.asDefault=false
-      - --entrypoints.websecure.http.tls.certresolver=myresolver
-      - --certificatesresolvers.myresolver.acme.email=synthify-corp@gmail.com
-      - --certificatesresolvers.myresolver.acme.tlschallenge=true
-      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+
     labels:
       - traefik.enable=true
       # Certificate Resolver Configuration
@@ -131,6 +123,3 @@ services:
 
 networks:
   traefik_network:
-volumes:
-  letsencrypt:
-    name: letsencrypt
