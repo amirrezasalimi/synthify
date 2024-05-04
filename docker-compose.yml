@@ -21,7 +21,11 @@ services:
       - --providers.docker.network=traefik_network
       - --providers.docker.exposedByDefault=false
       - --entrypoints.web.address=:80
-
+      # - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      # - --entryPoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.asDefault=false
+      - --entrypoints.websecure.http.tls.certresolver=myresolver
     labels:
       - traefik.enable=true
       # Certificate Resolver Configuration
@@ -123,3 +127,6 @@ services:
 
 networks:
   traefik_network:
+volumes:
+  letsencrypt:
+    name: letsencrypt
