@@ -22,6 +22,7 @@ const useFlow = (id: string) => {
       prompt =
         "make a list of 20 different categories about shopping ,no extra talk ,sepereated by comma:";
     }
+
     let settings: FlowBlock["settings"] = {
       cache: type == "list",
       item_seperator: ",",
@@ -34,13 +35,16 @@ const useFlow = (id: string) => {
       };
     }
 
+
     state.data.blocks.push({
       id: makeId(),
       name: "Untitled",
       type,
       prompt,
       order: lowestOrder - 1,
-      ai_config: {},
+      ai_config: {
+        temperature: "0.5",
+      },
       settings,
     });
   };
