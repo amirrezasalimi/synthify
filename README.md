@@ -6,11 +6,21 @@ Synthify: Generate Synthesized Datasets with a No-Code UI
 
 Welcome to Synthify! Follow these steps to get started quickly:
 
+#### clone the repository:
+
+```bash
+git clone https://github.com/amirrezasalimi/synthify.git
+cd synthify
+```
+
 #### Step 1: Setting up Domains
 
 To run Synthify locally, you'll need to set up some fake domains.
+   
+### Then, follow these steps to set up the domains:
 
 1. **For macOS:**
+
    - Open Terminal.
    - Type `sudo nano /etc/hosts` and press Enter.
    - Add these lines to the end of the file:
@@ -22,7 +32,7 @@ To run Synthify locally, you'll need to set up some fake domains.
      ```
    - Save and exit.
 
-2. **For Windows and Linux:**  
+2. **For Windows and Linux:**
    - Google "How to edit hosts file [your operating system]" for instructions.
 
 #### Step 2: Running Synthify
@@ -33,7 +43,7 @@ Now, let's start Synthify using Docker:
 
 2. Open Terminal or Command Prompt.
 
-3. Type `docker-compose up -d` and press Enter. 
+3. Type `docker-compose up -d` and press Enter.
 
 #### Step 3: Enjoy Synthify!
 
