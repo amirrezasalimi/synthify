@@ -25,10 +25,7 @@ To run Synthify locally, you'll need to set up some fake domains.
    - Type `sudo nano /etc/hosts` and press Enter.
    - Add these lines to the end of the file:
      ```
-     127.0.0.1 pb.synthify.io
-     127.0.0.1 backend.synthify.io
-     127.0.0.1 party.synthify.io
-     127.0.0.1 synthify.io
+     127.0.0.1 synthify.dev pb.synthify.dev backend.synthify.dev party.synthify.dev
      ```
    - Save and exit.
 
@@ -47,7 +44,7 @@ Now, let's start Synthify using Docker:
 
 #### Step 3: Enjoy Synthify!
 
-1. Open [http://synthify.io](http://synthify.io) in your browser.
+1. Open [http://synthify.dev](http://synthify.dev) in your browser.
 
 2. Set up a user.
 
