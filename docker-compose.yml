@@ -97,6 +97,12 @@ services:
 
     depends_on:
       - backend
+  dns:
+    image: "andyshinn/dnsmasq"
+    container_name: "custom_dns"
+    command: --no-daemon --log-queries --no-resolv --server=/synthify.dev/frontend --server=/pb.synthify.dev/pocketbase --server=/backend.synthify.dev/backend --server=/party.synthify.dev/party
+    networks:
+      - traefik_network
 
 networks:
   traefik_network:
