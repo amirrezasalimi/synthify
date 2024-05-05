@@ -2,47 +2,28 @@ version: "3.8"
 
 services:
   traefik:
-    image: traefik:v3.0
+    image: "traefik:v3.0"
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.web.address=:80"
     ports:
-      - 80:80
-      - 443:443
-      - 8080:8080
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+    labels:
+      - "traefik.http.routers.dashboard.rule=PathPrefix(`/dashboard`)"
+      - "traefik.http.routers.dashboard.entrypoints=traefik"
+      - "traefik.http.routers.dashboard.service=api@internal"
+    restart: always
     networks:
       - traefik_network
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      #- /var/log:/var/log
-    command:
-      - --api.dashboard=true
-      - --log.level=INFO
-      #- --log.filepath=/var/log/traefik.log
-      - --accesslog=true
-      #- --accesslog.filepath=/var/log/traefik-access.log
-      - --providers.docker.network=traefik_network
-      - --providers.docker.exposedByDefault=false
-      - --entrypoints.web.address=:80
-      # - --entrypoints.web.http.redirections.entrypoint.to=websecure
-      # - --entryPoints.web.http.redirections.entrypoint.scheme=https
-      - --entrypoints.websecure.address=:443
-      - --entrypoints.websecure.asDefault=false
-      - --entrypoints.websecure.http.tls.certresolver=myresolver
-    labels:
-      - traefik.enable=true
-      # Certificate Resolver Configuration
-      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
-      - "traefik.http.routers.traefik.tls.domains[0].main=synthify.io" # Replace yourdomain.com with your domain
-      - "traefik.http.routers.traefik.tls.domains[0].sans=*.synthify.io" # Replace yourdomain.com with your domain
-
-      # Certificate Resolver Middleware
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-
-      # Certificate Resolver EntryPoints
-      - "traefik.http.routers.traefik.entrypoints=websecure"
-
-      # Certificate Resolver Certificates Resolvers
-      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
-    restart: always
-    
   pocketbase:
     restart: always
     build:
@@ -55,10 +36,8 @@ services:
       - "8100:8090" # Internal access
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pocketbase.rule=Host(`pb.synthify.io`)"
-      - "traefik.http.routers.pocketbase.entrypoints=websecure"
-      - "traefik.http.routers.pocketbase.tls=true"
-      - "traefik.http.routers.pocketbase.tls.certresolver=myresolver"
+      - "traefik.http.routers.pocketbase.rule=Host(`pb.synthify.co`)"
+      - "traefik.http.routers.pocketbase.entrypoints=web"
 
     networks:
       - traefik_network
@@ -69,20 +48,19 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.synthifybackend.rule=Host(`backend.synthify.io`)"
-      - "traefik.http.routers.synthifybackend.entrypoints=websecure"
-      - "traefik.http.routers.synthifybackend.tls=true"
-      - "traefik.http.routers.synthifybackend.tls.certresolver=myresolver"
+      - "traefik.http.routers.synthifybackend.rule=Host(`backend.synthify.co`)"
+      - "traefik.http.routers.synthifybackend.entrypoints=web"
 
     networks:
       - traefik_network
     environment:
-      - POCKETBASE_HOST=${POCKETBASE_HOST}
+      - POCKETBASE_HOST=pocketbase:8090
       - POCKETBASE_EMAIL=${POCKETBASE_EMAIL}
       - POCKETBASE_PASSWORD=${POCKETBASE_PASSWORD}
       - POCKETBASE_EXTERNAL_AUTH_TOKEN=${POCKETBASE_EXTERNAL_AUTH_TOKEN}
     depends_on:
       - pocketbase
+    restart: always
 
   party:
     build:
@@ -95,10 +73,8 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.party.rule=Host(`party.synthify.io`)"
-      - "traefik.http.routers.party.entrypoints=websecure"
-      - "traefik.http.routers.party.tls=true"
-      - "traefik.http.routers.party.tls.certresolver=myresolver"
+      - "traefik.http.routers.party.rule=Host(`party.synthify.co`)"
+      - "traefik.http.routers.party.entrypoints=web"
     depends_on:
       - backend
     networks:
@@ -114,11 +90,8 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`synthify.io`)"
-      - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls=true"
-      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
-
+      - "traefik.http.routers.frontend.rule=Host(`synthify.co`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
     networks:
       - traefik_network
 
@@ -127,6 +100,3 @@ services:
 
 networks:
   traefik_network:
-volumes:
-  letsencrypt:
-    name: letsencrypt
