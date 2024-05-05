@@ -38,6 +38,11 @@ const useInitial = () => {
     }
     const partyHost = import.meta.env.VITE_PARTY_HOST;
 
+    const isLocalhost =
+      location.hostname === "localhost" ||
+      location.hostname === "127.0.0.1" ||
+      location.hostname === "[::1]" ||
+      location.hostname === "synthify.co";
     const provider = new YPartyKitProvider(partyHost, id, ydoc, {
       params() {
         return {
@@ -46,6 +51,7 @@ const useInitial = () => {
       },
       resyncInterval: 2000,
       maxBackoffTime: 5000,
+      protocol: isLocalhost ? "ws" : "wss",
     });
 
     provider.on("synced", async (status: any) => {
