@@ -13,7 +13,7 @@
     "y-partykit": "^0.0.28"
   },
   "devDependencies": {
-    "partykit": "^0.0.100",
+    "partykit": "^0.0.104",
     "typescript": "^5.4.2"
   }
 }
