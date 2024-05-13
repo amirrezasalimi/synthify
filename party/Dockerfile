@@ -3,7 +3,6 @@ FROM node:latest
 # Generate the .env file
 ARG BACKEND_HOST
 
-WORKDIR /app
 
 COPY package.json .
 
