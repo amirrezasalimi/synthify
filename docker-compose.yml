@@ -14,6 +14,7 @@ services:
     ports:
       - "80:80"
       - "8080:8080"
+      - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
@@ -21,6 +22,7 @@ services:
       - "traefik.http.routers.dashboard.rule=PathPrefix(`/dashboard`)"
       - "traefik.http.routers.dashboard.entrypoints=traefik"
       - "traefik.http.routers.dashboard.service=api@internal"
+
     restart: always
     networks:
       - traefik_network
@@ -97,12 +99,5 @@ services:
 
     depends_on:
       - backend
-  dns:
-    image: "andyshinn/dnsmasq"
-    container_name: "custom_dns"
-    command: --no-daemon --log-queries --no-resolv --server=/synthify.dev/frontend --server=/pb.synthify.dev/pocketbase --server=/backend.synthify.dev/backend --server=/party.synthify.dev/party
-    networks:
-      - traefik_network
-
 networks:
   traefik_network:

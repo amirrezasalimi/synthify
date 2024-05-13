@@ -10,7 +10,7 @@ import {
 } from "./utils";
 import * as Y from "yjs";
 export default class YjsServer implements Party.Server {
-  constructor(public party: Party.Room) {}
+  constructor(public party: Party.Room) { }
   async onConnect(conn: Party.Connection, ctx: Party.ConnectionContext) {
     const params = new URLSearchParams(conn.uri.split("?")[1]);
     const projectId = this.party.id;
@@ -18,32 +18,35 @@ export default class YjsServer implements Party.Server {
 
     const origin = process.env.BACKEND_HOST as string;
 
-    
-    if (!token) {
-      conn.close();
-      return;
-    }
+    const isLocalhost = origin.includes("localhost") || origin.includes("backend.synthify.co");
     let project: Project | null;
-    if (!origin) {
-      console.log("Error: Missing BACKEND_HOST environment variable");
-      return;
-    }
-    try {
-      project = await getProject(origin, projectId, token);
-    } catch (e) {
-      console.log(`Error fetching project: `, e);
 
-      conn.close();
-      return;
+    if (!isLocalhost) {
+      if (!token) {
+        conn.close();
+        return;
+      }
+      if (!origin) {
+        console.log("Error: Missing BACKEND_HOST environment variable");
+        return;
+      }
+      try {
+        project = await getProject(origin, projectId, token);
+      } catch (e) {
+        console.log(`Error fetching project: `, e);
+
+        conn.close();
+        return;
+      }
     }
 
     return onConnect(conn, this.party, {
-      readOnly: project === null,
-      persist:{
+      readOnly: isLocalhost ? false : project === null,
+      persist: {
         mode: "snapshot",
       },
       async load() {
-        if (project && project.data && project.data !== "") {
+        if (project && project?.data && project?.data !== "") {
           return deserializeYDoc(project.data);
         }
         return new Y.Doc();

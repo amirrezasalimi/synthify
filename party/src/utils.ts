@@ -23,7 +23,8 @@ export const getProject = async (
         token: userToken,
       })
     )}`;
-
+    console.log(`url`,url);
+    
     fetch(url)
       .then(async (res) => {
         if (res.ok) {
