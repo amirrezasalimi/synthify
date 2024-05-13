@@ -46,7 +46,7 @@ const Tasks = () => {
       <div className="px-4 flex items-center h-12 min-h-12 max-h-12  border-b border-b-background-700">
         <h2 className="font-bold">Datasets</h2>
       </div>
-      <div className="flex flex-col gap-2 overflow-scroll px-3 py-4 h-[calc(100vh-(3rem+4rem))]">
+      <div className="flex flex-col gap-2 overflow-y-auto px-3 py-4 h-[calc(100vh-(3rem+4rem))]">
         {helper.tasks.isLoading && <Spinner />}
         {helper.tasks.data?.map((task: any, i: number) => (
           <div
