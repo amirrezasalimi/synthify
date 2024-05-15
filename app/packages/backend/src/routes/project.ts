@@ -450,18 +450,24 @@ export const projectRouter = router({
       })
     )
     .query(async ({ ctx, input }) => {
-      const user = ctx.user.id;
+      try {
+        const user = ctx.user.id;
+        const project = await pb.collection("projects").getOne(input.project);
 
-      const project = await pb.collection("projects").getOne(input.project);
-
-      if (project.user !== user) {
-        throw new Error("Access denied");
+        if (project.user !== user) {
+          throw new Error("Access denied");
+        }
+        const res = await pb.collection("datas").getList(input.page, 20, {
+          filter: `task = "${input.task}"`,
+          sort: "-created",
+        });
+        return res;
+      } catch (e) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Dataset not found",
+        });
       }
-      const res = await pb.collection("datas").getList(input.page, 20, {
-        filter: `task = "${input.task}"`,
-        sort: "-created",
-      });
-      return res;
     }),
   downloadDataset: userProcedure
     .input(
@@ -578,7 +584,7 @@ export const projectRouter = router({
       if (task.user !== user) {
         throw new Error("Access denied");
       }
-      
+
       try {
         const logs = await pb.collection("task_logs").getList(page, 20, {
           filter: `task = "${id}"`,
