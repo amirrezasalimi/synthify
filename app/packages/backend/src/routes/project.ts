@@ -343,7 +343,6 @@ export const projectRouter = router({
     )
     .query(async ({ input: { token, project } }) => {
       const _pb = pbInstance();
-      _pb.autoCancellation(false);
       try {
         _pb.authStore.save(token);
         await _pb.collection("users").authRefresh();
@@ -361,7 +360,6 @@ export const projectRouter = router({
           message: "Invalid token",
         });
       }
-      pb.autoCancellation(false);
 
       const projectRecord = await pb.collection("projects").getOne(project);
       if (projectRecord.user !== user.id) {
@@ -376,7 +374,6 @@ export const projectRouter = router({
           message: "Project not found",
         });
       }
-      pb.autoCancellation(true);
       return projectRecord;
     }),
   updateProjectDataWithToken: publicProcedure
@@ -390,7 +387,6 @@ export const projectRouter = router({
     )
     .query(async ({ input: { token, project, data, json_data } }) => {
       const _pb = pbInstance();
-      _pb.autoCancellation(false);
       try {
         _pb.authStore.save(token);
         await _pb.collection("users").authRefresh();
@@ -408,7 +404,6 @@ export const projectRouter = router({
           message: "Invalid token",
         });
       }
-      pb.autoCancellation(false);
 
       const projectRecord = await pb.collection("projects").getOne(project);
       if (projectRecord.user !== user.id) {
@@ -423,7 +418,6 @@ export const projectRouter = router({
           message: "Project not found",
         });
       }
-      pb.autoCancellation(true);
       const res = await pb.collection("projects").update(project, {
         data,
         json_data,
