@@ -170,7 +170,7 @@ const ModelsModal = () => {
                         }}
                       />
                     </div>
-                    <div className="flex flex-col gap-1 py-2 max-h-[20vh] overflow-scroll">
+                    <div className="flex flex-col gap-1 py-2 max-h-[20vh] overflow-y-scroll">
                       {(service?.models ?? []).map((model) => (
                         <div key={model.id} className="flex gap-2 items-center">
                           <div>
