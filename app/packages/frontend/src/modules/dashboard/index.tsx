@@ -110,7 +110,7 @@ const Dashboard = () => {
                                 setSelectedPresetId(p.id);
                               }}
                             >
-                              {p.title}
+                              {p?.title??"Untitled"}
                             </div>
                           );
                         })
