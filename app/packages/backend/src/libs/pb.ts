@@ -2,22 +2,23 @@ import { TypedPocketBase } from "../types/pocketbase";
 import Pocketbase from "pocketbase";
 
 let authToken: string | null = null;
-const initPb = async (_: TypedPocketBase) => {
+const initPb = async (instance: TypedPocketBase) => {
   console.log("Connecting to Pocketbase...", process.env.POCKETBASE_HOST);
   try {
     if (authToken) {
-      await _.authStore.save(authToken);
+      await instance.authStore.save(authToken);
       try {
         // get an up-to-date auth store state by verifying and refreshing the loaded auth model (if any)
-        _.authStore.isValid && await _.admins.authRefresh();
+        instance.authStore.isValid && await instance.admins.authRefresh();
       } catch (e: any) {
         // clear the auth store on failed refresh
-        _.authStore.clear();
+        instance.authStore.clear();
         authToken = "";
+        console.log("if (authToken) originalError",e.originalError)
       }
-      return _;
+      return instance;
     }
-    const authData = await _.admins
+    const authData = await instance.admins
       .authWithPassword(
         process.env.POCKETBASE_EMAIL || "",
         process.env.POCKETBASE_PASSWORD || ""
@@ -25,15 +26,18 @@ const initPb = async (_: TypedPocketBase) => {
     authToken = authData.token;
     try {
       // get an up-to-date auth store state by verifying and refreshing the loaded auth model (if any)
-      _.authStore.isValid && await _.admins.authRefresh();
+      instance.authStore.isValid && await instance.admins.authRefresh();
     } catch (e: any) {
       // clear the auth store on failed refresh
-      _.authStore.clear();
+      instance.authStore.clear();
+      console.log("authRefresh originalError",e.originalError)
+
     }
   } catch (e) {
+    console.log("originalError",e.originalError)
     console.log(e?.message);
   }
-  return _;
+  return instance;
 };
 
 
