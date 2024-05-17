@@ -207,7 +207,7 @@ ${block.settings.response_schema}
         let usage: AiModelUsage | null = null;
         try {
           let temperature = "0.5";
-          if (ai_config.temperature) {
+          if (ai_config.temperature && ai_config.temperature!="undefined") {
             temperature = ai_config.temperature;
             temperature = evalExp(temperature, {}, block);
           }

@@ -326,7 +326,7 @@ const Block = ({
             variant="flat"
             size="sm"
             className="nowheel nodrag"
-            value={String(block.ai_config?.temperature)}
+            value={String(block.ai_config?.temperature??0.5)}
             onChange={(e) => {
               if (!block.settings) {
                 block.settings = {};
