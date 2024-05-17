@@ -100,7 +100,7 @@ const DatasetModal = () => {
       <ModalContent>
         <ModalHeader>Dataset {task.data?.title}</ModalHeader>
         <ModalBody>
-          <div className="flex flex-col gap-2 py-4 h-[70vh] overflow-y-auto">
+          <div className="flex flex-col gap-2 py-4 h-[70vh] overflow-hidden">
             {datas.isLoading && <Spinner />}
             {!datas.isLoading && (
               <>
@@ -119,9 +119,9 @@ const DatasetModal = () => {
                       key="Datas"
                       title={`Datas (${firstPage.data?.totalItems ?? 0})`}
                     >
-                      <Card className="w-full max-h-[60vh] overflow-scroll">
+                      <Card className="w-full max-h-[60vh] overflow-y-auto">
                         <CardBody>
-                          <div className="flex flex-col gap-2 h-full overflow-scroll">
+                          <div className="flex flex-col gap-2 h-full overflow-y-auto">
                             {datas.data?.pages.map((page) => {
                               return (
                                 <div className="flex flex-col gap-2 divide-y">
@@ -129,7 +129,7 @@ const DatasetModal = () => {
                                     return (
                                       <div
                                         key={item.id}
-                                        className="w-full p-4 max-h-[30vh] overflow-scroll"
+                                        className="w-full p-4 max-h-[30vh] overflow-y-auto"
                                       >
                                         <pre className="whitespace-break-spaces w-full h-full">
                                           {JSON.stringify(item.data, null, 2)}
@@ -145,16 +145,16 @@ const DatasetModal = () => {
                       </Card>
                     </Tab>
                     <Tab key="Logs" title={`Logs`}>
-                      <Card className="w-full max-h-[60vh] h-full overflow-scroll">
+                      <Card className="w-full max-h-[60vh] h-full overflow-y-auto">
                         <CardBody>
                           <div className="flex flex-col gap-2 h-full">
                             {logs.data?.totalItems === 0 && (
-                              <div className="w-full flex gap-2 justify-center p-4 max-h-[30vh] overflow-scroll">
+                              <div className="w-full flex gap-2 justify-center p-4 max-h-[30vh] overflow-y-auto">
                                 No logs
                               </div>
                             )}
                             {logs.isFetching && (
-                              <div className="w-full flex justify-center gap-2 p-4 max-h-[30vh] overflow-scroll">
+                              <div className="w-full flex justify-center gap-2 p-4 max-h-[30vh] overflow-y-auto">
                                 <Spinner />
                               </div>
                             )}
