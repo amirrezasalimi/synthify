@@ -44,6 +44,11 @@ const initPb = async (instance: TypedPocketBase) => {
 const pbInstance = () => {
   const _ = new Pocketbase(process.env.POCKETBASE_HOST) as TypedPocketBase;
   _.autoCancellation(false);
+  _.beforeSend = function (url, options) {
+    console.log("PB: ",url,options);
+    
+    return { url, options };
+};
   return _;
 };
 const pb = pbInstance();
