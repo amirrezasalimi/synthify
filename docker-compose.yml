@@ -56,7 +56,7 @@ services:
     networks:
       - traefik_network
     environment:
-      - POCKETBASE_HOST=pocketbase:8090
+      - POCKETBASE_HOST=http://pocketbase:8090
       - POCKETBASE_EMAIL=${POCKETBASE_EMAIL}
       - POCKETBASE_PASSWORD=${POCKETBASE_PASSWORD}
       - POCKETBASE_EXTERNAL_AUTH_TOKEN=${POCKETBASE_EXTERNAL_AUTH_TOKEN}
