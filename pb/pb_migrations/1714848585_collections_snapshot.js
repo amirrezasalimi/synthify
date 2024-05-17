@@ -70,7 +70,7 @@ migrate((db) => {
         "manageRule": null,
         "minPasswordLength": 8,
         "onlyEmailDomains": null,
-        "onlyVerified": true,
+        "onlyVerified": false,
         "requireEmail": false
       }
     },

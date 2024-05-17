@@ -26,11 +26,17 @@ export const userRouter = router({
           const user = await pb
             .collection("users")
             .getFirstListItem(`email = "${input.email}"`);
-          const authMethods = await pb
-            .collection("users")
-            .listExternalAuths(user.id);
+          let authMethodsLen = 0;
+          try {
+            const authMethods = await pb
+              .collection("users")
+              .listExternalAuths(user.id);
+            authMethodsLen = authMethods.length;
+          } catch (e) {
+            console.log(`error`, e);
+          }
           return {
-            has_password: authMethods.length == 0,
+            has_password: authMethodsLen == 0,
           };
         } catch (e) {
           return false;

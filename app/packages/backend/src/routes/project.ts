@@ -343,7 +343,6 @@ export const projectRouter = router({
     )
     .query(async ({ input: { token, project } }) => {
       const _pb = pbInstance();
-      _pb.autoCancellation(false);
       try {
         _pb.authStore.save(token);
         await _pb.collection("users").authRefresh();
@@ -361,7 +360,6 @@ export const projectRouter = router({
           message: "Invalid token",
         });
       }
-      pb.autoCancellation(false);
 
       const projectRecord = await pb.collection("projects").getOne(project);
       if (projectRecord.user !== user.id) {
@@ -376,7 +374,6 @@ export const projectRouter = router({
           message: "Project not found",
         });
       }
-      pb.autoCancellation(true);
       return projectRecord;
     }),
   updateProjectDataWithToken: publicProcedure
@@ -390,7 +387,6 @@ export const projectRouter = router({
     )
     .query(async ({ input: { token, project, data, json_data } }) => {
       const _pb = pbInstance();
-      _pb.autoCancellation(false);
       try {
         _pb.authStore.save(token);
         await _pb.collection("users").authRefresh();
@@ -408,7 +404,6 @@ export const projectRouter = router({
           message: "Invalid token",
         });
       }
-      pb.autoCancellation(false);
 
       const projectRecord = await pb.collection("projects").getOne(project);
       if (projectRecord.user !== user.id) {
@@ -423,7 +418,6 @@ export const projectRouter = router({
           message: "Project not found",
         });
       }
-      pb.autoCancellation(true);
       const res = await pb.collection("projects").update(project, {
         data,
         json_data,
@@ -456,18 +450,24 @@ export const projectRouter = router({
       })
     )
     .query(async ({ ctx, input }) => {
-      const user = ctx.user.id;
+      try {
+        const user = ctx.user.id;
+        const project = await pb.collection("projects").getOne(input.project);
 
-      const project = await pb.collection("projects").getOne(input.project);
-
-      if (project.user !== user) {
-        throw new Error("Access denied");
+        if (project.user !== user) {
+          throw new Error("Access denied");
+        }
+        const res = await pb.collection("datas").getList(input.page, 20, {
+          filter: `task = "${input.task}"`,
+          sort: "-created",
+        });
+        return res;
+      } catch (e) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Dataset not found",
+        });
       }
-      const res = await pb.collection("datas").getList(input.page, 20, {
-        filter: `task = "${input.task}"`,
-        sort: "-created",
-      });
-      return res;
     }),
   downloadDataset: userProcedure
     .input(
@@ -584,7 +584,7 @@ export const projectRouter = router({
       if (task.user !== user) {
         throw new Error("Access denied");
       }
-      
+
       try {
         const logs = await pb.collection("task_logs").getList(page, 20, {
           filter: `task = "${id}"`,
