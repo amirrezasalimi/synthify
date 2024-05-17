@@ -13,6 +13,10 @@ const elysia = new Elysia()
       origin: "*",
     })
   )
+  .onError(({ code, error }) => {
+    console.log(code,error);
+    return new Response(error.toString())
+})
   .use(
     trpc(routes, {
       createContext: createTrpcContext,
