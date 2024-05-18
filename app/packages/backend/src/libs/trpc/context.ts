@@ -14,15 +14,21 @@ const createTrpcContext = async function (
     if (xPb) {
       const _pb = pbInstance();
       _pb.authStore.save(xPb);
-      const res = await _pb.collection("users").authRefresh();
-      if (res?.record?.id) {
-        return {
-          user: res.record,
-          req: opts.req,
-        };
+      if (_pb.authStore.isValid) {
+        const res = await _pb.collection("users").authRefresh();
+        if (res?.record) {
+          return {
+            user: res.record,
+            req: opts.req,
+          };
+        }
+      } else {
+        // throw Error("Invalid token");
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    // console.log("context error:",e);
+  }
   // todo: find better approach
   return {
     req: opts.req,
