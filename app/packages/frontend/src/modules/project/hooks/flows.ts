@@ -1,12 +1,12 @@
 import { DragEndEvent } from "@dnd-kit/core";
 import { FlowNode } from "../types/flow-data";
 import useSyncedState from "./synced-state";
-import { NodeChange } from "reactflow";
+import { Edge, NodeChange } from "reactflow";
 import { SortableData } from "@dnd-kit/sortable";
 import toast from "react-hot-toast";
 import { defaultMainFlow } from "../constants";
-import { promptBlock } from "../constants";
 import { makeId } from "@/shared/utils/id";
+import { useMemo } from "react";
 
 const useFlows = () => {
   const state = useSyncedState();
@@ -69,7 +69,7 @@ const useFlows = () => {
     let x, y;
     if (lastFlow) {
       x = lastFlow?.position.x + 200 || 100;
-      y = lastFlow?.position.y +50 || 100;
+      y = lastFlow?.position.y + 50 || 100;
     } else {
       x = 100;
       y = 100;
@@ -95,8 +95,42 @@ const useFlows = () => {
     }
     state.nodes["main"] = defaultMainFlow;
   };
+
+  const edges: Edge[] = useMemo(() => {
+    const edges: Edge[] = [];
+    for (const node of nodes) {
+      if (node.type === "flow") {
+        const blocks = node.data.blocks;
+        for (const block of blocks) {
+          if (block.type === "run-flow") {
+            const targetFlow = block.settings.selected_flow;
+            if (!targetFlow) continue;
+            edges.push({
+              id: `${node.id}-${block.id}/runflow-${targetFlow}`,
+              type: 'bezier',
+              source: node.id,
+              sourceHandle: `runflow-${block.id}`,
+              target: targetFlow,
+              targetHandle: `flow-${targetFlow}`,
+              animated: true,
+              style: {
+                strokeDashoffset: 25,
+                strokeDasharray: 8,
+              }
+            });
+          }
+        }
+      }
+    }
+    return edges;
+  }, [
+    state.nodes,
+    state.config.isInitialized
+
+  ])
   return {
     nodes,
+    edges,
     onNodesChange,
     onSortEnd,
     addEmptyFlow,

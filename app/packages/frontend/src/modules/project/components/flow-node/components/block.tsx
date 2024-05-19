@@ -24,6 +24,7 @@ import { RichTextarea, createRegexRenderer } from "rich-textarea";
 import JsonResponseSchemaModal from "./json-response-schema-modal";
 import DataModal from "./data-modal";
 import DataFile from "./data-file";
+import { Handle, Position } from "reactflow";
 
 const Block = ({
   i,
@@ -62,7 +63,10 @@ const Block = ({
       block.ai_config.model = model_id;
     });
   };
-  const regex = new RegExp("{((?:[^{}]|{(?:[^{}]|{[^{}]*})*})*)}(?![^#]*#END_NO_EXP)", "gm");
+  const regex = new RegExp(
+    "{((?:[^{}]|{(?:[^{}]|{[^{}]*})*})*)}(?![^#]*#END_NO_EXP)",
+    "gm"
+  );
 
   const promptRender = createRegexRenderer([
     // anything between {} highlight
@@ -202,7 +206,7 @@ const Block = ({
             />
           )}
           {type == "run-flow" && (
-            <Dropdown>
+            <Dropdown className="relative">
               <DropdownTrigger>
                 {helper.selectedFlow?.data.name || "Select Flow"}
               </DropdownTrigger>
@@ -218,6 +222,17 @@ const Block = ({
                 }
               </DropdownMenu>
             </Dropdown>
+          )}
+          {helper.selectedFlow && (
+            <Handle
+              id={`runflow-${id}`}
+              type="source"
+              position={Position.Right}
+              className="absolute !right-[-36px] !w-3 !h-3 !top-6 !border-none group-hover:invisible visible"
+              style={{
+                background: color,
+              }}
+            />
           )}
         </div>
         {(type == "llm" || type == "list") && (
@@ -326,7 +341,7 @@ const Block = ({
             variant="flat"
             size="sm"
             className="nowheel nodrag"
-            value={String(block.ai_config?.temperature??0.5)}
+            value={String(block.ai_config?.temperature ?? 0.5)}
             onChange={(e) => {
               if (!block.settings) {
                 block.settings = {};

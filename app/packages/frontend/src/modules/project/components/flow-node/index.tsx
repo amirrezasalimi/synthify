@@ -1,4 +1,4 @@
-import { NodeProps } from "reactflow";
+import { Handle, NodeProps, Position } from "reactflow";
 import { FlowData } from "../../types/flow-data";
 import useFlow from "../../hooks/flow";
 import {
@@ -28,8 +28,19 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
   } = useFlow(id);
 
   return (
-    <div className="w-[400px]">
+    <div className="w-[400px] relative group/flow">
       {/* head */}
+      {id != "main" && (
+        <Handle
+          id={`flow-${id}`}
+          type="target"
+          position={Position.Left}
+          className="absolute !left-[-36px] !w-3 !h-3 !top-6 !border-none"
+          style={{
+            background: data.color,
+          }}
+        />
+      )}
       <div
         className="w-full flex items-center justify-center rounded-xl group"
         style={{
@@ -38,10 +49,10 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
       >
         {/* remove */}
         {id !== "main" && (
-          <div className="remove-flow absolute w-[100px] h-10 left-[-36px] top-2 z-10  flex items-center">
+          <div className="remove-flow absolute w-6 h-10 left-[-40px] top-1 z-10  flex items-center bg-background group-hover:visible invisible">
             <TbTrash
               size={24}
-              className="hover:text-red-500 cursor-pointer group-hover:visible invisible"
+              className="hover:text-red-500 cursor-pointer"
               onClick={remove}
             >
               X

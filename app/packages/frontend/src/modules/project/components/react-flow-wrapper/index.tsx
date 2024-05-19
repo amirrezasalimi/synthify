@@ -9,14 +9,16 @@ const nodeTypes: NodeTypes = {
   flow: FlowNode,
 };
 const ReactFlowWrapper = ({ children }: { children?: React.ReactNode }) => {
-  const { nodes, onNodesChange, onSortEnd } = useFlows();
-
+  const { nodes, edges, onNodesChange, onSortEnd } = useFlows();
+  console.log("edges", edges);
+  
   return (
     <div className="w-full h-full">
       <DndContext autoScroll onDragEnd={onSortEnd}>
         <ReactFlow
           nodeTypes={nodeTypes}
           nodes={nodes}
+          edges={edges}
           onNodesChange={onNodesChange}
         >
           <AiAssistant />
