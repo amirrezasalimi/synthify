@@ -119,7 +119,7 @@ const ModelsModal = () => {
             {services.isLoading && <Spinner />}
             {!services.isLoading && services.data?.length === 0 && (
               <div className="flex justify-center items-center h-32">
-                <h3 className="text-lg text-gray-500">No ai services found</h3>
+                <h3 className="text-gray-500 text-lg">No ai services found</h3>
               </div>
             )}
             {services.data?.map((service) => (
@@ -130,14 +130,14 @@ const ModelsModal = () => {
                 radius="sm"
               >
                 <CardBody className="flex flex-col gap-2">
-                  <div className="flex  justify-between">
+                  <div className="flex justify-between">
                     <div className="flex flex-col gap-2">
                       <h2 className="font-bold tetx-md">{service.title}</h2>
                       <span>{service.endpoint}</span>
                     </div>
                     <div>
                       <TbTrash
-                        className="cursor-pointer hover:text-red-500"
+                        className="hover:text-red-500 cursor-pointer"
                         size={24}
                         onClick={() => {
                           if (removeService.isLoading) return;
@@ -151,7 +151,7 @@ const ModelsModal = () => {
                   </div>
                   <Divider />
                   <div className="flex flex-col">
-                    <div className="flex gap-2 items-center">
+                    <div className="flex items-center gap-2">
                       <h3 className="font-medium">
                         models({service?.models?.length ?? 0})
                       </h3>
@@ -172,13 +172,15 @@ const ModelsModal = () => {
                     </div>
                     <div className="flex flex-col gap-1 py-2 max-h-[20vh] overflow-y-scroll">
                       {(service?.models ?? []).map((model) => (
-                        <div key={model.id} className="flex gap-2 items-center">
+                        <div key={model.id} className="flex items-center gap-2">
                           <div>
-                            <h4 className="text-sm">{model.name}</h4>
+                            <h4 className="text-sm">
+                              {model?.name || model?.id || `unknown`}
+                            </h4>
                           </div>
                           <div>
                             <TbPlus
-                              className="cursor-pointer hover:text-red-500 rotate-45"
+                              className="hover:text-red-500 cursor-pointer rotate-45"
                               size={16}
                               onClick={() => {
                                 if (removeModel.isLoading) return;
@@ -197,7 +199,7 @@ const ModelsModal = () => {
                         </div>
                       ))}
                     </div>
-                    <div className="flex gap-2 items-center mt-4">
+                    <div className="flex items-center gap-2 mt-4">
                       <Input
                         variant="bordered"
                         placeholder="cohere/command-r-plus"
