@@ -1,6 +1,6 @@
 Synthify: Generate Synthesized Datasets with a No-Code UI
 
-![Synthify]![image](https://github.com/user-attachments/assets/830ebb48-3ca1-40aa-b7ed-a988cd34e97c))
+![Synthify](https://github.com/user-attachments/assets/830ebb48-3ca1-40aa-b7ed-a988cd34e97c)
 
 ### Quick Start Guide
 
