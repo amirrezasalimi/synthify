@@ -21,7 +21,7 @@ const importPresets = async () => {
     console.error(`pocketbase Error`);
     console.error(e);
     if (e instanceof ClientResponseError) {
-      console.error(e.data);
+      console.error(e.message, e.response, e.status, e.cause, e.originalError);
     }
   }
 };
