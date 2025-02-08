@@ -16,8 +16,8 @@ const pbInstance = (token?: string) => {
       // );
 
       options.headers = {
-        Authorization: token,
         ...options.headers,
+        Authorization: token,
       };
       return {
         url,
