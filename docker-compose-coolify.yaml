@@ -11,15 +11,12 @@ services:
       - ./data/pb/hooks:/pb/pb_hooks
     ports:
       - "8100:8090" # Internal access
-    networks:
-      - synthify_network
+
   backend:
     build:
       context: ./app/packages/backend
       dockerfile: Dockerfile
 
-    networks:
-      - synthify_network
     environment:
       - POCKETBASE_HOST=${POCKETBASE_HOST}
       - POCKETBASE_EMAIL=${POCKETBASE_EMAIL}
@@ -41,8 +38,7 @@ services:
 
     depends_on:
       - backend
-    networks:
-      - synthify_network
+
   frontend:
     build:
       context: ./app/
@@ -51,10 +47,6 @@ services:
         - VITE_BACKEND_HOST=${BACKEND_HOST}
         - VITE_PARTY_HOST=${PARTY_HOST}
         - VITE_POCKETBASE_HOST=${POCKETBASE_HOST}
-    networks:
-      - synthify_network
 
     depends_on:
       - backend
-networks:
-  synthify_network:
