@@ -8,17 +8,17 @@ const pbInstance = (token?: string) => {
   _.autoCancellation(false);
   if (token) {
     _.beforeSend = (url, options) => {
-      console.log(url,options,token);
-      
+      // console.log(url,options,token);
+
       options.headers = {
-        Authorization: `Bearer ${token}`,
+        Authorization: token,
         ...options.headers,
       };
       return {
         url,
         options,
-      }
-    }
+      };
+    };
   }
   return _;
 };
