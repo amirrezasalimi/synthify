@@ -8,17 +8,16 @@ const pbInstance = (token?: string) => {
   _.autoCancellation(false);
   if (token) {
     _.beforeSend = (url, options) => {
-      console.log(
-        url,
-        options,
-        token,
-        env.POCKETBASE_HOST,
-        env.POCKETBASE_ADMIN_TOKEN
-      );
+      // console.log(
+      //   url,
+      //   options,
+      //   token,
+      //   env.POCKETBASE_HOST,
+      // );
 
       options.headers = {
-        ...options.headers,
         Authorization: token,
+        ...options.headers,
       };
       return {
         url,
