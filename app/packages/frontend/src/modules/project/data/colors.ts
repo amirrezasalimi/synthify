@@ -1,0 +1,1 @@
+export const flowColors = ["#FF3897", "#1FE9AC", "#E91F1F", "#531FE9"];

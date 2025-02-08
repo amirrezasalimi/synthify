@@ -6,10 +6,12 @@ export interface FlowData {
   color: string;
   blocks: FlowBlock[];
 }
+export type BlockType = "list" | "llm" | "run-flow" | "merge" | "data";
+
 export interface FlowBlock {
   id: string;
   name: string;
-  type: "list" | "llm" | "run-flow" | "merge" | "data";
+  type: BlockType;
   prompt: string;
   settings: {
     data_type?: "json" | "text" | "parquet";

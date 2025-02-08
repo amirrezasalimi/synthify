@@ -28,28 +28,28 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
   } = useFlow(id);
 
   return (
-    <div className="w-[400px] relative group/flow">
+    <div className="relative w-[400px] group/flow">
       {/* head */}
       {id != "main" && (
         <Handle
           id={`flow-${id}`}
           type="target"
           position={Position.Left}
-          className="absolute !left-[-36px] !w-3 !h-3 !top-6 !border-none"
+          className="!top-6 !left-[-36px] absolute !border-none !w-3 !h-3"
           style={{
             background: data.color,
           }}
         />
       )}
       <div
-        className="w-full flex items-center justify-center rounded-xl group"
+        className="flex justify-center items-center rounded-xl w-full group"
         style={{
           backgroundColor: data.color,
         }}
       >
         {/* remove */}
         {id !== "main" && (
-          <div className="remove-flow absolute w-6 h-10 left-[-40px] top-1 z-10  flex items-center bg-background group-hover:visible invisible">
+          <div className="group-hover:visible top-1 left-[-40px] z-10 absolute flex items-center bg-background w-6 h-10 invisible remove-flow">
             <TbTrash
               size={24}
               className="hover:text-red-500 cursor-pointer"
@@ -61,7 +61,7 @@ const FlowNode = ({ data, id }: NodeProps<FlowData>) => {
         )}
 
         <div
-          className="w-full text-white text-lg  m-1.5 px-2 py-1"
+          className="m-1.5 px-2 py-1 w-full text-lg text-white"
           style={{
             backgroundColor: data.color,
           }}

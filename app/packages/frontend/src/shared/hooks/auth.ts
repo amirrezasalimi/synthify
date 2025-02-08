@@ -11,7 +11,7 @@ const useAuth = () => {
         return pb_client.authStore.isValid;
       }
       return false;
-    },
+    }
   });
   const logout = async () => {
     await pb_client.authStore.clear();
