@@ -335,7 +335,7 @@ const runDataTask = async ({
       const cost = data.usages.total_cost ?? 0;
       await logFunction({
         type: "llm-success",
-        message: `cost: $${parseFloat(`${cost}`).toFixed(2)}\n===\nResponse: ${data.response}`,
+        message: `cost: $${cost}\n===\nResponse: ${data.response}`,
         flowId: data.flowId,
         blockId: data.blockId,
         custom: {
