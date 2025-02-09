@@ -125,9 +125,13 @@ const useChat = () => {
         });
     });
   };
+
+  const clearMessages = () => {
+    chat.messages = [];
+  };
   return {
     messages: chat.messages,
-    clearMessages: () => {},
+    clearMessages,
     changeModel,
     selectedModelId: chat.selectedModelId,
     sendMessage,

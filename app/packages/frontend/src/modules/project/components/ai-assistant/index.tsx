@@ -2,7 +2,7 @@ import { BotIcon } from "@/shared/components/icons";
 import { Button, cn } from "@nextui-org/react";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { TbSend, TbSettings } from "react-icons/tb";
+import { TbSend, TbSettings, TbTrash } from "react-icons/tb";
 import { useLocalStorage } from "react-use";
 import useChat from "./hooks/chat";
 import toast from "react-hot-toast";
@@ -33,6 +33,9 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
     }
   }, []);
 
+  const clearChat = () => {
+    chat.clearMessages();
+  };
   return (
     <motion.div
       className={cn(
@@ -51,7 +54,10 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
       <div className="relative flex flex-col h-full">
         <div className="top-0 z-10 absolute flex justify-between items-center bg-background-800 bg-opacity-80 backdrop-blur-lg backdrop-filter px-4 w-full h-12">
           <div>{showSettings ? "Settings" : "Ai Assistant"}</div>
-          <div>
+          <div className="flex gap-2">
+            <Button isIconOnly onClick={clearChat} variant={"light"}>
+              <TbTrash size={20} />
+            </Button>
             <Button
               isIconOnly
               onClick={() => setShowSettings((prev) => !prev)}
