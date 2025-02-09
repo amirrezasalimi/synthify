@@ -5,11 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { TbSend, TbSettings, TbTrash } from "react-icons/tb";
 import { useLocalStorage } from "react-use";
 import useChat from "./hooks/chat";
-import toast from "react-hot-toast";
+import useDataImporter from "../../hooks/data-importer";
 
 const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
   const [message, setMessage] = useLocalStorage("chat-message", "");
   const [showSettings, setShowSettings] = useState(false);
+  const importer = useDataImporter();
   const msg = message as string;
 
   const chat = useChat();
@@ -36,6 +37,25 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
   const clearChat = () => {
     chat.clearMessages();
   };
+
+  const isValidJson = (schema: string): boolean => {
+    try {
+      let cleaned = schema.trim();
+      if (cleaned.startsWith("```json")) {
+        cleaned = cleaned.replace(/^```json\s*/, "");
+      } else if (cleaned.startsWith("```")) {
+        cleaned = cleaned.replace(/^```\s*/, "");
+      }
+      if (cleaned.endsWith("```")) {
+        cleaned = cleaned.replace(/\s*```$/, "");
+      }
+      JSON.parse(cleaned);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   return (
     <motion.div
       className={cn(
@@ -109,7 +129,17 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
                     : "bg-secondary text-background"
                 )}
               >
-                {content}
+                <div className="size-full"></div>
+                {isValidJson(content) && (
+                  <Button
+                    color="default"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => importer.importData(content)}
+                  >
+                    Import
+                  </Button>
+                )}
               </div>
             );
           })}
@@ -171,7 +201,7 @@ const AiAssistant = () => {
       >
         <BotIcon className={"w-6 h-6 min-w-min "} />
         <div className={"whitespace-nowrap transition-all overflow-hidden"}>
-          Ai assistant
+          Ai assistant (experimental)
         </div>
       </motion.div>
     </>
