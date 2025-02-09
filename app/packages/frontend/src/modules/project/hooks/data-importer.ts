@@ -45,13 +45,12 @@ const useDataImporter = () => {
           const flow = flows[key] as {
             blocks: FlowBlock[];
           };
-          const newId = makeId();
-          state.nodes[newId] = {
-            id: newId,
+          state.nodes[key] = {
+            id: key,
             type: "flow",
             data: {
               name: key,
-              id: newId,
+              id: key,
               blocks: flow.blocks,
               color: flowColors[Math.floor(Math.random() * flowColors.length)],
             } as FlowData,
