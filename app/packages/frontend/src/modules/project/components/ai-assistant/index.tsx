@@ -129,7 +129,7 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
                     : "bg-secondary text-background"
                 )}
               >
-                <div className="size-full"></div>
+                <div className="size-full">{content}</div>
                 {isValidJson(content) && (
                   <Button
                     color="default"
