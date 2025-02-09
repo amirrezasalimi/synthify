@@ -14,6 +14,11 @@ import { AiModelUsage, AiResponseData, LogData, RunFlowData } from "./types";
 import Sandbox from "@nyariv/sandboxjs";
 
 // Helper functions for generating random numbers and floats
+
+const pickRandItem = <T>(arr: T[]): T => {
+  return arr[Math.floor(Math.random() * arr.length)];
+};
+
 const generateRandomNumber = (min: number, max?: number): number => {
   if (max === undefined) {
     return Math.floor(Math.random() * min);
@@ -41,6 +46,7 @@ const evaluateExpression = (
       globals: {
         ...Sandbox.SAFE_GLOBALS,
         rand: generateRandomNumber,
+        rand_item: pickRandItem,
         rand_float: generateRandomFloat,
       },
     });
