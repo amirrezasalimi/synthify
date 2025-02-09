@@ -26,12 +26,12 @@ const godPrompt = () => {
         {
           "name": "question",
           "type": "text",
-          "prompt": "formulate a question using category {rand(categories)}, ensuring to add a question mark at the end, without providing an answer or extra commentary."
+          "prompt": "formulate a question using category {{rand_item(categories)}}, ensuring to add a question mark at the end, without providing an answer or extra commentary."
         },
         {
           "name": "output",
           "type": "data",
-          "prompt": "{question}"
+          "prompt": "{{question}}"
         }
       ]
     }
@@ -52,9 +52,9 @@ const godPrompt = () => {
     "flow": "flow-name"
   }
   
-  In all "prompt" fields, you can use expressions such as {block_name} to pull the generated content from other blocks or even from the "output" block of other flows. When running a flow, {flow_name} can be used to access the output of the flow being executed in your current main flow.
+  In all "prompt" fields, you can use expressions such as {{block_name}} to pull the generated content from other blocks or even from the "output" block of other flows. When running a flow, {{flow_name}} can be used to access the output of the flow being executed in your current main flow.
   
-  The rand() function is also available for use, which can accept an array, rand(min,max), or rand(n) for generating a random number. Furthermore, any JavaScript inline code can be included within {} brackets, such as {Math.random(1)}.
+  The rand_item() function is also available for use which can accept an array, and rand(min,max), or rand(n) function for generating a random number. Furthermore, any JavaScript inline code can be included within {{}} brackets, such as {Math.random(1)}.
   
   #### Notes:
   - Avoid using AI prompts for simple tasks, such as generating random numbers, merging texts, or requesting very large texts. Optimize the process by decomposing the problem into distinct blocks.
@@ -109,7 +109,7 @@ const useChat = () => {
         });
       }
       console.log("Sending message", JSON.stringify(chat.messages, null, 2));
-      
+
       sendMsg
         .mutateAsync({
           aiModelId: chat.selectedModelId || "",
