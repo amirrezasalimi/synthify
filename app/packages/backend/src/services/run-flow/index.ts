@@ -21,12 +21,21 @@ const generateRandomNumber = (min: number, max?: number): number => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-const generateRandomFloat = (min: number, max: number, digits: number = 2): string => {
+const generateRandomFloat = (
+  min: number,
+  max: number,
+  digits: number = 2
+): string => {
   return (Math.random() * (max - min) + min).toFixed(digits);
 };
 
 // Function to evaluate expressions within a sandbox environment
-const evaluateExpression = (content: string, context: Object, block: FlowBlock, logFunction: (data: LogData) => void): string => {
+const evaluateExpression = (
+  content: string,
+  context: Object,
+  block: FlowBlock,
+  logFunction: (data: LogData) => void
+): string => {
   try {
     const sandbox = new Sandbox({
       globals: {
@@ -38,6 +47,7 @@ const evaluateExpression = (content: string, context: Object, block: FlowBlock, 
 
     const regex = /{((?:[^{}]|{(?:[^{}]|{[^{}]*})*})*)}(?![^#]*#END_NO_EXP)/gm;
     content = content.replace(regex, (match, p1) => {
+      console.log(`Evaluating expression: ${p1}`); // Add this line
       try {
         const code = `return ${p1}`;
         const exec = sandbox.compile(code);
@@ -49,6 +59,10 @@ const evaluateExpression = (content: string, context: Object, block: FlowBlock, 
           message: `Error in evaluateExpression: ${error ?? ""}`,
           flowId: block.id,
           blockId: block.id,
+          custom: {
+            expression: p1,
+            match,
+          },
         });
         return "";
       }
@@ -91,11 +105,19 @@ const processBlock = async (
     content = evaluateExpression(content, blockCache, block, logFunction);
   }
 
-  const serviceConfig = aiServices.find((service) => service.id === ai_config?.service);
+  const serviceConfig = aiServices.find(
+    (service) => service.id === ai_config?.service
+  );
   const isAiBlock = type === "llm" || type === "list";
 
   if (serviceConfig && isAiBlock) {
-    const aiResponse = await processAiBlock(block, content, serviceConfig, logFunction, onAiResponseFunction);
+    const aiResponse = await processAiBlock(
+      block,
+      content,
+      serviceConfig,
+      logFunction,
+      onAiResponseFunction
+    );
     if (aiResponse) {
       content = aiResponse;
     }
@@ -136,7 +158,12 @@ const processAiBlock = async (
   let usage: AiModelUsage | null = null;
 
   try {
-    let temperature = evaluateExpression(block.ai_config?.temperature ?? "0.5", {}, block, logFunction);
+    let temperature = evaluateExpression(
+      block.ai_config?.temperature ?? "0.5",
+      {},
+      block,
+      logFunction
+    );
     const res = await oai.chat.completions.create({
       temperature: Number(temperature),
       model: aiModelId,
@@ -186,22 +213,37 @@ const processAiBlock = async (
     const separator = block.settings.item_seperator ?? "\n";
     return isJsonMode
       ? aiResponse
-      : (aiResponse ?? "").split(new RegExp(separator, "g")).map((item) => item.trim().replace(separator, ""));
+      : (aiResponse ?? "")
+          .split(new RegExp(separator, "g"))
+          .map((item) => item.trim().replace(separator, ""));
   }
 
   return aiResponse;
 };
 
 // Main function to run a flow
-const runFlow = async (props: RunFlowData): Promise<string | Record<string, any> | undefined> => {
-  const { cache, aiServices, currentFlow, allFlows, logFunction, onAiResponseFunction } = props;
+const runFlow = async (
+  props: RunFlowData
+): Promise<string | Record<string, any> | undefined> => {
+  const {
+    cache,
+    aiServices,
+    currentFlow,
+    allFlows,
+    logFunction,
+    onAiResponseFunction,
+  } = props;
   const flowId = currentFlow.id;
   const blockCache: Record<string, string | string[] | any> = {};
-  const orderedBlocks = currentFlow.data.blocks.sort((a, b) => a.order - b.order);
+  const orderedBlocks = currentFlow.data.blocks.sort(
+    (a, b) => a.order - b.order
+  );
 
   for (const block of orderedBlocks) {
     if (block.type === "run-flow") {
-      const nextFlow = allFlows.find((flow) => flow.id === block.settings.selected_flow);
+      const nextFlow = allFlows.find(
+        (flow) => flow.id === block.settings.selected_flow
+      );
       if (nextFlow) {
         const result = await runFlow({
           ...props,
@@ -212,7 +254,14 @@ const runFlow = async (props: RunFlowData): Promise<string | Record<string, any>
       continue;
     }
 
-    await processBlock(block, blockCache, cache, aiServices, logFunction, onAiResponseFunction);
+    await processBlock(
+      block,
+      blockCache,
+      cache,
+      aiServices,
+      logFunction,
+      onAiResponseFunction
+    );
 
     if (orderedBlocks[orderedBlocks.length - 1].id === block.id) {
       return flowId === "main" ? blockCache[block.name] : blockCache;
