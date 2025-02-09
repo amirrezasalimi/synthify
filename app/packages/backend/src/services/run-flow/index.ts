@@ -44,6 +44,7 @@ const evaluateExpression = (
         rand_float: generateRandomFloat,
       },
     });
+    console.log(`Context: `, content, context, block);
 
     const regex = /{((?:[^{}]|{(?:[^{}]|{[^{}]*})*})*)}(?![^#]*#END_NO_EXP)/gm;
     content = content.replace(regex, (match, p1) => {
