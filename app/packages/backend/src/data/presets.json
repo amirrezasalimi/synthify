@@ -184,7 +184,7 @@
                 "id": "output",
                 "name": "output",
                 "order": 0,
-                "prompt": "User: {question}\n\nAssistant: {answer}",
+                "prompt": "User: {{question}}\n\nAssistant: {{answer}}",
                 "settings": {},
                 "type": "merge"
               },
