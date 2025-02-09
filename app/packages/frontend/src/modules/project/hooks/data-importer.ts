@@ -3,7 +3,6 @@ import { flowColors } from "../data/colors";
 import { FlowBlock, FlowData } from "../types/flow-data";
 import useDoc from "./doc";
 import useSyncedState from "./synced-state";
-import { makeId } from "@/shared/utils/id";
 
 const useDataImporter = () => {
   const state = useSyncedState();
