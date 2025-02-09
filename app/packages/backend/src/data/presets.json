@@ -16,7 +16,7 @@
                 "id": "svnWpj0q",
                 "name": "selected",
                 "order": -2,
-                "prompt": "{{rand(data)}}",
+                "prompt": "{{rand_item(data)}}",
                 "settings": {
                   "cache": false,
                   "item_seperator": ","
@@ -157,7 +157,7 @@
                 "id": "35Bww8DB",
                 "name": "selected",
                 "order": -1,
-                "prompt": "{{rand(data)}}",
+                "prompt": "{{rand_item(data)}}",
                 "settings": {
                   "cache": false,
                   "item_seperator": ","
@@ -224,7 +224,7 @@
                 "id": "GGzeVTVR",
                 "name": "answer",
                 "order": -1,
-                "prompt": "answer this question, short answer:\n{question}",
+                "prompt": "answer this question, short answer:\n{{question}}",
                 "settings": {
                   "cache": false,
                   "item_seperator": ","
@@ -387,7 +387,7 @@
                 "id": "EgbaSpWa",
                 "name": "selected",
                 "order": -1,
-                "prompt": "{{rand(data)}}",
+                "prompt": "{{rand_item(data)}}",
                 "settings": {
                   "cache": false,
                   "item_seperator": ","
