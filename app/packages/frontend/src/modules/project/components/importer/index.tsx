@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   Modal,
   Button,
-  Input,
   ModalBody,
   ModalHeader,
   ModalFooter,
@@ -11,7 +10,7 @@ import {
 import { createRegexRenderer, RichTextarea } from "rich-textarea";
 import useSyncedState from "../../hooks/synced-state";
 import useDoc from "../../hooks/doc";
-import { FlowData, FlowNode } from "../../types/flow-data";
+import { FlowNode } from "../../types/flow-data";
 import { flowColors } from "../../data/colors";
 
 const Importer = () => {
