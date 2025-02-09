@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { defaultMainFlow } from "../constants";
 import { makeId } from "@/shared/utils/id";
 import { useMemo } from "react";
+import { flowColors } from "../data/colors";
 
 const useFlows = () => {
   const state = useSyncedState();
@@ -74,7 +75,7 @@ const useFlows = () => {
       x = 100;
       y = 100;
     }
-    const colors = ["#FF3897", "#1FE9AC", "#E91F1F", "#531FE9"];
+
     const id = makeId();
 
     state.nodes[id] = {
@@ -83,7 +84,7 @@ const useFlows = () => {
       data: {
         id,
         name: `flow${Object.keys(state.nodes).length + 1}`,
-        color: colors[Math.floor(Math.random() * colors.length)],
+        color: flowColors[Math.floor(Math.random() * flowColors.length)],
         blocks: [],
       },
       position: { x, y },

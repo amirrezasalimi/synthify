@@ -2,14 +2,15 @@ import { BotIcon } from "@/shared/components/icons";
 import { Button, cn } from "@nextui-org/react";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { TbSend, TbSettings } from "react-icons/tb";
+import { TbSend, TbSettings, TbTrash } from "react-icons/tb";
 import { useLocalStorage } from "react-use";
 import useChat from "./hooks/chat";
-import toast from "react-hot-toast";
+import useDataImporter from "../../hooks/data-importer";
 
 const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
   const [message, setMessage] = useLocalStorage("chat-message", "");
   const [showSettings, setShowSettings] = useState(false);
+  const importer = useDataImporter();
   const msg = message as string;
 
   const chat = useChat();
@@ -33,6 +34,28 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
     }
   }, []);
 
+  const clearChat = () => {
+    chat.clearMessages();
+  };
+
+  const isValidJson = (schema: string): boolean => {
+    try {
+      let cleaned = schema.trim();
+      if (cleaned.startsWith("```json")) {
+        cleaned = cleaned.replace(/^```json\s*/, "");
+      } else if (cleaned.startsWith("```")) {
+        cleaned = cleaned.replace(/^```\s*/, "");
+      }
+      if (cleaned.endsWith("```")) {
+        cleaned = cleaned.replace(/\s*```$/, "");
+      }
+      JSON.parse(cleaned);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   return (
     <motion.div
       className={cn(
@@ -48,10 +71,13 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
       }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex flex-col relative h-full">
-        <div className="w-full flex justify-between h-12 bg-background-800 z-10 absolute top-0 px-4 items-center bg-opacity-80 backdrop-filter backdrop-blur-lg">
-          <div>{showSettings ? "Settings" : "Ai Assistant"}</div>
-          <div>
+      <div className="relative flex flex-col h-full">
+        <div className="top-0 z-10 absolute flex justify-between items-center bg-background-800 bg-opacity-80 backdrop-blur-lg backdrop-filter px-4 w-full h-12">
+          <div>{showSettings ? "Settings" : "Ai Assistant(experimental)"}</div>
+          <div className="flex gap-2">
+            <Button isIconOnly onClick={clearChat} variant={"light"}>
+              <TbTrash size={20} />
+            </Button>
             <Button
               isIconOnly
               onClick={() => setShowSettings((prev) => !prev)}
@@ -63,7 +89,7 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
         </div>
         {/* settings */}
         <motion.div
-          className="w-full bg-background-700 overflow-hidden my-2"
+          className="bg-background-700 my-2 w-full overflow-hidden"
           initial={{
             height: 0,
           }}
@@ -71,7 +97,7 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
             height: showSettings ? "auto" : 0,
           }}
         >
-          <div className="w-full h-full p-2 mt-[4rem]">
+          <div className="mt-[4rem] p-2 w-full h-full">
             <Button onClick={chat.changeModel} fullWidth variant="ghost">
               {chat.selectedModelId || "Select a model"}
             </Button>
@@ -80,7 +106,7 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
         {/* chat */}
         <motion.div
           ref={messagesRef}
-          className="overflow-y-auto flex flex-col gap-2 relative pt-[2rem] pb-[140px] px-4"
+          className="relative flex flex-col gap-2 px-4 pt-[2rem] pb-[140px] overflow-y-auto"
           animate={{
             opacity: showSettings ? 0 : 1,
             height: showSettings ? 0 : "100%",
@@ -88,7 +114,7 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
         >
           {/* gradient shadow */}
           {showBottomShadow && (
-            <div className="sticky bottom-2 w-full h-4 bg-gradient-to-t from-background-800 to-transparent"></div>
+            <div className="bottom-2 sticky bg-gradient-to-t from-background-800 to-transparent w-full h-4"></div>
           )}
           {chat.messages?.map((msg, i) => {
             const content = msg.content as string;
@@ -103,19 +129,29 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
                     : "bg-secondary text-background"
                 )}
               >
-                {content}
+                <div className="size-full">{content}</div>
+                {isValidJson(content) && (
+                  <Button
+                    color="default"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => importer.importData(content)}
+                  >
+                    Import
+                  </Button>
+                )}
               </div>
             );
           })}
         </motion.div>
         {/* bottom */}
 
-        <div className="w-full h-[120px] absolute bottom-0 border-t border-background-600 bg-background-700 bg-opacity-80 backdrop-filter backdrop-blur-lg">
+        <div className="bottom-0 absolute bg-background-700 bg-opacity-80 backdrop-blur-lg backdrop-filter border-t border-background-600 w-full h-[120px]">
           <textarea
             disabled={chat.sendMessageIsLoading}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="w-full h-full resize-none  p-2 outline-none bg-transparent"
+            className="bg-transparent p-2 w-full h-full outline-none resize-none"
             placeholder="ask what you want"
             rows={
               msg.split("\n").length > 1 ? msg.split("\n").length : undefined
@@ -132,7 +168,7 @@ const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
             onClick={send}
             isIconOnly
             variant="light"
-            className="absolute bottom-2 right-2"
+            className="right-2 bottom-2 absolute"
           >
             <TbSend size={20} />
           </Button>
@@ -149,10 +185,10 @@ const AiAssistant = () => {
       <AiAssistantChat isOpen={isOpen} />
       <motion.div
         onClick={() => {
-          return toast("coming soon");
+          // return toast("coming soon");
           setIsOpen((prev) => !prev);
         }}
-        className="absolute z-10 bottom-0 right-0 mb-6 px-4 flex gap-3 justify-center items-center rounded-md h-10  border bg-secondary border-secondary-700 text-background cursor-pointer overflow-hidden select-none"
+        className="right-0 bottom-0 z-10 absolute flex justify-center items-center gap-3 border-secondary-700 bg-secondary mb-6 px-4 border rounded-md h-10 text-background cursor-pointer overflow-hidden select-none"
         initial={{
           width: "fit-content",
           transformOrigin: "100% 100%",

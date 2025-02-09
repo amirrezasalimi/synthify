@@ -16,7 +16,7 @@
                 "id": "svnWpj0q",
                 "name": "selected",
                 "order": -2,
-                "prompt": "{rand(data)}",
+                "prompt": "{{rand_item(data)}}",
                 "settings": {
                   "cache": false,
                   "item_seperator": ","
@@ -56,7 +56,7 @@
                 "id": "output",
                 "name": "output",
                 "order": 0,
-                "prompt": "{text}\n--\n{structure}",
+                "prompt": "{{text}}\n--\n{{structure}}",
                 "settings": {},
                 "type": "merge"
               },
@@ -68,7 +68,7 @@
                 "id": "5u119vq3",
                 "name": "text",
                 "order": -2,
-                "prompt": "make a random meaningful text in \"{cats.selected}\" topic .\nuse numbers , dates , anything.\nno extra talk or chat:",
+                "prompt": "make a random meaningful text in \"{{cats.selected}}\" topic .\nuse numbers , dates , anything.\nno extra talk or chat:",
                 "settings": {
                   "cache": false,
                   "item_seperator": ","
@@ -96,7 +96,7 @@
                 "id": "J6pydLGJ",
                 "name": "structure",
                 "order": -1,
-                "prompt": "extract key info's of this provided text , give the response in Sample format (typescript schema , json data).\nimportant rules: \n- do not use nested objects \n- response should be like sample,  no need define new types or js variables , only like sample.\n- second part is json , its start with { .\n- separate parts with -- \n- no need to extract long texts , only key info.\ntext:\n{text}\n\nResponse sample, no extra talk or chat:\ntype Schema={\ntest:string\n}\n--\n{\n  \"test\":\"\"\n}",
+                "prompt": "extract key info's of this provided text , give the response in Sample format (typescript schema , json data).\nimportant rules: \n- do not use nested objects \n- response should be like sample,  no need define new types or js variables , only like sample.\n- second part is json , its start with { .\n- separate parts with -- \n- no need to extract long texts , only key info.\ntext:\n{{text}}\n\nResponse sample, no extra talk or chat:\ntype Schema={\ntest:string\n}\n--\n{\n  \"test\":\"\"\n}",
                 "settings": {
                   "cache": false,
                   "item_seperator": ","
@@ -157,7 +157,7 @@
                 "id": "35Bww8DB",
                 "name": "selected",
                 "order": -1,
-                "prompt": "{rand(data)}",
+                "prompt": "{{rand_item(data)}}",
                 "settings": {
                   "cache": false,
                   "item_seperator": ","
@@ -184,7 +184,7 @@
                 "id": "output",
                 "name": "output",
                 "order": 0,
-                "prompt": "User: {question}\n\nAssistant: {answer}",
+                "prompt": "User: {{question}}\n\nAssistant: {{answer}}",
                 "settings": {},
                 "type": "merge"
               },
@@ -209,7 +209,7 @@
                 "id": "KWyUqM3M",
                 "name": "question",
                 "order": -2,
-                "prompt": "make a random question in the '{categories.selected}' , no answer or extra talk , add ? at end:",
+                "prompt": "make a random question in the '{{categories.selected}}' , no answer or extra talk , add ? at end:",
                 "settings": {
                   "cache": false,
                   "item_seperator": ","
@@ -224,7 +224,7 @@
                 "id": "GGzeVTVR",
                 "name": "answer",
                 "order": -1,
-                "prompt": "answer this question, short answer:\n{question}",
+                "prompt": "answer this question, short answer:\n{{question}}",
                 "settings": {
                   "cache": false,
                   "item_seperator": ","
@@ -267,7 +267,7 @@
                 "id": "PzahRpAi",
                 "name": "functions",
                 "order": -2,
-                "prompt": "you are helpful assistant , your task is to generate schema for function calling in '{cats.selected}' topic\nrules\n- make a json schema in the format like sample.\n- make {rand(2,5)} functions .\n- only response the generated schema , no extra chat or talk \n#NO_EXP\nsample response (valid json format):\n[\n    {\n      \"type\": \"function\",\n      \"function\": {\n        \"name\": \"get_temperature\",\n        \"description\": \"get temperature of a city\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"city\": {\n              \"type\": \"string\",\n              \"description\": \"name\"\n            }\n          },\n          \"required\": [\n            \"city\"\n          ]\n        }\n      }\n    }\n]\n#END_NO_EXP",
+                "prompt": "you are helpful assistant , your task is to generate schema for function calling in '{{cats.selected}}' topic\nrules\n- make a json schema in the format like sample.\n- make {{rand(2,5)}} functions .\n- only response the generated schema , no extra chat or talk \n#NO_EXP\nsample response (valid json format):\n[\n    {\n      \"type\": \"function\",\n      \"function\": {\n        \"name\": \"get_temperature\",\n        \"description\": \"get temperature of a city\",\n        \"parameters\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"city\": {\n              \"type\": \"string\",\n              \"description\": \"name\"\n            }\n          },\n          \"required\": [\n            \"city\"\n          ]\n        }\n      }\n    }\n]\n#END_NO_EXP",
                 "settings": {
                   "cache": false,
                   "item_seperator": ",",
@@ -347,7 +347,7 @@
                 "id": "IXy3vvAQ",
                 "name": "conversations",
                 "order": -1,
-                "prompt": "Generate a conversation between a user and an AI assistant on the topic of {cats.selected}. Follow these rules:\n\nConversation format:\nuser: [user message]\n\nassistant: [assistant response]\n\n- Include at least {rand(3,10)} messages\n- Leave one blank line between user and assistant messages\n- The user starts the conversation, and the assistant responds\n- The assistant can call functions, and the user should respond with:\n  <function_response> [function output] </function_response>\n- The assistant should comment on the function output in the next message\n- Use only the 'user' and 'assistant' keywords\n- Ensure data used in functions is realistic, not fake\n\nconversation:\n{base.system}\n",
+                "prompt": "Generate a conversation between a user and an AI assistant on the topic of {{cats.selected}}. Follow these rules:\n\nConversation format:\nuser: [user message]\n\nassistant: [assistant response]\n\n- Include at least {{rand(3,10)}} messages\n- Leave one blank line between user and assistant messages\n- The user starts the conversation, and the assistant responds\n- The assistant can call functions, and the user should respond with:\n  <function_response> [function output] </function_response>\n- The assistant should comment on the function output in the next message\n- Use only the 'user' and 'assistant' keywords\n- Ensure data used in functions is realistic, not fake\n\nconversation:\n{base.system}\n",
                 "settings": {
                   "cache": false,
                   "item_seperator": ","
@@ -387,7 +387,7 @@
                 "id": "EgbaSpWa",
                 "name": "selected",
                 "order": -1,
-                "prompt": "{rand(data)}",
+                "prompt": "{{rand_item(data)}}",
                 "settings": {
                   "cache": false,
                   "item_seperator": ","

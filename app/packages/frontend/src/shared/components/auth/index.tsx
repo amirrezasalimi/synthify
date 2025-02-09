@@ -8,7 +8,6 @@ import useAuthFlow from "./hooks/auth-flow";
 import {
   Link,
   useNavigate,
-  useParams,
   useSearchParams,
 } from "react-router-dom";
 import { trpc } from "@/shared/utils/trpc";
@@ -34,12 +33,12 @@ const ProviderItem = ({
     <div
       onClick={onClick}
       className={clsx(
-        "w-full p-3 border border-gray-300/10 cursor-pointer bg-white rounded-2xl gap-4 justify-center items-center inline-flex",
+        "inline-flex justify-center items-center gap-4 border-gray-300/10 bg-white p-3 border rounded-2xl w-full cursor-pointer",
         loading ? "opacity-50 cursor-wait" : "hover:opacity-80"
       )}
     >
       {icon}
-      <span className="text-center text-zinc-800 text-lg font-normal">
+      <span className="font-normal text-center text-lg text-zinc-800">
         Continue With {provider}
       </span>
     </div>
@@ -114,7 +113,7 @@ const Auth = ({ head = true }: { head?: boolean }) => {
       });
   };
   return (
-    <div className="w-full md:w-[400px] flex flex-col justify-center items-center">
+    <div className="flex flex-col justify-center items-center w-full md:w-[400px]">
       {authCheck && (
         <>
           <CircularProgress size="lg" />
@@ -122,27 +121,24 @@ const Auth = ({ head = true }: { head?: boolean }) => {
       )}
       {isLoginned && (
         <>
-          <div className="w-full flex justify-start py-6">
-            <span className="text-center  text-xl font-semibold">
+          <div className="flex justify-start py-6 w-full">
+            <span className="font-semibold text-center text-xl">
               continue as
             </span>
           </div>
           <Link className="w-full" to={LINKS.DASHBOARD}>
-            <div
-              className="w-full px-6 py-4 flex bg-background-500 border  rounded-2xl justify-between items-center cursor-pointer hover:bg-background-800 transition-all
-                    "
-            >
-              <div className="flex gap-3 items-center">
+            <div className="flex justify-between items-center bg-background-500 hover:bg-background-800 px-6 py-4 border rounded-2xl w-full transition-all cursor-pointer">
+              <div className="flex items-center gap-3">
                 <Avatar name={user?.email || ""} src={user?.avatar} />
                 <div className="flex flex-col justify-center items-start">
-                  <span className=" font-semibold">{user?.username}</span>
+                  <span className="font-semibold">{user?.username}</span>
                   <span className=" ">{user?.email}</span>
                 </div>
               </div>
-              <TbChevronRight className="text-gray-400 w-[32px] h-[32px]" />
+              <TbChevronRight className="w-[32px] h-[32px] text-gray-400" />
             </div>
           </Link>
-          <div className="w-full mt-4 flex flex-col gap-2 text-center ">
+          <div className="flex flex-col gap-2 mt-4 w-full text-center">
             <span className="text-red-500 cursor-pointer" onClick={logout}>
               Logout
             </span>
@@ -152,17 +148,17 @@ const Auth = ({ head = true }: { head?: boolean }) => {
       {!authCheck && !isLogin && (
         <>
           {head && (
-            <div className="w-full flex justify-start py-3">
-              <span className="text-center  text-xl font-semibold">
+            <div className="flex justify-start py-3 w-full">
+              <span className="font-semibold text-center text-xl">
                 {step == "login" && "welcome back"}
                 {step == "register" && "register"}
                 {step == "email" && "welcome"}
               </span>
             </div>
           )}
-          <div className="w-full flex flex-col gap-2 ">
+          <div className="flex flex-col gap-2 w-full">
             <div>
-              <span className="text-center  text-xl font-semibold"></span>
+              <span className="font-semibold text-center text-xl"></span>
             </div>
             {step == "email" && (
               <>
@@ -174,13 +170,19 @@ const Auth = ({ head = true }: { head?: boolean }) => {
                   variant="bordered"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                      checkeEmail();
+                    }
+                  }}
                 />
+
                 <Button
                   isLoading={checkUserExists.isLoading}
                   onClick={checkeEmail}
                   fullWidth
                   size="lg"
-                  className="bg-blue-500 text-white mt-2"
+                  className="bg-blue-500 mt-2 text-white"
                 >
                   Continue
                 </Button>
@@ -188,13 +190,13 @@ const Auth = ({ head = true }: { head?: boolean }) => {
             )}
             {step == "login" && (
               <>
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
                   <TbArrowLeft
                     fontSize={24}
                     onClick={() => setStep("email")}
-                    className=" cursor-pointer"
+                    className="cursor-pointer"
                   />
-                  <div className=" text-md font-semibold">
+                  <div className="font-semibold text-md">
                     Login as &nbsp;
                     <span className="text-blue-500">{email}</span>
                   </div>
@@ -207,6 +209,11 @@ const Auth = ({ head = true }: { head?: boolean }) => {
                   variant="bordered"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                      loginAction.mutate();
+                    }
+                  }}
                 />
                 <Button
                   onClick={() => loginAction.mutate()}
@@ -221,13 +228,13 @@ const Auth = ({ head = true }: { head?: boolean }) => {
             )}
             {step == "register" && (
               <>
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
                   <TbArrowLeft
                     fontSize={24}
                     onClick={() => setStep("email")}
-                    className=" cursor-pointer"
+                    className="cursor-pointer"
                   />
-                  <div className=" text-md font-semibold">
+                  <div className="font-semibold text-md">
                     Register as &nbsp;
                     <span className="text-blue-500">{email}</span>
                   </div>
@@ -241,6 +248,11 @@ const Auth = ({ head = true }: { head?: boolean }) => {
                   variant="bordered"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                      registerAction();
+                    }
+                  }}
                 />
                 <Button
                   onClick={registerAction}
@@ -255,7 +267,7 @@ const Auth = ({ head = true }: { head?: boolean }) => {
             )}
           </div>
           {/* login with oauth providers */}
-          <div className="w-full flex flex-col gap-2 mt-8">
+          <div className="flex flex-col gap-2 mt-8 w-full">
             <ProviderItem
               onClick={() => auth.open("github")}
               loading={auth.currentAuthLoading == "github"}

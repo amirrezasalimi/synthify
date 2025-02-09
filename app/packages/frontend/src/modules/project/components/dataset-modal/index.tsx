@@ -110,7 +110,7 @@ const DatasetModal = () => {
                     isLoading={datas.isFetching}
                     onClick={downloadDataset}
                     size="md"
-                    className="ml-2 absolute top-0 right-0 z-10"
+                    className="top-0 right-0 z-10 absolute ml-2"
                   >
                     Download
                   </Button>
@@ -129,9 +129,9 @@ const DatasetModal = () => {
                                     return (
                                       <div
                                         key={item.id}
-                                        className="w-full p-4 max-h-[30vh] overflow-y-auto"
+                                        className="p-4 w-full max-h-[30vh] overflow-y-auto"
                                       >
-                                        <pre className="whitespace-break-spaces w-full h-full">
+                                        <pre className="w-full h-full whitespace-break-spaces">
                                           {JSON.stringify(item.data, null, 2)}
                                         </pre>
                                       </div>
@@ -145,16 +145,16 @@ const DatasetModal = () => {
                       </Card>
                     </Tab>
                     <Tab key="Logs" title={`Logs`}>
-                      <Card className="w-full max-h-[60vh] h-full overflow-y-auto">
+                      <Card className="w-full h-full max-h-[60vh] overflow-y-auto">
                         <CardBody>
                           <div className="flex flex-col gap-2 h-full">
                             {logs.data?.totalItems === 0 && (
-                              <div className="w-full flex gap-2 justify-center p-4 max-h-[30vh] overflow-y-auto">
+                              <div className="flex justify-center gap-2 p-4 w-full max-h-[30vh] overflow-y-auto">
                                 No logs
                               </div>
                             )}
                             {logs.isFetching && (
-                              <div className="w-full flex justify-center gap-2 p-4 max-h-[30vh] overflow-y-auto">
+                              <div className="flex justify-center gap-2 p-4 w-full max-h-[30vh] overflow-y-auto">
                                 <Spinner />
                               </div>
                             )}
@@ -162,7 +162,7 @@ const DatasetModal = () => {
                               return (
                                 <div
                                   key={log.id}
-                                  className="w-full flex gap-4 items-center p-2 h-full max-h-[30vh] overflow-hidden"
+                                  className="flex items-center gap-4 p-2 w-full h-full max-h-[30vh] overflow-hidden"
                                 >
                                   <span
                                     className={cn(
@@ -177,8 +177,15 @@ const DatasetModal = () => {
                                   >
                                     {log.type}
                                   </span>
-                                  <pre className="whitespace-break-spaces flex items-center justify-between w-full h-full text-sm relative">
-                                    {log.message}
+                                  <pre className="relative flex justify-between items-center w-full h-full text-sm whitespace-break-spaces">
+                                    <span
+                                      dangerouslySetInnerHTML={{
+                                        __html: log.message.replace(
+                                          /\n/g,
+                                          "<br />"
+                                        ),
+                                      }}
+                                    />
                                     {(log.meta as unknown as any)?.blockId !==
                                       undefined && (
                                       <Button
@@ -191,7 +198,7 @@ const DatasetModal = () => {
                                           );
                                         }}
                                       >
-                                        Go to block
+                                        Go to
                                       </Button>
                                     )}
                                   </pre>

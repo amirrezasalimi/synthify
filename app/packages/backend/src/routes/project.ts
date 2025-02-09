@@ -7,12 +7,6 @@ import { UserAiAddByOptions, UsersResponse } from "@/types/pocketbase";
 import { FlowNode } from "@/types/flow-data";
 import runDataTask from "@/services/run-flow";
 import { TRPCError } from "@trpc/server";
-import fs from "fs";
-import {
-  fileTypeFromBlob,
-  fileTypeFromBuffer,
-  fileTypeFromFile,
-} from "file-type";
 // routes
 export const projectRouter = router({
   // user ai's
@@ -215,6 +209,15 @@ export const projectRouter = router({
     .mutation(
       async ({ ctx, input: { flows, title, count = 1, projectId } }) => {
         const user = ctx.user.id;
+        let normalized_title = title.trim();
+        if (!normalized_title) {
+          const runs_count = (
+            await pb.collection("tasks").getList(1, 1, {
+              filter: `user = "${user}" && project = "${projectId}"`,
+            })
+          ).totalItems;
+          normalized_title = `#${runs_count + 1}`;
+        }
 
         const project = await pb.collection("projects").getOne(projectId);
         if (project.user !== user) {
@@ -233,7 +236,7 @@ export const projectRouter = router({
           projectId,
           count,
           flows,
-          title,
+          title: normalized_title,
         });
         return "ok";
       }

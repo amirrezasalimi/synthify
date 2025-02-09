@@ -1,5 +1,6 @@
 import { pb } from "@/libs/pb";
 import presets from "@/data/presets.json";
+import { ClientResponseError } from "pocketbase";
 const importPresets = async () => {
   try {
     const oldPresets = await pb.collection("presets").getFullList();
@@ -17,9 +18,12 @@ const importPresets = async () => {
       }
     }
   } catch (e) {
+    console.error(`pocketbase Error`);
     console.error(e);
+    if (e instanceof ClientResponseError) {
+      console.error(e.message, e.response, e.status, e.cause, e.originalError);
+    }
   }
 };
-
 
 export default importPresets;

@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  pocketbase:
+    restart: always
+    build:
+      context: ./pb
+      dockerfile: Dockerfile
+    volumes:
+      - ./data/pb/data:/pb/pb_data
+      - ./data/pb/hooks:/pb/pb_hooks
+    ports:
+      - "8100:8090" # Internal access
+
+  backend:
+    build:
+      context: ./app/packages/backend
+      dockerfile: Dockerfile
+
+    environment:
+      - POCKETBASE_HOST=${POCKETBASE_HOST}
+      - POCKETBASE_EMAIL=${POCKETBASE_EMAIL}
+      - POCKETBASE_PASSWORD=${POCKETBASE_PASSWORD}
+      - POCKETBASE_ADMIN_TOKEN=${POCKETBASE_ADMIN_TOKEN}
+      - POCKETBASE_EXTERNAL_AUTH_TOKEN=${POCKETBASE_EXTERNAL_AUTH_TOKEN}
+    depends_on:
+      - pocketbase
+    restart: always
+
+  party:
+    build:
+      context: ./party
+      dockerfile: Dockerfile
+      args:
+        - BACKEND_HOST=${BACKEND_HOST}
+    volumes:
+      - ./data/party:/.partykit
+
+    depends_on:
+      - backend
+
+  frontend:
+    build:
+      context: ./app/
+      dockerfile: Dockerfile-frontend
+      args:
+        - VITE_BACKEND_HOST=${BACKEND_HOST}
+        - VITE_PARTY_HOST=${PARTY_HOST}
+        - VITE_POCKETBASE_HOST=${POCKETBASE_HOST}
+
+    depends_on:
+      - backend

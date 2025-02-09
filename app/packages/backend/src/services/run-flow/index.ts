@@ -10,293 +10,277 @@ import {
   UserAiResponse,
 } from "../../types/pocketbase";
 import OpenAI from "openai";
-import { AiModelUsage } from "./types";
+import { AiModelUsage, AiResponseData, LogData, RunFlowData } from "./types";
 import Sandbox from "@nyariv/sandboxjs";
 
-// helpers
-const rand = (a: number | any[], b?: number) => {
-  if (Array.isArray(a)) {
-    return a[Math.floor(Math.random() * a.length)];
+// Helper functions for generating random numbers and floats
+
+const pickRandItem = <T>(arr: T[]): T => {
+  return arr[Math.floor(Math.random() * arr.length)];
+};
+
+const generateRandomNumber = (min: number, max?: number): number => {
+  if (max === undefined) {
+    return Math.floor(Math.random() * min);
   }
-  if (b === undefined) {
-    return Math.floor(Math.random() * a);
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
+const generateRandomFloat = (
+  min: number,
+  max: number,
+  digits: number = 2
+): string => {
+  return (Math.random() * (max - min) + min).toFixed(digits);
+};
+
+// Function to evaluate expressions within a sandbox environment
+const evaluateExpression = (
+  content: string,
+  context: Object,
+  block: FlowBlock,
+  logFunction: (data: LogData) => void
+): string => {
+  try {
+    const sandbox = new Sandbox({
+      globals: {
+        ...Sandbox.SAFE_GLOBALS,
+        rand: generateRandomNumber,
+        rand_item: pickRandItem,
+        rand_float: generateRandomFloat,
+      },
+    });
+    console.log(`Context: `, content, context, block);
+
+    const regex =
+      /{{((?:[^{}]|{(?:[^{}]|{[^{}]*})*})*)}}(?![^#]*#END_NO_EXP)/gm;
+    content = content.replace(regex, (match, p1) => {
+      console.log(`Evaluating expression: ${p1}`); // Add this line
+      try {
+        const code = `return ${p1}`;
+        const exec = sandbox.compile(code);
+        const result = exec(context).run() as string;
+        console.log(`Code: `, code);
+        console.log(`Result: `, result);
+
+        return result;
+      } catch (error) {
+        logFunction({
+          type: "error",
+          message: `Error in evaluateExpression: ${error ?? ""}`,
+          flowId: block.id,
+          blockId: block.id,
+          custom: {
+            expression: p1,
+            match,
+          },
+        });
+        return "";
+      }
+    });
+    content = content.replace(/#NO_EXP/g, "").replace(/#END_NO_EXP/g, "");
+  } catch (error) {
+    logFunction({
+      type: "error",
+      message: `Error in evaluateExpression: ${error ?? ""}`,
+      flowId: block.id,
+      blockId: block.id,
+    });
   }
-  return Math.floor(Math.random() * (b - a + 1) + a);
-};
-const rand_float = (a: number, b: number, digits: number = 2) => {
-  return (Math.random() * (b - a) + a).toFixed(digits);
-};
-//
-
-type LogData = {
-  type: "debug" | "ai-error" | "llm-success" | "error";
-  message: string;
-  flowId: string;
-  blockId: string;
-  custom?: any;
-};
-type AiResponseData = {
-  prompt: string;
-  response: string;
-  serviceName: string;
-  modelId: string;
-  flowId: string;
-  blockId: string;
-  //
-  usages: AiModelUsage;
-};
-type RunFlowData = {
-  // used for 'list' type , to cache the results for all dataset flows
-  cache: Record<string, string | string[] | any>;
-  // users ai configured ai services
-  aiServices: UserAiResponse<unknown, unknown>[];
-  // current flow
-  flow: FlowNode;
-  // all flows
-  flows: FlowNode[];
-
-  //
-  log: (data: LogData) => void;
-  onAiResponse: (data: AiResponseData) => void;
+  return content;
 };
 
-const runFlow = async (props: RunFlowData) => {
-  const { cache, aiServices, flow, flows, log, onAiResponse } = props;
-  const flowId = flow.id;
-  const blockCache: Record<string, string | string[] | any> = {};
-  // run single flow
-  const blocks = flow.data.blocks;
-  const ordredBlocks = blocks.sort((a, b) => a.order - b.order);
+// Function to process a single block within a flow
+const processBlock = async (
+  block: FlowBlock,
+  blockCache: Record<string, string | string[] | any>,
+  cache: Record<string, string | string[] | any>,
+  aiServices: UserAiResponse<unknown, unknown>[],
+  logFunction: (data: LogData) => void,
+  onAiResponseFunction: (data: AiResponseData) => void
+): Promise<void> => {
+  const { type, id: blockId, settings, name, prompt, ai_config } = block;
+  let content: any = prompt || "";
 
-  const evalExp = (content: string, context: Object, block: FlowBlock) => {
+  if (settings.cache && cache[`${block.id}-${blockId}`]) {
+    blockCache[name] = cache[`${block.id}-${blockId}`];
+    return;
+  }
+
+  if (type === "data") {
+    const { data_type, data_from, data_raw = "" } = settings;
+    if (data_from === "raw" && data_raw !== "") {
+      content = data_type === "json" ? JSON.parse(data_raw) : data_raw;
+    }
+  } else {
+    content = evaluateExpression(content, blockCache, block, logFunction);
+  }
+
+  const serviceConfig = aiServices.find(
+    (service) => service.id === ai_config?.service
+  );
+  const isAiBlock = type === "llm" || type === "list";
+
+  if (serviceConfig && isAiBlock) {
+    const aiResponse = await processAiBlock(
+      block,
+      content,
+      serviceConfig,
+      logFunction,
+      onAiResponseFunction
+    );
+    if (aiResponse) {
+      content = aiResponse;
+    }
+  }
+
+  blockCache[name] = content;
+  if (settings.cache) {
+    cache[`${block.id}-${blockId}`] = content;
+  }
+};
+
+// Function to process AI-related blocks
+const processAiBlock = async (
+  block: FlowBlock,
+  content: string,
+  serviceConfig: UserAiResponse<unknown, unknown>,
+  logFunction: (data: LogData) => void,
+  onAiResponseFunction: (data: AiResponseData) => void
+): Promise<string | null | object> => {
+  const oai = new OpenAI({
+    apiKey: serviceConfig.api_key,
+    baseURL: serviceConfig.endpoint,
+  });
+
+  const isJsonMode = block.settings.response_type === "json";
+  let aiPrompt = content;
+
+  if (isJsonMode && block.settings.response_schema) {
+    const sample = block.settings?.response_sample || "";
+    if (sample.trim() !== "") {
+      aiPrompt += `\n---\nSample Json Response:\n${sample}`;
+    }
+    aiPrompt += `\n---\nResponse exactly in this type format with json data, no extra talk, this type shouldn't be as parent root:\n${block.settings.response_schema}`;
+  }
+
+  const aiModelId = block.ai_config?.model ?? "gpt-3.5-turbo";
+  let aiResponse: string | null = null;
+  let usage: AiModelUsage | null = null;
+
+  try {
+    let temperature = evaluateExpression(
+      block.ai_config?.temperature ?? "0.5",
+      {},
+      block,
+      logFunction
+    );
+    const res = await oai.chat.completions.create({
+      temperature: Number(temperature),
+      model: aiModelId,
+      messages: [{ role: "user", content: aiPrompt }],
+      response_format: { type: isJsonMode ? "json_object" : "text" },
+    });
+    aiResponse = res?.choices?.[0].message?.content ?? null;
+    usage = res?.usage as AiModelUsage;
+  } catch (error: any) {
+    logFunction({
+      type: "ai-error",
+      message: error.message,
+      flowId: block.id,
+      blockId: block.id,
+    });
+    return null;
+  }
+
+  if (!aiResponse || !usage) return null;
+
+  onAiResponseFunction({
+    prompt: content,
+    response: aiResponse,
+    serviceName: serviceConfig.title,
+    modelId: aiModelId,
+    flowId: block.id,
+    blockId: block.id,
+    usages: usage,
+  });
+
+  if (isJsonMode) {
+    const jsonRegex = /```json([\s\S]*?)```/g;
+    aiResponse = aiResponse.replace(jsonRegex, "$1");
     try {
-      const sandbox = new Sandbox({
-        globals: {
-          ...Sandbox.SAFE_GLOBALS,
-          rand,
-          rand_float,
-        },
-      });
-
-      const regex = new RegExp(
-        "{((?:[^{}]|{(?:[^{}]|{[^{}]*})*})*)}(?![^#]*#END_NO_EXP)",
-        "gm"
-      );
-      content = content.replace(regex, (match, p1) => {
-        try {
-          const code = `return ${p1}`;
-          const exec = sandbox.compile(code);
-          const res = exec(context).run() as string;
-          return res;
-        } catch (e) {
-          log({
-            type: "error",
-            // @ts-ignore
-            message: `Error in evalExp: ${e?.message ?? ""}`,
-            flowId,
-            blockId: block.id,
-          });
-          return "";
-        }
-      });
-      content = content.replace(/#NO_EXP/g, "");
-      content = content.replace(/#END_NO_EXP/g, "");
-    } catch (e) {
-      log({
-        type: "error",
-        // @ts-ignore
-        message: `Error in evalExp: ${e?.message ?? ""}`,
-        flowId,
+      aiResponse = JSON.parse(aiResponse);
+    } catch (error) {
+      logFunction({
+        type: "ai-error",
+        message: "Invalid JSON response",
+        flowId: block.id,
         blockId: block.id,
       });
     }
-    return content;
-  };
+  }
 
-  for (const block of ordredBlocks) {
-    const { type } = block;
+  if (block.type === "list") {
+    const separator = block.settings.item_seperator ?? "\n";
+    return isJsonMode
+      ? aiResponse
+      : (aiResponse ?? "")
+          .split(new RegExp(separator, "g"))
+          .map((item) => item.trim().replace(separator, ""));
+  }
 
-    if (type == "run-flow") {
-      const nextFlow = flows.find((f) => f.id === block.settings.selected_flow);
+  return aiResponse;
+};
+
+// Main function to run a flow
+const runFlow = async (
+  props: RunFlowData
+): Promise<string | Record<string, any> | undefined> => {
+  const {
+    cache,
+    aiServices,
+    currentFlow,
+    allFlows,
+    logFunction,
+    onAiResponseFunction,
+  } = props;
+  const flowId = currentFlow.id;
+  const blockCache: Record<string, string | string[] | any> = {};
+  const orderedBlocks = currentFlow.data.blocks.sort(
+    (a, b) => a.order - b.order
+  );
+
+  for (const block of orderedBlocks) {
+    if (block.type === "run-flow") {
+      const nextFlow = allFlows.find(
+        (flow) => flow.id === block.settings.selected_flow
+      );
       if (nextFlow) {
-        const res = await runFlow({
+        const result = await runFlow({
           ...props,
-          flow: nextFlow,
+          currentFlow: nextFlow,
         });
-        if (res) blockCache[nextFlow.data.name] = res;
-        // console.log(`run-flow ${nextFlow.data.name}`, res);
+        if (result) blockCache[nextFlow.data.name] = result;
       }
       continue;
     }
-    let content = "";
-    // prompt block
-    content = block.prompt;
 
-    let useCache = false;
-    const cacheBlock = block.settings.cache || false;
-    if (block.settings.cache) {
-      if (cache[`${flowId}-${block.id}`]) {
-        blockCache[block.name] = cache[`${flowId}-${block.id}`];
-        useCache = true;
-      }
-    }
+    await processBlock(
+      block,
+      blockCache,
+      cache,
+      aiServices,
+      logFunction,
+      onAiResponseFunction
+    );
 
-    if (!useCache) {
-      if (type == "data") {
-        const dataType = block.settings.data_type;
-        const dataFrom = block.settings.data_from;
-        const data_raw = block.settings.data_raw || "";
-        if (dataFrom == "raw" && data_raw != "") {
-          if (dataType == "json") {
-            try {
-              content = JSON.parse(data_raw);
-            } catch (e) {
-              log({
-                type: "debug",
-                message: `Invalid JSON data`,
-                flowId,
-                blockId: block.id,
-              });
-            }
-          } else {
-            content = data_raw;
-          }
-        }
-        if (cacheBlock) cache[`${flowId}-${block.id}`] = content;
-      } else {
-        const context: Object = {};
-        for (const key in blockCache) {
-          // @ts-ignore
-          context[key] = blockCache[key];
-        }
-        content = evalExp(content, context, block);
-      }
-      const ai_config = block.ai_config;
-      const service_config = aiServices.find(
-        (service) => service.id === ai_config.service
-      );
-      const isAiBlock = type === "llm" || type === "list";
-
-      if (service_config && isAiBlock) {
-        const oai = new OpenAI({
-          apiKey: service_config.api_key,
-          baseURL: service_config.endpoint,
-        });
-
-        const isJsonMode = block.settings.response_type == "json";
-
-        let ai_prompt = content;
-        if (isJsonMode && block.settings.response_schema) {
-          const sample = block.settings?.response_sample || "";
-          if (sample.trim() != "") {
-            ai_prompt += `
----
-Sample Json Response:
-${sample}
-`;
-          }
-          ai_prompt += `
----
-Response exactly in this type format with json data, no extra talk, this type should'nt be as parent root:
-${block.settings.response_schema}
-`;
-        }
-
-        const aiModelId = ai_config.model ?? "gpt-3.5-turbo";
-        let ai_res: string | null = null;
-        let usage: AiModelUsage | null = null;
-        try {
-          let temperature = "0.5";
-          if (ai_config.temperature && ai_config.temperature!="undefined") {
-            temperature = ai_config.temperature;
-            temperature = evalExp(temperature, {}, block);
-          }
-          const res = await oai.chat.completions.create({
-            temperature: Number(temperature ?? 0.5),
-            model: aiModelId,
-            messages: [
-              {
-                role: "user",
-                content: ai_prompt,
-              },
-            ],
-            response_format: {
-              type: isJsonMode ? "json_object" : "text",
-            },
-          });
-          ai_res = res?.choices?.[0].message?.content;
-          usage = res?.usage as AiModelUsage;
-        } catch (e: any) {
-          log({
-            type: "ai-error",
-            message: e.message,
-            flowId,
-            blockId: block.id,
-          });
-        }
-
-        if (!ai_res || !usage) continue;
-        if (ai_res) {
-          onAiResponse({
-            prompt: content,
-            response: content ?? "",
-            serviceName: service_config.title,
-            modelId: aiModelId,
-            flowId,
-            blockId: block.id,
-            usages: usage,
-          });
-        }
-        if (isJsonMode) {
-          // replace ```json and last ``` with empty string, with regex , multiline
-          const jsonRegex = /```json([\s\S]*?)```/g;
-          ai_res = ai_res.replace(jsonRegex, "$1");
-          try {
-            ai_res = JSON.parse(ai_res);
-          } catch (e) {
-            log({
-              type: "ai-error",
-              message: "Invalid JSON response",
-              flowId,
-              blockId: block.id,
-            });
-          }
-        }
-
-        if (type == "list") {
-          const sep = block.settings.item_seperator ?? "\n";
-          const list = isJsonMode
-            ? ai_res
-            : (ai_res || "")
-                .split(new RegExp(sep, "g"))
-                .map((t) => t.trim().replace(sep, ""));
-
-          if (cacheBlock) {
-            cache[`${flowId}-${block.id}`] = list;
-          }
-          blockCache[block.name] = list;
-        } else {
-          blockCache[block.name] = ai_res;
-          if (cacheBlock) cache[`${flowId}-${block.id}`] = ai_res;
-        }
-        //
-      } else {
-        blockCache[block.name] = content;
-        if (cacheBlock) cache[`${flowId}-${block.id}`] = content;
-      }
-    }
-
-    if (ordredBlocks[ordredBlocks.length - 1].id == block.id) {
-      if (flowId == "main") {
-        return content;
-      } else {
-        return blockCache;
-      }
+    if (orderedBlocks[orderedBlocks.length - 1].id === block.id) {
+      return flowId === "main" ? blockCache[block.name] : blockCache;
     }
   }
-  2;
 };
 
+// Function to run a data task
 const runDataTask = async ({
   count,
   title,
@@ -309,9 +293,9 @@ const runDataTask = async ({
   flows: FlowNode[];
   userId: string;
   projectId: string;
-}) => {
+}): Promise<void> => {
   const mainFlow = flows.find((flow) => flow.data.id === "main") as FlowNode;
-  const res = await pb.collection("tasks").create({
+  const task = await pb.collection("tasks").create({
     user: userId,
     project: projectId,
     count,
@@ -319,19 +303,17 @@ const runDataTask = async ({
     flows,
     status: TasksStatusOptions["in-progress"],
   } as TasksRecord);
-  const taskId = res.id;
+  const taskId = task.id;
 
   const aiServices = await pb.collection("user_ai").getFullList({
     user: userId,
   });
 
   const cache: Record<string, string | string[]> = {};
-
   const dataset: string[] = [];
 
-  const log = async (data: LogData) => {
+  const logFunction = async (data: LogData): Promise<void> => {
     console.log(`log`, data);
-
     try {
       await pb.collection("task_logs").create({
         task: taskId,
@@ -343,15 +325,17 @@ const runDataTask = async ({
           ...data.custom,
         },
       } as TaskLogsRecord);
-    } catch (e) {
-      console.log(`error`, e);
+    } catch (error) {
+      console.log(`error`, error);
     }
   };
-  const onAiResponse = async (data: AiResponseData) => {
+
+  const onAiResponseFunction = async (data: AiResponseData): Promise<void> => {
     try {
-      await log({
+      const cost = data.usages.total_cost ?? 0;
+      await logFunction({
         type: "llm-success",
-        message: `AI Response`,
+        message: `cost: $${cost}\n===\nResponse: ${data.response}`,
         flowId: data.flowId,
         blockId: data.blockId,
         custom: {
@@ -364,14 +348,13 @@ const runDataTask = async ({
         user: userId,
         entity_id: taskId,
         entity_type: "task",
-        // ai_service: data.serviceName,
         cost: data.usages.total_cost,
         usages: data.usages,
         service_name: data.serviceName,
         model_id: data.modelId,
       } as AiUsagesRecord);
-    } catch (e) {
-      console.log(`error`, e);
+    } catch (error) {
+      console.log(`error`, error);
     }
   };
 
@@ -381,15 +364,14 @@ const runDataTask = async ({
     try {
       result = (await runFlow({
         cache,
-        flow: mainFlow,
-        flows,
+        currentFlow: mainFlow,
+        allFlows: flows,
         aiServices: aiServices,
-        log,
-        onAiResponse,
+        logFunction,
+        onAiResponseFunction,
       })) as string;
       result && dataset.push(result);
-    } catch (e) {
-      // @ts-ignore
+    } catch (e: any) {
       error = e.message;
     }
     if (result) {
@@ -404,8 +386,9 @@ const runDataTask = async ({
       } as DatasRecord);
     }
   }
-  // update status
-  pb.collection("tasks").update(taskId, {
+
+  // Update task status
+  await pb.collection("tasks").update(taskId, {
     status: TasksStatusOptions["done"],
   } as TasksRecord);
 };

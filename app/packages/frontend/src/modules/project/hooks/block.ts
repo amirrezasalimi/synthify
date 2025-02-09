@@ -1,12 +1,31 @@
 import { defaultResponseSchema } from "../constants";
-import { FlowNode } from "../types/flow-data";
+import { useCommonStore } from "../stores/common";
+import { FlowBlock, FlowNode } from "../types/flow-data";
 import useSyncedState from "./synced-state";
 
 const useBlock = (flowId: string, blockId: string) => {
   const state = useSyncedState();
+
   const block = state.nodes[flowId]?.data.blocks.find(
     (block) => block.id === blockId
   );
+
+  const toggleChooseModelModal = useCommonStore(
+    (state) => state.toggleChooseModelModal
+  );
+  const openAiModelChooser = () => {
+    if (block) {
+      toggleChooseModelModal(true, (service_id, model_id) => {
+        if (!block.ai_config) {
+          block.ai_config = {};
+        }
+        block.ai_config.service = service_id;
+        block.ai_config.model = model_id;
+      });
+    }
+  };
+
+
   const otherFlows = Object.values(state.nodes ?? []).filter(
     (flow) => flow?.id !== flowId && flow?.id != "main"
   ) as FlowNode[];
@@ -39,12 +58,14 @@ const useBlock = (flowId: string, blockId: string) => {
     block.settings.response_sample = sample;
   };
   return {
+    data: block as FlowBlock,
     selectedFlow,
     otherFlows,
     changeFlow,
     changeResponseMode,
     changeResponseSchema,
     changeResponseSample,
+    openAiModelChooser
   };
 };
 

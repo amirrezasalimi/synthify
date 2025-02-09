@@ -17,7 +17,6 @@
     "@trpc/server": "^10.45.2",
     "@types/node": "^20.12.5",
     "elysia": "^1.0.13",
-    "install": "^0.13.0",
     "openai": "^4.33.0",
     "pocketbase": "^0.21.1",
     "pocketbase-typegen": "^1.2.1",
