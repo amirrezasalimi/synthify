@@ -53,6 +53,9 @@ const evaluateExpression = (
         const code = `return ${p1}`;
         const exec = sandbox.compile(code);
         const result = exec(context).run() as string;
+        console.log(`Code: `, code);
+        console.log(`Result: `, result);
+
         return result;
       } catch (error) {
         logFunction({
