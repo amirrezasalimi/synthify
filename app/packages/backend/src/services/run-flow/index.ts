@@ -52,7 +52,8 @@ const evaluateExpression = (
     });
     console.log(`Context: `, content, context, block);
 
-    const regex = /{((?:[^{}]|{(?:[^{}]|{[^{}]*})*})*)}(?![^#]*#END_NO_EXP)/gm;
+    const regex =
+      /{{((?:[^{}]|{(?:[^{}]|{[^{}]*})*})*)}}(?![^#]*#END_NO_EXP)/gm;
     content = content.replace(regex, (match, p1) => {
       console.log(`Evaluating expression: ${p1}`); // Add this line
       try {

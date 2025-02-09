@@ -11,7 +11,7 @@ const PromptSection: React.FC<PromptSectionProps> = ({
   onPromptChange,
 }) => {
   const regex = new RegExp(
-    "{((?:[^{}]|{(?:[^{}]|{[^{}]*})*})*)}(?![^#]*#END_NO_EXP)",
+    "{{((?:[^{}]|{(?:[^{}]|{[^{}]*})*})*)}}(?![^#]*#END_NO_EXP)",
     "gm"
   );
 
