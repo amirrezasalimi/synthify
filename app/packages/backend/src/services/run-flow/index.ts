@@ -332,9 +332,10 @@ const runDataTask = async ({
 
   const onAiResponseFunction = async (data: AiResponseData): Promise<void> => {
     try {
+      const cost = data.usages.total_cost ?? 0;
       await logFunction({
         type: "llm-success",
-        message: `AI Response`,
+        message: `cost: $${parseFloat(`${cost}`).toFixed(2)}\n===\nResponse: ${data.response}`,
         flowId: data.flowId,
         blockId: data.blockId,
         custom: {
