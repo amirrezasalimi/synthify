@@ -6,6 +6,7 @@ import { TbSend, TbSettings, TbTrash } from "react-icons/tb";
 import { useLocalStorage } from "react-use";
 import useChat from "./hooks/chat";
 import useDataImporter from "../../hooks/data-importer";
+import toast from "react-hot-toast";
 
 const AiAssistantChat = ({ isOpen }: { isOpen: boolean }) => {
   const [message, setMessage] = useLocalStorage("chat-message", "");
@@ -186,7 +187,8 @@ const AiAssistant = () => {
       <motion.div
         onClick={() => {
           // return toast("coming soon");
-          setIsOpen((prev) => !prev);
+          // setIsOpen((prev) => !prev);
+          toast("coming soon");
         }}
         className="right-0 bottom-0 z-10 absolute flex justify-center items-center gap-3 border-secondary-700 bg-secondary mb-6 px-4 border rounded-md h-10 text-background cursor-pointer overflow-hidden select-none"
         initial={{
