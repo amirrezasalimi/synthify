@@ -198,7 +198,7 @@ const DatasetModal = () => {
                                           );
                                         }}
                                       >
-                                        Go to block
+                                        Go to
                                       </Button>
                                     )}
                                   </pre>
